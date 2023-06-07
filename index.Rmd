@@ -1,0 +1,179 @@
+---
+title: "A gentle introduction to Bayesian Estimation 2023"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: scroll
+---
+
+<style>                     
+.navbar {
+  background-color: #FFCD00;
+  border-color: #C00A35;
+}
+.navbar-brand {
+color:black!important;
+}
+
+
+</style>   
+
+
+# Intro {.sidebar}
+
+This dashboard covers the course materials for the course [**A gentle introduction to Bayesian Estimation**](https://utrechtsummerschool.nl/courses/social-sciences/a-gentle-introduction-to-bayesian-estimation). 
+<br> <br>
+We usually adapt the course as we go, so we suggest to access the materials online when we consider them. The materials can be downloaded via [the github page for this course](https://github.com/UtrechtUniversity/BayesianEstimation). 
+
+---
+
+
+Instructors: 
+
+ - [Rens van de Schoot](https://www.rensvandeschoot.com/) <br>
+ - [Sara van Erp](https://www.saravanerp.com/)
+ - [Duco Veen](https://www.ducoveen.com/) 
+ - [Beth Grandfield](https://www.uu.nl/staff/EMGrandfield)
+ 
+
+---
+# Quick Overview
+
+## Column 1
+
+### Outline
+This course introduces all the essential ingredients needed to start Bayesian estimation and inference. We discuss specifying priors, obtaining the posterior, prior/posterior predictive checking, sensitivity analyses, and the usefulness of a specific class of priors called shrinkage priors. We propose strategies for reproducibility and reporting standards, outlining the WAMBS-checklist (when to Worry and how to Avoid the Misuse of Bayesian Statistics). We have prepared many exercises to enable students to get hands-on experience.
+
+The popularity of Bayesian statistics has increased over the years; however, Bayesian methods are not a part of the statistics curricula in most graduate programs internationally. The Bayesian framework can handle some commonly encountered problems in classical statistics, such as the lack of power in small sample research and convergence issues in complex models. Furthermore, some researchers prefer the Bayesian framework because it sequentially updates knowledge with new data instead of requiring that each new study tests the null hypothesis that there is no effect in the population. The main focus of the course is on conceptually understanding Bayesian inference and applying Bayesian methods.
+
+The instructors will clarify the differences between the philosophies and interpretations in classical and Bayesian frameworks. They illustrate how types of research questions can be answered using Bayesian methods. This course will also give students experience running Bayesian analyses and interpreting results and instruct participants on the prevailing “best practices” for writing a scientific article based on Bayesian statistics. Participants will emerge from the course with knowledge about how to apply Bayesian methods to answer their research questions and with the ability to understand articles that examine and use Bayesian methods.
+
+
+
+## Column 2
+
+### Daily schedule 
+
+| When?  |      | What?      |
+|:--------|:-------|:-------------|
+| 09.00 | 12.00  | Lecture |
+|       | [Lunch](https://www.uu.nl/en/educatorium) |            
+| 13:30 | 16.00  | Computer lab |
+
+
+### Lecture Hall locations
+| When?  | Where    |
+|:--------|:-------|
+| Monday | [Koningsberger Atlas](https://goo.gl/maps/ufn6aXVL9K48Gn7S6) |
+| Tuesday | [Koningsberger Atlas](https://goo.gl/maps/ufn6aXVL9K48Gn7S6)  | 
+| Wednesday | [Koningsberger Atlas](https://goo.gl/maps/ufn6aXVL9K48Gn7S6) |
+| Thursday | [Koningsberger Atlas](https://goo.gl/maps/ufn6aXVL9K48Gn7S6) |
+| Friday | [Koningsberger Atlas](https://goo.gl/maps/ufn6aXVL9K48Gn7S6) |
+
+# How to prepare
+
+## Column 1
+
+### Preparing for the course
+
+**1. Install the latest version of `R`**
+`R` can be obtained [here](https://cran.r-project.org). We won't use `R` directly in the course, but rather call `R` through `RStudio`. Therefore it needs to be installed. 
+
+**2. Install the latest `RStudio` Desktop**
+
+Rstudio is an Integrated Development Environment (IDE). It can be obtained as stand-alone software [here](https://www.rstudio.com/products/rstudio/download/#download). The free and open source `RStudio Desktop` version is sufficient.
+
+
+## Column 2
+
+### **What if the steps to the left do not work for me?**
+If all fails and you have insufficient rights to your machine, the following web-based service will offer a solution. 
+
+1. You will receive an account to Utrecht University's [SolisWorkspace](https://solisworkspace.uu.nl/). You would have access to `R` and `RStudio` there. You may need to install packages for new sessions during the course. 
+2. Open a free account on [rstudio.cloud](https://rstudio.cloud). You can run your own cloud-based `RStudio` environment there. 
+
+
+# Monday
+
+## Column 1
+
+
+### Outline
+Day 1: we discuss the stages involved in Bayesian analysis: obtaining background knowledge from previous literature, specifying the prior distributions,  and deriving the posterior. We discuss the importance of prior and posterior predictive checking, and selecting a proper technique for sampling from a probability distribution. We prepared exercises in web apps to play around with priors and data to learn how these will affect the posterior.
+
+
+### Materials
+We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
+
+
+
+## Column 2
+
+### Useful links
+
+# Tuesday
+
+## Column 1
+
+### Outline
+Day 2: we discuss reproducibility and reporting standards strategies, outlining the WAMBS-checklist (when to Worry and how to Avoid the Misuse of Bayesian Statistics).  We have prepared exercises in R (brms, blavaan, rjags, rstan, rstanarm, bayesreg) to get hands-on experience. If you are not familiar with R, we will send you some exercises to be completed before starting the course.
+
+### Materials
+We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
+
+
+## Column 2
+
+### Useful links
+
+
+
+# Wednesday
+
+## Column 1
+
+### Outline
+Day 3: we discuss estimation methods including alternatives that can be more efficient when dealing with computational or non-covergence issues. A brief introduction to and  the benefits of these estimation methods (MCMC, Gibbs, MH, HMC, NUTS, etc.) will be reviewed. These insights can help to understand differences between software that can be used. Today may be a little more technical (less gentle) but without equations.
+
+### Materials
+We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
+
+
+
+## Column 2
+
+### Useful links
+
+
+
+# Thursday
+
+## Column 1
+
+
+### Outline
+Day 4: although the prior distribution can offer many advantages, the prior can also inadvertently influence the results. Today we will discuss the importance of prior sensitivity analysis to investigate the influence the prior has on the results. We will focus on models with many parameters to estimate, possibly too many for the model to be identified in a classical sense. We discuss the use of shrinkage priors to estimate these models and select substantial parameters.
+
+### Materials
+We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
+
+## Column 2
+
+### Useful links
+
+
+# Friday
+
+## Column 1
+
+### Outline
+Day 5: today we elaborate on ways in which informative priors can be specified. We discuss how we can use expert knowledge and previous studies to inform these decisions. We also provide case studies and end with general reflections.
+
+### Materials
+We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
+
+## Column 2
+
+### Useful links
+
+
