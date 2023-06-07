@@ -109,7 +109,11 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 ## Column 2
 
-### Useful links
+### Useful references
+
+van de Schoot, R., Depaoli, S., King, R. et al. Bayesian statistics and modelling. Nature Review Methods Primers 1, 1 (2021). https://doi.org/10.1038/s43586-020-00001-2 
+
+
 
 # Tuesday
 
@@ -124,9 +128,11 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 ## Column 2
 
-### Useful links
+### Useful references
 
+Depaoli, S., & Van de Schoot, R. (2017). Improving transparency and replication in Bayesian statistics: The WAMBS-Checklist. Psychological methods, 22(2), 240.
 
+Van de Schoot, R., Veen, D., Smeets, L., Winter, S. D., & Depaoli, S. (2020). A tutorial on using the WAMBS checklist to avoid the misuse of Bayesian statistics. Small Sample Size Solutions: A Guide for Applied Researchers and Practitioners; van de Schoot, R., Miocevic, M., Eds, 30-49.
 
 # Wednesday
 
@@ -142,9 +148,12 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 ## Column 2
 
-### Useful links
+### Useful references
 
 
+https://chi-feng.github.io/mcmc-demo/
+
+Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, Andrew Gelman, Visualization in Bayesian Workflow, Journal of the Royal Statistical Society Series A: Statistics in Society, Volume 182, Issue 2, February 2019, Pages 389–402, https://doi.org/10.1111/rssa.12378
 
 # Thursday
 
@@ -159,8 +168,9 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 ## Column 2
 
-### Useful links
+### Useful references
 
+van Erp, S. (2020). A tutorial on Bayesian penalized regression with shrinkage priors for small sample sizes. Small sample size solutions, 71-84. https://library.oapen.org/bitstream/handle/20.500.12657/22385/9780367221898_text%20(1).pdf?sequence=1#page=85
 
 # Friday
 
@@ -174,6 +184,9 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 ## Column 2
 
-### Useful links
+### Useful references
 
+van de Schoot R, Veen D, Grandfield EM, et al . (2021) The Use of Questionable Research Practices to Survive in Academia Examined With Expert Elicitation, PriorData Conflicts, Bayes Factors for Replication Effects, and the Bayes Truth Serum. Front Psychol. doi: 10.3389/fpsyg.2021.621547.
+
+Veen, D., Stoel, D., Zondervan-Zwijnenburg, M., & Van de Schoot, R. (2017). Proposal for a five-step method to elicit expert judgment. Frontiers in psychology, 8, 2110. https://doi.org/10.3389/fpsyg.2017.02110.
 
