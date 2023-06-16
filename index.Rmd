@@ -76,12 +76,31 @@ The instructors will clarify the differences between the philosophies and interp
 
 ### Preparing for the course
 
+We have prepared many exercises in `R`. If you are not familiar with R, we recommend following the installation instructions and working through the exercises below before the start of the course. 
+
 **1. Install the latest version of `R`**
-`R` can be obtained [here](https://cran.r-project.org). We won't use `R` directly in the course, but rather call `R` through `RStudio`. Therefore it needs to be installed. 
+`R` can be obtained <a href="https://cran.r-project.org" target="_blank">here</a>. We won't use `R` directly in the course, but rather call `R` through `RStudio`. Therefore it needs to be installed. 
 
 **2. Install the latest `RStudio` Desktop**
 
-Rstudio is an Integrated Development Environment (IDE). It can be obtained as stand-alone software [here](https://www.rstudio.com/products/rstudio/download/#download). The free and open source `RStudio Desktop` version is sufficient.
+Rstudio is an Integrated Development Environment (IDE). It can be obtained as stand-alone software <a href="https://posit.co/download/rstudio-desktop/#download" target="_blank">here</a>. The free and open source `RStudio Desktop` version is sufficient.
+
+**3. Make sure you have a C++ compiler**
+
+We will use several packages, but mostly `brms`. As explained <a href="https://cran.r-project.org/web/packages/brms/readme/README.html" target="_blank">here</a>: *Because brms is based on Stan, a C++ compiler is required. The program* `Rtools` *(available* <a href="https://cran.r-project.org/bin/windows/Rtools/" target="_blank">here</a> *comes with a C++ compiler for Windows. On Mac, you should install* `Xcode`. *For further instructions on how to get the compilers running, see the prerequisites section * <a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started" target="_blank">here</a>. 
+
+### Materials
+
+**Exercise ‘Intro R’**
+
+If you're not familiar with R, you might want to work on these two exercises first before continuing:
+
+The first is a basic intro to R. By following the steps outlined in this tutorial, you will establish a fundamental understanding of R. For this exercise click <a href="https://www.rensvandeschoot.com/tutorials/r-for-beginners/" target="_blank">here</a>.
+
+The second exercise guides you through frequentist regression analysis in R, building upon your foundational knowledge. For this exercise, click <a href="https://www.rensvandeschoot.com/tutorials/linear-regression-in-r-frequentist/" target="_blank">here</a>.
+
+The underlying code is available on <a href="https://github.com/Rensvandeschoot/Tutorials" target="_blank">GitHub</a>. Your feedback (via an issue or PR) to the code or the exercises is very much appreciated!
+
 
 
 ## Column 2
@@ -89,8 +108,29 @@ Rstudio is an Integrated Development Environment (IDE). It can be obtained as st
 ### **What if the steps to the left do not work for me?**
 If all fails and you have insufficient rights to your machine, the following web-based service will offer a solution. 
 
-1. You will receive an account to Utrecht University's [SolisWorkspace](https://solisworkspace.uu.nl/). You would have access to `R` and `RStudio` there. You may need to install packages for new sessions during the course. 
-2. Open a free account on [rstudio.cloud](https://rstudio.cloud). You can run your own cloud-based `RStudio` environment there. 
+1. You will receive an account to Utrecht University's <a href="https://solisworkspace.uu.nl/" target="_blank">SolisWorkspace</a>. You would have access to `R` and `RStudio` there. You may need to install packages for new sessions during the course. 
+2. Open a free account on <a href="https://posit.cloud/" target="_blank">posit.cloud</a>. You can run your own cloud-based `RStudio` environment there. 
+
+### Useful references
+
+https://cran.r-project.org
+
+https://posit.co/download/rstudio-desktop/#download
+
+https://cran.r-project.org/bin/windows/Rtools/
+
+https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
+
+https://www.rensvandeschoot.com/tutorials/r-for-beginners/ 
+
+https://www.rensvandeschoot.com/tutorials/linear-regression-in-r-frequentist/ 
+
+https://github.com/Rensvandeschoot/Tutorials
+
+https://solisworkspace.uu.nl/
+
+https://posit.cloud/
+
 
 
 # Monday
@@ -105,11 +145,40 @@ Day 1: we discuss the stages involved in Bayesian analysis: obtaining background
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
+- Slides day 1
+
+**Exercise ‘First Bayesian Inference'**
+
+The first exercise makes use of a Shiny App that is designed to ease its users’ first contact with Bayesian statistical inference. By "pointing and clicking", the user can analyze the IQ example as has been used in the easy-to-go introduction to Bayesian inference of van de Schoot et al. (2014).
+
+For the exercise click <a href="https://www.rensvandeschoot.com/tutorials/fbi/" target="_blank">here</a>.
+
+The underlying code is available on <a href="https://github.com/Rensvandeschoot/First-Bayesian-Inference" target="_blank">GitHub</a>. If you like the App, leave a star. Feedback (via an issue or PR) to the code or the exercise is very much appreciated!
+
+**Exercise ‘Plausible Parameter Space’**
+
+The Plausible Parameter Space (PPS) Shiny App is designed to help users define their priors in a linear regression with two regression coefficients. Users are asked to specify their plausible parameter space and their expected prior means and uncertainty around these means. The PhD-delay data is used as an easy-to-go introduction 
+
+For the exercise click <a href="https://www.rensvandeschoot.com/pps" target="_blank">here</a>. 
+
+The underlying code is available on <a href="https://github.com/Rensvandeschoot/Plausible-Parameter-Space" target="_blank">GitHub</a>. If you like the App, leave a star. Feedback (via an issue or PR) to the code or the exercise is very much appreciated!
 
 
 ## Column 2
 
-### Useful links
+### Useful references
+
+van de Schoot, R., Depaoli, S., King, R. et al. Bayesian statistics and modelling. Nature Review Methods Primers 1, 1 (2021). https://doi.org/10.1038/s43586-020-00001-2 
+
+van de Schoot, R., Kaplan, D., Denissen, J., Asendorpf, J. B., Neyer, F. J. and van Aken, M. A.G. (2014), A Gentle Introduction to Bayesian Analysis: Applications to Developmental Research. Child Dev, 85: 842–860. doi:10.1111/cdev.12169
+
+https://www.rensvandeschoot.com/tutorials/fbi/
+
+https://github.com/Rensvandeschoot/First-Bayesian-Inference 
+
+https://www.rensvandeschoot.com/pps
+
+https://github.com/Rensvandeschoot/Plausible-Parameter-Space 
 
 # Tuesday
 
@@ -124,9 +193,11 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 ## Column 2
 
-### Useful links
+### Useful references
 
+Depaoli, S., & Van de Schoot, R. (2017). Improving transparency and replication in Bayesian statistics: The WAMBS-Checklist. Psychological methods, 22(2), 240.
 
+Van de Schoot, R., Veen, D., Smeets, L., Winter, S. D., & Depaoli, S. (2020). A tutorial on using the WAMBS checklist to avoid the misuse of Bayesian statistics. Small Sample Size Solutions: A Guide for Applied Researchers and Practitioners; van de Schoot, R., Miocevic, M., Eds, 30-49.
 
 # Wednesday
 
@@ -142,9 +213,12 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 ## Column 2
 
-### Useful links
+### Useful references
 
 
+https://chi-feng.github.io/mcmc-demo/
+
+Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, Andrew Gelman, Visualization in Bayesian Workflow, Journal of the Royal Statistical Society Series A: Statistics in Society, Volume 182, Issue 2, February 2019, Pages 389–402, https://doi.org/10.1111/rssa.12378
 
 # Thursday
 
@@ -159,8 +233,9 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 ## Column 2
 
-### Useful links
+### Useful references
 
+van Erp, S. (2020). A tutorial on Bayesian penalized regression with shrinkage priors for small sample sizes. Small sample size solutions, 71-84. https://library.oapen.org/bitstream/handle/20.500.12657/22385/9780367221898_text%20(1).pdf?sequence=1#page=85
 
 # Friday
 
@@ -174,6 +249,9 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 ## Column 2
 
-### Useful links
+### Useful references
 
+van de Schoot R, Veen D, Grandfield EM, et al . (2021) The Use of Questionable Research Practices to Survive in Academia Examined With Expert Elicitation, PriorData Conflicts, Bayes Factors for Replication Effects, and the Bayes Truth Serum. Front Psychol. doi: 10.3389/fpsyg.2021.621547.
+
+Veen, D., Stoel, D., Zondervan-Zwijnenburg, M., & Van de Schoot, R. (2017). Proposal for a five-step method to elicit expert judgment. Frontiers in psychology, 8, 2110. https://doi.org/10.3389/fpsyg.2017.02110.
 
