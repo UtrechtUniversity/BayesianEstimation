@@ -2074,16 +2074,52 @@ Atlas</a></td>
 <h2>Column 1</h2>
 <div id="preparing-for-the-course" class="section level3">
 <h3>Preparing for the course</h3>
+<p>We have prepared many exercises in <code>R</code>. If you are not
+familiar with R, we recommend following the installation instructions
+and working through the exercises below before the start of the
+course.</p>
 <p><strong>1. Install the latest version of <code>R</code></strong>
-<code>R</code> can be obtained <a href="https://cran.r-project.org">here</a>. We won’t use <code>R</code>
-directly in the course, but rather call <code>R</code> through
-<code>RStudio</code>. Therefore it needs to be installed.</p>
+<code>R</code> can be obtained
+<a href="https://cran.r-project.org" target="_blank">here</a>. We won’t
+use <code>R</code> directly in the course, but rather call
+<code>R</code> through <code>RStudio</code>. Therefore it needs to be
+installed.</p>
 <p><strong>2. Install the latest <code>RStudio</code>
 Desktop</strong></p>
 <p>Rstudio is an Integrated Development Environment (IDE). It can be
-obtained as stand-alone software <a href="https://www.rstudio.com/products/rstudio/download/#download">here</a>.
+obtained as stand-alone software
+<a href="https://posit.co/download/rstudio-desktop/#download" target="_blank">here</a>.
 The free and open source <code>RStudio Desktop</code> version is
 sufficient.</p>
+<p><strong>3. Make sure you have a C++ compiler</strong></p>
+<p>We will use several packages, but mostly <code>brms</code>. As
+explained
+<a href="https://cran.r-project.org/web/packages/brms/readme/README.html" target="_blank">here</a>:
+<em>Because brms is based on Stan, a C++ compiler is required. The
+program</em> <code>Rtools</code> <em>(available</em>
+<a href="https://cran.r-project.org/bin/windows/Rtools/" target="_blank">here</a>
+<em>comes with a C++ compiler for Windows. On Mac, you should
+install</em> <code>Xcode</code>. <em>For further instructions on how to
+get the compilers running, see the prerequisites section </em>
+<a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started" target="_blank">here</a>.</p>
+</div>
+<div id="materials" class="section level3">
+<h3>Materials</h3>
+<p><strong>Exercise ‘Intro R’</strong></p>
+<p>If you’re not familiar with R, you might want to work on these two
+exercises first before continuing:</p>
+<p>The first is a basic intro to R. By following the steps outlined in
+this tutorial, you will establish a fundamental understanding of R. For
+this exercise click
+<a href="https://www.rensvandeschoot.com/tutorials/r-for-beginners/" target="_blank">here</a>.</p>
+<p>The second exercise guides you through frequentist regression
+analysis in R, building upon your foundational knowledge. For this
+exercise, click
+<a href="https://www.rensvandeschoot.com/tutorials/linear-regression-in-r-frequentist/" target="_blank">here</a>.</p>
+<p>The underlying code is available on
+<a href="https://github.com/Rensvandeschoot/Tutorials" target="_blank">GitHub</a>.
+Your feedback (via an issue or PR) to the code or the exercises is very
+much appreciated!</p>
 </div>
 </div>
 <div id="column-2-1" class="section level2">
@@ -2094,12 +2130,28 @@ me?</strong></h3>
 <p>If all fails and you have insufficient rights to your machine, the
 following web-based service will offer a solution.</p>
 <ol style="list-style-type: decimal">
-<li>You will receive an account to Utrecht University’s <a href="https://solisworkspace.uu.nl/">SolisWorkspace</a>. You would have
-access to <code>R</code> and <code>RStudio</code> there. You may need to
-install packages for new sessions during the course.</li>
-<li>Open a free account on <a href="https://rstudio.cloud">rstudio.cloud</a>. You can run your own
-cloud-based <code>RStudio</code> environment there.</li>
+<li>You will receive an account to Utrecht University’s
+<a href="https://solisworkspace.uu.nl/" target="_blank">SolisWorkspace</a>.
+You would have access to <code>R</code> and <code>RStudio</code> there.
+You may need to install packages for new sessions during the
+course.</li>
+<li>Open a free account on
+<a href="https://rstudio.cloud" target="_blank">rstudio.cloud</a>. You
+can run your own cloud-based <code>RStudio</code> environment
+there.</li>
 </ol>
+</div>
+<div id="useful-references" class="section level3">
+<h3>Useful references</h3>
+<p><a href="https://cran.r-project.org" class="uri">https://cran.r-project.org</a></p>
+<p><a href="https://posit.co/download/rstudio-desktop/#download" class="uri">https://posit.co/download/rstudio-desktop/#download</a></p>
+<p><a href="https://cran.r-project.org/bin/windows/Rtools/" class="uri">https://cran.r-project.org/bin/windows/Rtools/</a></p>
+<p><a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started" class="uri">https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started</a></p>
+<p><a href="https://www.rensvandeschoot.com/tutorials/r-for-beginners/" class="uri">https://www.rensvandeschoot.com/tutorials/r-for-beginners/</a></p>
+<p><a href="https://www.rensvandeschoot.com/tutorials/linear-regression-in-r-frequentist/" class="uri">https://www.rensvandeschoot.com/tutorials/linear-regression-in-r-frequentist/</a></p>
+<p><a href="https://github.com/Rensvandeschoot/Tutorials" class="uri">https://github.com/Rensvandeschoot/Tutorials</a></p>
+<p><a href="https://solisworkspace.uu.nl/" class="uri">https://solisworkspace.uu.nl/</a></p>
+<p><a href="https://rstudio.cloud" class="uri">https://rstudio.cloud</a></p>
 </div>
 </div>
 </div>
@@ -2117,19 +2169,54 @@ technique for sampling from a probability distribution. We prepared
 exercises in web apps to play around with priors and data to learn how
 these will affect the posterior.</p>
 </div>
-<div id="materials" class="section level3">
+<div id="materials-1" class="section level3">
 <h3>Materials</h3>
 <p>We adapt the course as we go. To ensure that you work with the latest
 iteration of the course materials, we advice all course participants to
 access the materials online.</p>
+<ul>
+<li>Slides day 1</li>
+</ul>
+<p><strong>Exercise ‘First Bayesian Inference’</strong></p>
+<p>The first exercise makes use of a Shiny App that is designed to ease
+its users’ first contact with Bayesian statistical inference. By
+“pointing and clicking”, the user can analyze the IQ example as has been
+used in the easy-to-go introduction to Bayesian inference of van de
+Schoot et al. (2014).</p>
+<p>For the exercise click
+<a href="https://www.rensvandeschoot.com/tutorials/fbi/" target="_blank">here</a>.</p>
+<p>The underlying code is available on
+<a href="https://github.com/Rensvandeschoot/First-Bayesian-Inference" target="_blank">GitHub</a>.
+If you like the App, leave a star. Feedback (via an issue or PR) to the
+code or the exercise is very much appreciated!</p>
+<p><strong>Exercise ‘Plausible Parameter Space’</strong></p>
+<p>The Plausible Parameter Space (PPS) Shiny App is designed to help
+users define their priors in a linear regression with two regression
+coefficients. Users are asked to specify their plausible parameter space
+and their expected prior means and uncertainty around these means. The
+PhD-delay data is used as an easy-to-go introduction</p>
+<p>For the exercise click
+<a href="https://www.rensvandeschoot.com/pps" target="_blank">here</a>.</p>
+<p>The underlying code is available on
+<a href="https://github.com/Rensvandeschoot/Plausible-Parameter-Space" target="_blank">GitHub</a>.
+If you like the App, leave a star. Feedback (via an issue or PR) to the
+code or the exercise is very much appreciated!</p>
 </div>
 </div>
 <div id="column-2-2" class="section level2">
 <h2>Column 2</h2>
-<div id="useful-references" class="section level3">
+<div id="useful-references-1" class="section level3">
 <h3>Useful references</h3>
 <p>van de Schoot, R., Depaoli, S., King, R. et al. Bayesian statistics
 and modelling. Nature Review Methods Primers 1, 1 (2021). <a href="https://doi.org/10.1038/s43586-020-00001-2" class="uri">https://doi.org/10.1038/s43586-020-00001-2</a></p>
+<p>van de Schoot, R., Kaplan, D., Denissen, J., Asendorpf, J. B., Neyer,
+F. J. and van Aken, M. A.G. (2014), A Gentle Introduction to Bayesian
+Analysis: Applications to Developmental Research. Child Dev, 85:
+842–860. <a href="doi:10.1111/cdev.12169" class="uri">doi:10.1111/cdev.12169</a></p>
+<p><a href="https://www.rensvandeschoot.com/tutorials/fbi/" class="uri">https://www.rensvandeschoot.com/tutorials/fbi/</a></p>
+<p><a href="https://github.com/Rensvandeschoot/First-Bayesian-Inference" class="uri">https://github.com/Rensvandeschoot/First-Bayesian-Inference</a></p>
+<p><a href="https://www.rensvandeschoot.com/pps" class="uri">https://www.rensvandeschoot.com/pps</a></p>
+<p><a href="https://github.com/Rensvandeschoot/Plausible-Parameter-Space" class="uri">https://github.com/Rensvandeschoot/Plausible-Parameter-Space</a></p>
 </div>
 </div>
 </div>
@@ -2146,7 +2233,7 @@ rjags, rstan, rstanarm, bayesreg) to get hands-on experience. If you are
 not familiar with R, we will send you some exercises to be completed
 before starting the course.</p>
 </div>
-<div id="materials-1" class="section level3">
+<div id="materials-2" class="section level3">
 <h3>Materials</h3>
 <p>We adapt the course as we go. To ensure that you work with the latest
 iteration of the course materials, we advice all course participants to
@@ -2155,7 +2242,7 @@ access the materials online.</p>
 </div>
 <div id="column-2-3" class="section level2">
 <h2>Column 2</h2>
-<div id="useful-references-1" class="section level3">
+<div id="useful-references-2" class="section level3">
 <h3>Useful references</h3>
 <p>Depaoli, S., &amp; Van de Schoot, R. (2017). Improving transparency
 and replication in Bayesian statistics: The WAMBS-Checklist.
@@ -2182,7 +2269,7 @@ insights can help to understand differences between software that can be
 used. Today may be a little more technical (less gentle) but without
 equations.</p>
 </div>
-<div id="materials-2" class="section level3">
+<div id="materials-3" class="section level3">
 <h3>Materials</h3>
 <p>We adapt the course as we go. To ensure that you work with the latest
 iteration of the course materials, we advice all course participants to
@@ -2191,7 +2278,7 @@ access the materials online.</p>
 </div>
 <div id="column-2-4" class="section level2">
 <h2>Column 2</h2>
-<div id="useful-references-2" class="section level3">
+<div id="useful-references-3" class="section level3">
 <h3>Useful references</h3>
 <p><a href="https://chi-feng.github.io/mcmc-demo/" class="uri">https://chi-feng.github.io/mcmc-demo/</a></p>
 <p>Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, Andrew
@@ -2215,7 +2302,7 @@ many parameters to estimate, possibly too many for the model to be
 identified in a classical sense. We discuss the use of shrinkage priors
 to estimate these models and select substantial parameters.</p>
 </div>
-<div id="materials-3" class="section level3">
+<div id="materials-4" class="section level3">
 <h3>Materials</h3>
 <p>We adapt the course as we go. To ensure that you work with the latest
 iteration of the course materials, we advice all course participants to
@@ -2224,7 +2311,7 @@ access the materials online.</p>
 </div>
 <div id="column-2-5" class="section level2">
 <h2>Column 2</h2>
-<div id="useful-references-3" class="section level3">
+<div id="useful-references-4" class="section level3">
 <h3>Useful references</h3>
 <p>van Erp, S. (2020). A tutorial on Bayesian penalized regression with
 shrinkage priors for small sample sizes. Small sample size solutions,
@@ -2243,7 +2330,7 @@ specified. We discuss how we can use expert knowledge and previous
 studies to inform these decisions. We also provide case studies and end
 with general reflections.</p>
 </div>
-<div id="materials-4" class="section level3">
+<div id="materials-5" class="section level3">
 <h3>Materials</h3>
 <p>We adapt the course as we go. To ensure that you work with the latest
 iteration of the course materials, we advice all course participants to
@@ -2252,7 +2339,7 @@ access the materials online.</p>
 </div>
 <div id="column-2-6" class="section level2">
 <h2>Column 2</h2>
-<div id="useful-references-4" class="section level3">
+<div id="useful-references-5" class="section level3">
 <h3>Useful references</h3>
 <p>van de Schoot R, Veen D, Grandfield EM, et al . (2021) The Use of
 Questionable Research Practices to Survive in Academia Examined With
