@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.90">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Duco Veen &amp; Sara van Erp">
+
+<title>Prior and Posterior Predictive Checking in Bayesian Estimation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="prior_posterior_predictive_practical_files/libs/clipboard/clipboard.min.js"></script>
+<script src="prior_posterior_predictive_practical_files/libs/quarto-html/quarto.js"></script>
+<script src="prior_posterior_predictive_practical_files/libs/quarto-html/popper.min.js"></script>
+<script src="prior_posterior_predictive_practical_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="prior_posterior_predictive_practical_files/libs/quarto-html/anchor.min.js"></script>
+<link href="prior_posterior_predictive_practical_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="prior_posterior_predictive_practical_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="prior_posterior_predictive_practical_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="prior_posterior_predictive_practical_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="prior_posterior_predictive_practical_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#a-beginners-guide-to-predictive-checking" id="toc-a-beginners-guide-to-predictive-checking" class="nav-link active" data-scroll-target="#a-beginners-guide-to-predictive-checking">A Beginner’s Guide to Predictive Checking</a></li>
+  <li><a href="#prior-predictive-checking" id="toc-prior-predictive-checking" class="nav-link" data-scroll-target="#prior-predictive-checking">Prior Predictive Checking</a></li>
+  <li><a href="#posterior-predictive-checking" id="toc-posterior-predictive-checking" class="nav-link" data-scroll-target="#posterior-predictive-checking">Posterior Predictive Checking</a></li>
+  <li><a href="#sec-case-study" id="toc-sec-case-study" class="nav-link" data-scroll-target="#sec-case-study">Case Study: Applying Prior and Posterior Predictive Checks on Real-World Data</a></li>
+  <li><a href="#conclusion-and-further-resources" id="toc-conclusion-and-further-resources" class="nav-link" data-scroll-target="#conclusion-and-further-resources">Conclusion and Further Resources</a></li>
+  <li><a href="#original-computing-environment" id="toc-original-computing-environment" class="nav-link" data-scroll-target="#original-computing-environment">Original Computing Environment</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Prior and Posterior Predictive Checking in Bayesian Estimation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Duco Veen &amp; Sara van Erp </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-1_4bb8a626ee98987bf52ab29c6bfed628">
+<style type="text/css">
+.output {
+max-height: 500px;
+overflow-y: scroll;
+}
+</style>
+</div>
+<p>Through this tutorial, learners will gain a practical understanding of conducting prior and posterior predictive checks in Bayesian estimation using <code>brms</code>. We will include clear code examples, explanations, and visualizations at every step to ensure a comprehensive understanding of the process. We start out with simulated data examples and include a case study in <a href="#sec-case-study" class="quarto-xref">Section&nbsp;4</a></p>
+<p><strong>Learning Goals</strong></p>
+<ol type="1">
+<li>Understand the concepts of prior and posterior predictive checking in Bayesian estimation.</li>
+<li>Learn how to do prior and posterior predictive checking, using the BRMS and Bayesplot packages.</li>
+</ol>
+<section id="a-beginners-guide-to-predictive-checking" class="level2">
+<h2 class="anchored" data-anchor-id="a-beginners-guide-to-predictive-checking">A Beginner’s Guide to Predictive Checking</h2>
+<p>Welcome to the exciting world of predictive checking! This concept forms a core part of the Bayesian workflow and is a handy technique for validating and refining statistical models. Think of it like a quality check for your models. It takes advantage of the fact that Bayesian models can simulate data (they are generative models). We use this power to create what our model and its associated priors suggest could be possible data outcomes. It’s like getting a sneak peek at what your model predicts even before you start the main analysis.</p>
+<p>Now, predictive checking comes in two flavours: prior predictive checking and posterior predictive checking.</p>
+<p>Prior predictive checking is like a dress rehearsal before the main event. It’s all about simulating data based on the prior predictive distribution. And what decides this distribution? It’s purely down to the model’s prior distributions and the model’s specifications, i.e., the parameters you’ve chosen for your model. It’s like a behind-the-scenes pass that lets you see the potential outcomes of your prior choices and whether they make sense or have too much sway. Have you ever wondered if your chosen hyperparameters are spot on, or too narrow or too broad? Well, this is where prior predictive checks shine. They help you spot any issues that could unduly influence the final outcome. It also helps you to spot when you’ve mixed up specification, for instance, specifying a variances instead of a precision (yes this has happened to us).</p>
+<p>On the other hand, posterior predictive checks are like the grand finale. They let us evaluate how well the model fits the observed data, and they consider both the data and the priors. So, it’s like a comprehensive health check for your model. If the model generates data that looks a lot like our observed data, the model is specified well and healthy. If the model generates data that look very different, we might need a check-up.</p>
+<p>These checks are like superpowers. They enable us to understand our model better, ensure it’s working as expected, and decide on any tweaks if needed. So buckle up and let’s dive deeper into the fascinating realm of predictive checking!</p>
+</section>
+<section id="prior-predictive-checking" class="level2">
+<h2 class="anchored" data-anchor-id="prior-predictive-checking">Prior Predictive Checking</h2>
+<p>Let’s imagine that the Dutch news reports an increase in bike thefts and we want to investigate the relation between bike thefts and the increase in temperature. Let’s start by generating the simulated data. We simulate the number of bike thefts in a small village on a hundred random days. Please note, we are simplyfing the model, not taking any dependency between days into account and act as if seasonal changes in weather can happen overnight.</p>
+<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-2_ed661a5f6743b8bc91e2452204600db6">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">23</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate simulated data</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>temperature <span class="ot">&lt;-</span> <span class="fu">runif</span>(n, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">30</span>) <span class="co"># Random temperatures between 0 and 30</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>intercept <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>slope <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>noise_sd <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>bike_thefts <span class="ot">&lt;-</span> intercept <span class="sc">+</span> slope <span class="sc">*</span> temperature <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> noise_sd)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">temperature =</span> temperature, <span class="at">bike_thefts =</span> bike_thefts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s take a quick look at our data to get a feel for what they look like.</p>
+<p>Firstly, we can get summary statistics for our data.</p>
+<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-3_a49dc5b75707a2214f92071273aee3ae">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  temperature       bike_thefts    
+ Min.   : 0.5915   Min.   : 4.256  
+ 1st Qu.: 8.4886   1st Qu.:14.856  
+ Median :16.1382   Median :17.193  
+ Mean   :16.0487   Mean   :18.363  
+ 3rd Qu.:24.5464   3rd Qu.:22.670  
+ Max.   :29.8983   Max.   :28.617  </code></pre>
+</div>
+</div>
+<p>Next, let’s take a look at the first few rows of the data.</p>
+<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-4_5c988b7a5f546874c607823e72cd1c30">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  temperature bike_thefts
+        &lt;dbl&gt;       &lt;dbl&gt;
+1       17.3        22.4 
+2        6.69       12.6 
+3        9.96        8.99
+4       21.3        22.8 
+5       24.6        26.0 
+6       12.7        13.8 </code></pre>
+</div>
+</div>
+<p>Finally, let’s visualize our data. We’ll create a scatterplot to see if there’s a visible correlation between the temperature and the number of bike thefts.</p>
+<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-5_76987660eb2222233df1b6e6bcd6b84f">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> temperature, <span class="at">y =</span> bike_thefts)) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Temperature"</span>, <span class="at">y =</span> <span class="st">"Bike thefts"</span>) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><br></p>
+<p>Now that we have our simulated data, let’s define our model and priors in brms and fit the data. See if you can do if yourself before looking at the solutions. <em>Hint:</em> check out <code>?priors</code> and <code>?brm</code> to specify the priors and call the model. How do you get only samples from the prior?</p>
+<div class="cell output" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-6_462538db137496f6ea7175d106c2094e">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define priors</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>priors <span class="ot">&lt;-</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">10</span>, <span class="dv">5</span>), <span class="at">class =</span> <span class="st">"Intercept"</span>) <span class="sc">+</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify and fit the model, note the sample_prior = "only" </span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># this makes sure we are going to look at the prior predictive samples. </span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(bike_thefts <span class="sc">~</span> temperature, <span class="at">data =</span> data, </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> priors, <span class="at">family =</span> <span class="fu">gaussian</span>(),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">sample_prior =</span> <span class="st">"only"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 2.1e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.21 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.017 seconds (Warm-up)
+Chain 1:                0.016 seconds (Sampling)
+Chain 1:                0.033 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 3e-06 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.03 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.018 seconds (Warm-up)
+Chain 2:                0.017 seconds (Sampling)
+Chain 2:                0.035 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 3e-06 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.03 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.017 seconds (Warm-up)
+Chain 3:                0.018 seconds (Sampling)
+Chain 3:                0.035 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 4e-06 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.04 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.021 seconds (Warm-up)
+Chain 4:                0.018 seconds (Sampling)
+Chain 4:                0.039 seconds (Total)
+Chain 4: </code></pre>
+</div>
+</div>
+<p>Great, once we’ve fit our model, we can use the <code>pp_check</code> function in <code>brms</code> to look at the prior predictive checks. These are build upon work in the <code>bayesplot</code> package, you could use those functions directly, but it requires some more effort.</p>
+<p>The most basic thing we can look at is to see what possible distributions of the data are simulated.</p>
+<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-7_8f70f14c9671d628d318e5072cfb32d7">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can also look at what summary statistics these data produce. For instance, what mean of standard deviations.</p>
+<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-8_61759c69305132e7588d005783ef0932">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat"</span>, <span class="at">stat =</span> <span class="st">"mean"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using all posterior draws for ppc type 'stat' by default.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat"</span>, <span class="at">stat =</span> <span class="st">"sd"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using all posterior draws for ppc type 'stat' by default.
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Or maybe what combinations of the two.</p>
+<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-9_4479fe8a25d88325f335bbe1150029c1">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using all posterior draws for ppc type 'stat_2d' by default.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li>Introduction to Prior Distributions<br>
+</li>
+<li>Setting up a model with BRMS</li>
+<li>Generating data and fitting the model<br>
+</li>
+<li>Conducting prior predictive checks</li>
+<li>Visualizing prior predictive checks with Bayesplot</li>
+</ul>
+</section>
+<section id="posterior-predictive-checking" class="level2">
+<h2 class="anchored" data-anchor-id="posterior-predictive-checking">Posterior Predictive Checking</h2>
+<ul>
+<li>Introduction to Posterior Distributions<br>
+</li>
+<li>Conducting posterior inference<br>
+</li>
+<li>Conducting posterior predictive checks</li>
+<li>Visualizing posterior predictive checks with Bayesplot</li>
+</ul>
+</section>
+<section id="sec-case-study" class="level2">
+<h2 class="anchored" data-anchor-id="sec-case-study">Case Study: Applying Prior and Posterior Predictive Checks on Real-World Data</h2>
+<ul>
+<li>Selecting and Preprocessing a Real-World Dataset
+<ul>
+<li>Applying BRMS for Model Creation and Fitting</li>
+<li>Prior and Posterior Predictive Checking on the Dataset</li>
+<li>Visualizing and Interpreting the Results with Bayesplot</li>
+</ul></li>
+</ul>
+</section>
+<section id="conclusion-and-further-resources" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion-and-further-resources">Conclusion and Further Resources</h2>
+<ul>
+<li>Summary of what has been learned<br>
+</li>
+<li>Potential issues and their solutions<br>
+</li>
+<li>Pointers to further resources for learning</li>
+</ul>
+</section>
+<section id="original-computing-environment" class="level2">
+<h2 class="anchored" data-anchor-id="original-computing-environment">Original Computing Environment</h2>
+<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-10_f08d0e0ad8a2b99f301edbc44e8c7e6f">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.2.1 (2022-06-23 ucrt)
+ os       Windows 10 x64 (build 19045)
+ system   x86_64, mingw32
+ ui       RTerm
+ language (EN)
+ collate  Dutch_Netherlands.utf8
+ ctype    Dutch_Netherlands.utf8
+ tz       Europe/Berlin
+ date     2023-06-23
+ pandoc   3.1.1 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ ! package        * version date (UTC) lib source
+   abind            1.4-5   2016-07-21 [1] CRAN (R 4.2.0)
+   assertthat       0.2.1   2019-03-21 [1] CRAN (R 4.2.1)
+   backports        1.4.1   2021-12-13 [1] CRAN (R 4.2.0)
+   base64enc        0.1-3   2015-07-28 [1] CRAN (R 4.2.0)
+   bayesplot        1.9.0   2022-03-10 [1] CRAN (R 4.2.1)
+   bridgesampling   1.1-2   2021-04-16 [1] CRAN (R 4.2.1)
+   brms           * 2.17.0  2022-04-13 [1] CRAN (R 4.2.1)
+   Brobdingnag      1.2-7   2022-02-03 [1] CRAN (R 4.2.1)
+   broom            1.0.0   2022-07-01 [1] CRAN (R 4.2.1)
+   cachem           1.0.6   2021-08-19 [1] CRAN (R 4.2.1)
+   callr            3.7.0   2021-04-20 [1] CRAN (R 4.2.1)
+   cellranger       1.1.0   2016-07-27 [1] CRAN (R 4.2.1)
+   checkmate        2.1.0   2022-04-21 [1] CRAN (R 4.2.1)
+   cli              3.6.1   2023-03-23 [1] CRAN (R 4.2.3)
+   coda             0.19-4  2020-09-30 [1] CRAN (R 4.2.1)
+   codetools        0.2-18  2020-11-04 [2] CRAN (R 4.2.1)
+   colorspace       2.0-3   2022-02-21 [1] CRAN (R 4.2.1)
+   colourpicker     1.1.1   2021-10-04 [1] CRAN (R 4.2.1)
+   crayon           1.5.1   2022-03-26 [1] CRAN (R 4.2.1)
+   crosstalk        1.2.0   2021-11-04 [1] CRAN (R 4.2.1)
+   curl             4.3.2   2021-06-23 [1] CRAN (R 4.2.1)
+   DBI              1.1.3   2022-06-18 [1] CRAN (R 4.2.1)
+   dbplyr           2.2.1   2022-06-27 [1] CRAN (R 4.2.1)
+   devtools         2.4.5   2022-10-11 [1] CRAN (R 4.2.2)
+   digest           0.6.29  2021-12-01 [1] CRAN (R 4.2.1)
+   distributional   0.3.0   2022-01-05 [1] CRAN (R 4.2.1)
+   dplyr          * 1.1.1   2023-03-22 [1] CRAN (R 4.2.3)
+   DT               0.23    2022-05-10 [1] CRAN (R 4.2.1)
+   dygraphs         1.1.1.6 2018-07-11 [1] CRAN (R 4.2.1)
+   ellipsis         0.3.2   2021-04-29 [1] CRAN (R 4.2.1)
+   evaluate         0.15    2022-02-18 [1] CRAN (R 4.2.1)
+   fansi            1.0.3   2022-03-24 [1] CRAN (R 4.2.1)
+   farver           2.1.1   2022-07-06 [1] CRAN (R 4.2.1)
+   fastmap          1.1.0   2021-01-25 [1] CRAN (R 4.2.1)
+   forcats        * 0.5.1   2021-01-27 [1] CRAN (R 4.2.1)
+   fs               1.5.2   2021-12-08 [1] CRAN (R 4.2.1)
+   gargle           1.2.0   2021-07-02 [1] CRAN (R 4.2.1)
+   generics         0.1.3   2022-07-05 [1] CRAN (R 4.2.1)
+   ggplot2        * 3.4.1   2023-02-10 [1] CRAN (R 4.2.3)
+   ggridges         0.5.3   2021-01-08 [1] CRAN (R 4.2.1)
+   glue             1.6.2   2022-02-24 [1] CRAN (R 4.2.1)
+   googledrive      2.0.0   2021-07-08 [1] CRAN (R 4.2.1)
+   googlesheets4    1.0.0   2021-07-21 [1] CRAN (R 4.2.1)
+   gridExtra        2.3     2017-09-09 [1] CRAN (R 4.2.1)
+   gtable           0.3.0   2019-03-25 [1] CRAN (R 4.2.1)
+   gtools           3.9.3   2022-07-11 [1] CRAN (R 4.2.1)
+   haven            2.5.0   2022-04-15 [1] CRAN (R 4.2.1)
+   hms              1.1.1   2021-09-26 [1] CRAN (R 4.2.1)
+   htmltools        0.5.5   2023-03-23 [1] CRAN (R 4.2.3)
+   htmlwidgets      1.5.4   2021-09-08 [1] CRAN (R 4.2.1)
+   httpuv           1.6.5   2022-01-05 [1] CRAN (R 4.2.1)
+   httr             1.4.3   2022-05-04 [1] CRAN (R 4.2.1)
+   igraph           1.3.2   2022-06-13 [1] CRAN (R 4.2.1)
+   inline           0.3.19  2021-05-31 [1] CRAN (R 4.2.1)
+   jsonlite         1.8.4   2022-12-06 [1] CRAN (R 4.2.3)
+   knitr            1.39    2022-04-26 [1] CRAN (R 4.2.1)
+   labeling         0.4.2   2020-10-20 [1] CRAN (R 4.2.0)
+   later            1.3.0   2021-08-18 [1] CRAN (R 4.2.1)
+   lattice          0.20-45 2021-09-22 [2] CRAN (R 4.2.1)
+   lifecycle        1.0.3   2022-10-07 [1] CRAN (R 4.2.3)
+   loo              2.5.1   2022-03-24 [1] CRAN (R 4.2.1)
+   lubridate        1.8.0   2021-10-07 [1] CRAN (R 4.2.1)
+   magrittr         2.0.3   2022-03-30 [1] CRAN (R 4.2.1)
+   markdown         1.5     2023-01-31 [1] CRAN (R 4.2.3)
+   Matrix           1.4-1   2022-03-23 [2] CRAN (R 4.2.1)
+   matrixStats      0.62.0  2022-04-19 [1] CRAN (R 4.2.1)
+   memoise          2.0.1   2021-11-26 [1] CRAN (R 4.2.1)
+   mime             0.12    2021-09-28 [1] CRAN (R 4.2.0)
+   miniUI           0.1.1.1 2018-05-18 [1] CRAN (R 4.2.1)
+   modelr           0.1.8   2020-05-19 [1] CRAN (R 4.2.1)
+   munsell          0.5.0   2018-06-12 [1] CRAN (R 4.2.1)
+   mvtnorm          1.1-3   2021-10-08 [1] CRAN (R 4.2.0)
+   nlme             3.1-157 2022-03-25 [2] CRAN (R 4.2.1)
+   pillar           1.9.0   2023-03-22 [1] CRAN (R 4.2.3)
+   pkgbuild         1.3.1   2021-12-20 [1] CRAN (R 4.2.1)
+   pkgconfig        2.0.3   2019-09-22 [1] CRAN (R 4.2.1)
+   pkgload          1.3.0   2022-06-27 [1] CRAN (R 4.2.1)
+   plyr             1.8.7   2022-03-24 [1] CRAN (R 4.2.1)
+   posterior        1.2.2   2022-06-09 [1] CRAN (R 4.2.1)
+   prettyunits      1.1.1   2020-01-24 [1] CRAN (R 4.2.1)
+   processx         3.7.0   2022-07-07 [1] CRAN (R 4.2.1)
+   profvis          0.3.7   2020-11-02 [1] CRAN (R 4.2.1)
+   promises         1.2.0.1 2021-02-11 [1] CRAN (R 4.2.1)
+   ps               1.7.1   2022-06-18 [1] CRAN (R 4.2.1)
+   purrr          * 0.3.4   2020-04-17 [1] CRAN (R 4.2.1)
+   R6               2.5.1   2021-08-19 [1] CRAN (R 4.2.1)
+   Rcpp           * 1.0.9   2022-07-08 [1] CRAN (R 4.2.1)
+ D RcppParallel     5.1.5   2022-01-05 [1] CRAN (R 4.2.1)
+   readr          * 2.1.2   2022-01-30 [1] CRAN (R 4.2.1)
+   readxl           1.4.2   2023-02-09 [1] CRAN (R 4.2.3)
+   remotes          2.4.2   2021-11-30 [1] CRAN (R 4.2.1)
+   reprex           2.0.1   2021-08-05 [1] CRAN (R 4.2.1)
+   reshape2         1.4.4   2020-04-09 [1] CRAN (R 4.2.1)
+   rlang            1.1.0   2023-03-14 [1] CRAN (R 4.2.3)
+   rmarkdown        2.14    2022-04-25 [1] CRAN (R 4.2.1)
+   rstan            2.26.13 2022-06-25 [1] local
+   rstantools       2.2.0   2022-04-08 [1] CRAN (R 4.2.1)
+   rstudioapi       0.13    2020-11-12 [1] CRAN (R 4.2.1)
+   rvest            1.0.2   2021-10-16 [1] CRAN (R 4.2.1)
+   scales           1.2.0   2022-04-13 [1] CRAN (R 4.2.1)
+   sessioninfo      1.2.2   2021-12-06 [1] CRAN (R 4.2.1)
+   shiny            1.7.1   2021-10-02 [1] CRAN (R 4.2.1)
+   shinyjs          2.1.0   2021-12-23 [1] CRAN (R 4.2.1)
+   shinystan        3.0.0   2022-08-16 [1] local
+   shinythemes      1.2.0   2021-01-25 [1] CRAN (R 4.2.1)
+   StanHeaders      2.26.13 2022-06-25 [1] local
+   stringi          1.7.8   2022-07-11 [1] CRAN (R 4.2.1)
+   stringr        * 1.4.0   2019-02-10 [1] CRAN (R 4.2.1)
+   tensorA          0.36.2  2020-11-19 [1] CRAN (R 4.2.0)
+   threejs          0.3.3   2020-01-21 [1] CRAN (R 4.2.1)
+   tibble         * 3.2.1   2023-03-20 [1] CRAN (R 4.2.3)
+   tidyr          * 1.2.0   2022-02-01 [1] CRAN (R 4.2.1)
+   tidyselect       1.2.0   2022-10-10 [1] CRAN (R 4.2.3)
+   tidyverse      * 1.3.2   2022-07-18 [1] CRAN (R 4.2.1)
+   tzdb             0.3.0   2022-03-28 [1] CRAN (R 4.2.1)
+   urlchecker       1.0.1   2021-11-30 [1] CRAN (R 4.2.2)
+   usethis          2.1.6   2022-05-25 [1] CRAN (R 4.2.1)
+   utf8             1.2.2   2021-07-24 [1] CRAN (R 4.2.1)
+   V8               4.2.0   2022-05-14 [1] CRAN (R 4.2.1)
+   vctrs            0.6.1   2023-03-22 [1] CRAN (R 4.2.3)
+   withr            2.5.0   2022-03-03 [1] CRAN (R 4.2.1)
+   xfun             0.38    2023-03-24 [1] CRAN (R 4.2.3)
+   xml2             1.3.3   2021-11-30 [1] CRAN (R 4.2.1)
+   xtable           1.8-4   2019-04-21 [1] CRAN (R 4.2.1)
+   xts              0.12.1  2020-09-09 [1] CRAN (R 4.2.1)
+   yaml             2.3.5   2022-02-21 [1] CRAN (R 4.2.0)
+   zoo              1.8-10  2022-04-15 [1] CRAN (R 4.2.1)
+
+ [1] C:/Users/5507553/Documents/r_default/Rpackages
+ [2] C:/Program Files/R/R-4.2.1/library
+
+ D ── DLL MD5 mismatch, broken installation.
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    if (id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        return container.innerHTML
+      } else {
+        return note.innerHTML;
+      }
+    } else {
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      try { hash = new URL(url).hash; } catch {}
+      const id = hash.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note !== null) {
+        try {
+          const html = processXRef(id, note);
+          instance.setContent(html);
+        } finally {
+          instance.enable();
+          instance.show();
+        }
+      } else {
+        // See if we can fetch this
+        fetch(url.split('#')[0])
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.getElementById(id);
+          console.log(htmlDoc.body.innerHTML);
+          if (note !== null) {
+            const html = processXRef(id, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

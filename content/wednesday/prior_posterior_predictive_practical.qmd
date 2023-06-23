@@ -1,0 +1,162 @@
+---
+title: "Prior and Posterior Predictive Checking in Bayesian Estimation"
+format: 
+  html:
+    toc: true
+author: Duco Veen & Sara van Erp
+
+execute: 
+  echo: true
+  cache: true 
+---
+
+```{css, echo = FALSE}
+.output {
+max-height: 500px;
+overflow-y: scroll;
+}
+```
+
+Through this tutorial, learners will gain a practical understanding of conducting prior and posterior predictive checks in Bayesian estimation using `brms`. We will include clear code examples, explanations, and visualizations at every step to ensure a comprehensive understanding of the process. We start out with simulated data examples and include a case study in @sec-case-study
+
+**Learning Goals**
+
+1. Understand the concepts of prior and posterior predictive checking in Bayesian estimation.
+2. Learn how to do prior and posterior predictive checking, using the BRMS and Bayesplot packages.
+
+## A Beginner's Guide to Predictive Checking
+
+Welcome to the exciting world of predictive checking! This concept forms a core part of the Bayesian workflow and is a handy technique for validating and refining statistical models. Think of it like a quality check for your models. It takes advantage of the fact that Bayesian models can simulate data (they are generative models). We use this power to create what our model and its associated priors suggest could be possible data outcomes. It's like getting a sneak peek at what your model predicts even before you start the main analysis. 
+
+Now, predictive checking comes in two flavours: prior predictive checking and posterior predictive checking. 
+
+Prior predictive checking is like a dress rehearsal before the main event. It's all about simulating data based on the prior predictive distribution. And what decides this distribution? It's purely down to the model's prior distributions and the model's specifications, i.e., the parameters you've chosen for your model. It's like a behind-the-scenes pass that lets you see the potential outcomes of your prior choices and whether they make sense or have too much sway. Have you ever wondered if your chosen hyperparameters are spot on, or too narrow or too broad? Well, this is where prior predictive checks shine. They help you spot any issues that could unduly influence the final outcome. It also helps you to spot when you've mixed up specification, for instance, specifying a variances instead of a precision (yes this has happened to us). 
+
+On the other hand, posterior predictive checks are like the grand finale. They let us evaluate how well the model fits the observed data, and they consider both the data and the priors. So, it's like a comprehensive health check for your model. If the model generates data that looks a lot like our observed data, the model is specified well and healthy. If the model generates data that look very different, we might need a check-up. 
+
+These checks are like superpowers. They enable us to understand our model better, ensure it's working as expected, and decide on any tweaks if needed. So buckle up and let's dive deeper into the fascinating realm of predictive checking!
+
+
+ 
+
+## Prior Predictive Checking
+
+Let's imagine that the Dutch news reports an increase in bike thefts and we want to investigate the relation between bike thefts and the increase in temperature. Let's start by generating the simulated data. We simulate the number of bike thefts in a small village on a hundred random days. Please note, we are simplyfing the model, not taking any dependency between days into account and act as if seasonal changes in weather can happen overnight. 
+
+```{r}
+#| echo: true
+# Load required packages
+library(tidyverse)
+library(brms)
+set.seed(23)
+
+# Generate simulated data
+n <- 100
+temperature <- runif(n, min = 0, max = 30) # Random temperatures between 0 and 30
+intercept <- 10
+slope <- 0.5
+noise_sd <- 3
+bike_thefts <- intercept + slope * temperature + rnorm(n, sd = noise_sd)
+
+data <- tibble(temperature = temperature, bike_thefts = bike_thefts)
+```
+
+Let's take a quick look at our data to get a feel for what they look like. 
+
+Firstly, we can get summary statistics for our data.
+
+```{r}
+summary(data)
+```
+
+Next, let's take a look at the first few rows of the data.
+
+```{r}
+head(data)
+```
+
+Finally, let's visualize our data. We'll create a scatterplot to see if there's a visible correlation between the temperature and the number of bike thefts.
+
+```{r}
+ggplot(data, aes(x = temperature, y = bike_thefts)) +
+  geom_point() +
+  labs(x = "Temperature", y = "Bike thefts") +
+  theme_minimal()
+```
+
+<br>
+
+Now that we have our simulated data, let's define our model and priors in brms and fit the data. See if you can do if yourself before looking at the solutions. *Hint:* check out `?priors` and `?brm` to specify the priors and call the model. How do you get only samples from the prior? 
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| cache: true
+#| class: output
+# Define priors
+priors <- prior(normal(10, 5), class = "Intercept") + 
+  prior(normal(0, 1), class = "b")
+
+# Specify and fit the model, note the sample_prior = "only" 
+# this makes sure we are going to look at the prior predictive samples. 
+fit <- brm(bike_thefts ~ temperature, data = data, 
+           prior = priors, family = gaussian(),
+           sample_prior = "only")
+```
+
+Great, once we've fit our model, we can use the `pp_check` function in `brms` to look at the prior predictive checks. These are build upon work in the `bayesplot` package, you could use those functions directly, but it requires some more effort. 
+
+The most basic thing we can look at is to see what possible distributions of the data are simulated. 
+
+```{r}
+pp_check(fit, prefix = "ppd", ndraws = 100)
+```
+
+We can also look at what summary statistics these data produce. For instance, what mean of standard deviations. 
+
+```{r}
+pp_check(fit, prefix = "ppd", type = "stat", stat = "mean")
+pp_check(fit, prefix = "ppd", type = "stat", stat = "sd")
+```
+
+Or maybe what combinations of the two.
+
+```{r}
+pp_check(fit, prefix = "ppd", type = "stat_2d")
+```
+
+
+
+- Introduction to Prior Distributions  
+- Setting up a model with BRMS
+- Generating data and fitting the model  
+- Conducting prior predictive checks
+- Visualizing prior predictive checks with Bayesplot
+  
+## Posterior Predictive Checking
+
+- Introduction to Posterior Distributions  
+- Conducting posterior inference  
+- Conducting posterior predictive checks
+- Visualizing posterior predictive checks with Bayesplot  
+
+## Case Study: Applying Prior and Posterior Predictive Checks on Real-World Data {#sec-case-study}
+
+- Selecting and Preprocessing a Real-World Dataset
+    - Applying BRMS for Model Creation and Fitting
+    - Prior and Posterior Predictive Checking on the Dataset
+    - Visualizing and Interpreting the Results with Bayesplot
+
+## Conclusion and Further Resources
+
+- Summary of what has been learned  
+- Potential issues and their solutions  
+- Pointers to further resources for learning
+
+
+## Original Computing Environment
+
+```{r}
+devtools::session_info()
+```
+

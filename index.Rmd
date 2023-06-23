@@ -261,7 +261,8 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 - slides day 3
 
-- practical day 3
+- <a href="content/wednesday/prior_posterior_predictive_practical.html" target="_blank">Practical day 3</a>
+
 
 
 ## Column 2
