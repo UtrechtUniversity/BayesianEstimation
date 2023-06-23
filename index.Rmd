@@ -21,19 +21,19 @@ color:black!important;
 
 # Intro {.sidebar}
 
-This dashboard covers the course materials for the course [**A gentle introduction to Bayesian Estimation**](https://utrechtsummerschool.nl/courses/social-sciences/a-gentle-introduction-to-bayesian-estimation). 
+This dashboard covers the course materials for the course <a href="https://utrechtsummerschool.nl/courses/social-sciences/a-gentle-introduction-to-bayesian-estimation" target="_blank">A Gentle Introduction to Bayesian Estimation</a>. 
 <br> <br>
-We usually adapt the course as we go, so we suggest to access the materials online when we consider them. The materials can be downloaded via [the github page for this course](https://github.com/UtrechtUniversity/BayesianEstimation). 
+We usually adapt the course as we go, so we suggest to access the materials online when we consider them. The materials can be downloaded via <a href="https://github.com/UtrechtUniversity/BayesianEstimation" target="_blank">The github page for this course</a>. 
 
 ---
 
 
 Instructors: 
 
- - [Rens van de Schoot](https://www.rensvandeschoot.com/) <br>
- - [Sara van Erp](https://www.saravanerp.com/)
- - [Duco Veen](https://www.ducoveen.com/) 
- - [Beth Grandfield](https://www.uu.nl/staff/EMGrandfield)
+ - <a href="https://www.rensvandeschoot.com/" target="_blank">Rens van de Schoot</a>
+ - <a href="https://www.saravanerp.com/" target="_blank">Sara van Erp</a>
+ - <a href="https://www.ducoveen.com/" target="_blank">Duco Veen</a>
+ - <a href="https://www.uu.nl/staff/EMGrandfield" target="_blank">Beth Grandfield</a>
  
 
 ---
@@ -57,18 +57,18 @@ The instructors will clarify the differences between the philosophies and interp
 | When?  |      | What?      |
 |:--------|:-------|:-------------|
 | 09.00 | 12.00  | Lecture |
-|       | [Lunch](https://www.uu.nl/en/educatorium) |            
+|       | <a href="https://www.uu.nl/en/educatorium" target="_blank">Lunch</a> |            
 | 13:30 | 16.00  | Computer lab |
 
 
 ### Lecture Hall locations
 | When?  | Where    |
 |:--------|:-------|
-| Monday | [Koningsberger Atlas](https://goo.gl/maps/ufn6aXVL9K48Gn7S6) |
-| Tuesday | [Koningsberger Atlas](https://goo.gl/maps/ufn6aXVL9K48Gn7S6)  | 
-| Wednesday | [Koningsberger Atlas](https://goo.gl/maps/ufn6aXVL9K48Gn7S6) |
-| Thursday | [Koningsberger Atlas](https://goo.gl/maps/ufn6aXVL9K48Gn7S6) |
-| Friday | [Koningsberger Atlas](https://goo.gl/maps/ufn6aXVL9K48Gn7S6) |
+| Monday | <a href="https://goo.gl/maps/ufn6aXVL9K48Gn7S6" target="_blank">Koningsberger Atlas</a> |
+| Tuesday | <a href="https://goo.gl/maps/ufn6aXVL9K48Gn7S6" target="_blank">Koningsberger Atlas</a> |
+| Wednesday | <a href="https://goo.gl/maps/ufn6aXVL9K48Gn7S6" target="_blank">Koningsberger Atlas</a> |
+| Thursday | <a href="https://goo.gl/maps/ufn6aXVL9K48Gn7S6" target="_blank">Koningsberger Atlas</a> |
+| Friday | <a href="https://goo.gl/maps/ufn6aXVL9K48Gn7S6" target="_blank">Koningsberger Atlas</a> |
 
 # How to prepare
 
@@ -259,6 +259,9 @@ Day 3: we discuss estimation methods including alternatives that can be more eff
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
+- slides day 3
+
+- practical day 3
 
 
 ## Column 2
@@ -281,6 +284,10 @@ Day 4: although the prior distribution can offer many advantages, the prior can 
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
+- slides day 4
+
+- practical day 4
+
 ## Column 2
 
 ### Useful references
@@ -297,6 +304,14 @@ Day 5: today we elaborate on ways in which informative priors can be specified. 
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
+- slides day 5
+
+**Exercise ‘Expert Elicitation'**
+
+This exercise, using the Five-Step Method Shinyapp, introduces the concept of specifying prior distributions based on eliciting expert knowledge. The participants will be guided through a comprehensive five-step method, enabling experts from diverse fields, such as academia, business, and society, to formulate their beliefs and predictions in the form of a probability distribution.
+
+To start with the exercise, click <a href="https://www.rensvandeschoot.com/tutorials/expert-judgement/" target="_blank">here</a>. The underlying code for the exercise is readily available on <a href="https://github.com/VeenDuco/Five-Step-Method-Shinyapp" target="_blank">GitHub</a>.
+
 ## Column 2
 
 ### Useful references
@@ -305,3 +320,8 @@ van de Schoot R, Veen D, Grandfield EM, et al . (2021) The Use of Questionable R
 
 Veen, D., Stoel, D., Zondervan-Zwijnenburg, M., & Van de Schoot, R. (2017). Proposal for a five-step method to elicit expert judgment. Frontiers in psychology, 8, 2110. https://doi.org/10.3389/fpsyg.2017.02110.
 
+https://www.rensvandeschoot.com/tutorials/expert-judgement/
+
+https://utrecht-university.shinyapps.io/elicitation/
+
+https://github.com/VeenDuco/Five-Step-Method-Shinyapp
