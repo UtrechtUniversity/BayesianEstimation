@@ -49,6 +49,4 @@ po/*~
 rsconnect/
 
 # Temporary ignore some content folders
-content/tuesday/WAMBS multilevel.Rmd
-content/tuesday/WAMBS_multilevel.qmd
 content/wednesday
