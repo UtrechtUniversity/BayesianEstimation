@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.90">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen">
+
+<title>WAMBS BRMS Tutorial: Popularity Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="WAMBS_multilevel_files/libs/clipboard/clipboard.min.js"></script>
+<script src="WAMBS_multilevel_files/libs/quarto-html/quarto.js"></script>
+<script src="WAMBS_multilevel_files/libs/quarto-html/popper.min.js"></script>
+<script src="WAMBS_multilevel_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="WAMBS_multilevel_files/libs/quarto-html/anchor.min.js"></script>
+<link href="WAMBS_multilevel_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="WAMBS_multilevel_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="WAMBS_multilevel_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="WAMBS_multilevel_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="WAMBS_multilevel_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#wambs-checklist" id="toc-wambs-checklist" class="nav-link" data-scroll-target="#wambs-checklist"><strong>WAMBS checklist</strong></a>
+  <ul class="collapse">
+  <li><a href="#when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics" id="toc-when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics" class="nav-link" data-scroll-target="#when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics"><em>When to worry, and how to Avoid the Misuse of Bayesian Statistics</em></a></li>
+  </ul></li>
+  <li><a href="#packages-and-data" id="toc-packages-and-data" class="nav-link" data-scroll-target="#packages-and-data">Packages and Data</a></li>
+  <li><a href="#the-model" id="toc-the-model" class="nav-link" data-scroll-target="#the-model">The model</a>
+  <ul class="collapse">
+  <li><a href="#do-you-understand-the-priors" id="toc-do-you-understand-the-priors" class="nav-link" data-scroll-target="#do-you-understand-the-priors">1.Do you understand the priors?</a></li>
+  <li><a href="#does-the-trace-plot-exhibit-convergence" id="toc-does-the-trace-plot-exhibit-convergence" class="nav-link" data-scroll-target="#does-the-trace-plot-exhibit-convergence">2. Does the trace-plot exhibit convergence?</a></li>
+  <li><a href="#does-convergence-remain-after-doubling-the-number-of-iterations" id="toc-does-convergence-remain-after-doubling-the-number-of-iterations" class="nav-link" data-scroll-target="#does-convergence-remain-after-doubling-the-number-of-iterations">3. Does convergence remain after doubling the number of iterations?</a></li>
+  <li><a href="#does-the-posterior-distribution-histogram-have-enough-information" id="toc-does-the-posterior-distribution-histogram-have-enough-information" class="nav-link" data-scroll-target="#does-the-posterior-distribution-histogram-have-enough-information">4. Does the posterior distribution histogram have enough information?</a></li>
+  <li><a href="#do-the-chains-exhibit-a-strong-degree-of-autocorrelation" id="toc-do-the-chains-exhibit-a-strong-degree-of-autocorrelation" class="nav-link" data-scroll-target="#do-the-chains-exhibit-a-strong-degree-of-autocorrelation">5. Do the chains exhibit a strong degree of autocorrelation?</a></li>
+  <li><a href="#do-the-posterior-distributions-make-substantive-sense" id="toc-do-the-posterior-distributions-make-substantive-sense" class="nav-link" data-scroll-target="#do-the-posterior-distributions-make-substantive-sense">6. Do the posterior distributions make substantive sense?</a></li>
+  <li><a href="#do-different-specification-of-the-multivariate-variance-priors-influence-the-results" id="toc-do-different-specification-of-the-multivariate-variance-priors-influence-the-results" class="nav-link" data-scroll-target="#do-different-specification-of-the-multivariate-variance-priors-influence-the-results">7. Do different specification of the multivariate variance priors influence the results?</a></li>
+  <li><a href="#is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors" id="toc-is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors" class="nav-link" data-scroll-target="#is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors">8. Is there a notable effect of the prior when compared with non-informative priors?</a></li>
+  <li><a href="#are-the-results-stable-from-a-sensitivity-analysis" id="toc-are-the-results-stable-from-a-sensitivity-analysis" class="nav-link" data-scroll-target="#are-the-results-stable-from-a-sensitivity-analysis">9. Are the results stable from a sensitivity analysis?</a></li>
+  <li><a href="#is-the-bayesian-way-of-interpreting-and-reporting-model-results-used" id="toc-is-the-bayesian-way-of-interpreting-and-reporting-model-results-used" class="nav-link" data-scroll-target="#is-the-bayesian-way-of-interpreting-and-reporting-model-results-used">10. Is the Bayesian way of interpreting and reporting model results used?</a></li>
+  </ul></li>
+  <li><a href="#original-computing-environment" id="toc-original-computing-environment" class="nav-link" data-scroll-target="#original-computing-environment">Original Computing Environment</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">WAMBS BRMS Tutorial: Popularity Data</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>In this tutorial you will be following the steps of the When-to-Worry-and-How-to-Avoid-the-Misuse-of-Bayesian-Statistics - checklist <a href="https://www.rensvandeschoot.com/wambs-checklist/">(the WAMBS-checklist)</a> to analyze a cross level interaction model.</p>
+</section>
+<section id="wambs-checklist" class="level2">
+<h2 class="anchored" data-anchor-id="wambs-checklist"><strong>WAMBS checklist</strong></h2>
+<section id="when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics"><em>When to worry, and how to Avoid the Misuse of Bayesian Statistics</em></h3>
+<p><strong>To be checked before estimating the model</strong></p>
+<ol type="1">
+<li>Do you understand the priors?</li>
+</ol>
+<p><strong>To be checked after estimation but before inspecting model results</strong></p>
+<ol start="2" type="1">
+<li>Does the trace-plot exhibit convergence?</li>
+<li>Does convergence remain after doubling the number of iterations?</li>
+<li>Does the posterior distribution histogram have enough information?</li>
+<li>Do the chains exhibit a strong degree of autocorrelation?</li>
+<li>Do the posterior distributions make substantive sense?</li>
+</ol>
+<p><strong>Understanding the exact influence of the priors</strong></p>
+<ol start="7" type="1">
+<li>Do different specification of the multivariate variance priors influence the results?</li>
+<li>Is there a notable effect of the prior when compared with non-informative priors?</li>
+<li>Are the results stable from a sensitivity analysis?</li>
+<li>Is the Bayesian way of interpreting and reporting model results used?</li>
+</ol>
+</section>
+</section>
+<section id="packages-and-data" class="level2">
+<h2 class="anchored" data-anchor-id="packages-and-data">Packages and Data</h2>
+<p>The main package that is used for this analysis is <a href="https://cran.r-project.org/web/packages/brms/brms.pdf">brms</a>. In order to make this package function it need to call on STAN and a C++ compiler in the R extension Rtools. For more information and a tutorial on how to install these please have a look at: https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started and https://cran.r-project.org/bin/windows/Rtools/.</p>
+<blockquote class="blockquote">
+<p>“Because brms is based on Stan, a C++ compiler is required. The program Rtools (available on https://cran.r-project.org/bin/windows/Rtools/) comes with a C++ compiler for Windows. On Mac, you should use Xcode. For further instructions on how to get the compilers running, see the prerequisites section at the RStan-Getting-Started page.” ~ quoted from the BRMS package document:</p>
+</blockquote>
+<p>After you installed the aforementioned software you need to load some other R packages. If you have not yet installed all below mentioned packages, you can install them by the command install.packages(“NAMEOFPACKAGE”)</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-1_20816f35c37b70e230e53390c2b4c9e0">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># needed for data manipulation.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms) <span class="co"># for the analysis</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven) <span class="co"># to load the SPSS .sav file</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer) <span class="co"># needed for some extra colours in one of the graphs</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggmcmc)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mcmcplots) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<blockquote class="blockquote">
+<p>note. If you are getting the error: <em>Error: .onLoad failed in loadNamespace() for ‘dbplyr’, details: call: setClass(cl, contains = c(prevClass, “VIRTUAL”), where = where) error: error in contained classes (“character”) for class “ident”; class definition removed from ‘dbplyr’</em> the brms package is loaded before the tidyverse package. Please restart R and load them in the order, tidyverse first brms second.</p>
+</blockquote>
+<p>To download the popularity data go to https://multilevel-analysis.sites.uu.nl/datasets/ and follow the links to https://github.com/MultiLevelAnalysis/Datasets-third-edition-Multilevel-book/blob/master/chapter%202/popularity/SPSS/popular2.sav. We will use the .sav file which can be found in the SPSS folder. After downloading the data to your working directory you can open it with the read_sav() command.</p>
+<p>Alternatively, you can directly download them from GitHub into your R work space using the following command:</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-2_9f1472886b2e793c7252ed499f566de0">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>popular2data <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="at">file  =</span> <span class="st">"https://github.com/MultiLevelAnalysis/Datasets-third-edition-Multilevel-book/blob/master/chapter%202/popularity/SPSS/popular2.sav?raw=true"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>There are some variables in the dataset that we do not use, so we can select the variables we will use and have a look at the first few observations.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-3_7617ecf466bd36f47773bc171208db14">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>popular2data <span class="ot">&lt;-</span> <span class="fu">select</span>(popular2data, pupil, class, extrav, sex, texp, popular) <span class="co"># we select just the variables we will use</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(popular2data) <span class="co"># we have a look at the first 6 observations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  pupil class extrav       sex  texp popular
+  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl+lbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+1     1     1      5  1 [girl]    24     6.3
+2     2     1      7  0 [boy]     24     4.9
+3     3     1      4  1 [girl]    24     5.3
+4     4     1      3  1 [girl]    24     4.7
+5     5     1      5  1 [girl]    24     6  
+6     6     1      4  0 [boy]     24     4.7</code></pre>
+</div>
+</div>
+</section>
+<section id="the-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-model">The model</h2>
+<p>For this tutorial we make use of the multilevel crosslevel model (Model M2 from Table 2.3 in the book) we developed in the BRMS Tutorial. We have a main effect of sex, a random effect of Extravesion and a cross-level interaction between Extraversion and Teacher experience. This means we have to add texp as a predictor for the coefficient of extrav The cross level interaction term between extraversion and teacher experience can be created by the ‘:’ sign or by multiplying the terms.</p>
+<p>If we put all of this in formula form we get: <span class="math inline">\(Popularity_{ij}=\beta_{0j}+\beta_1*gender_{ij}+ \beta_{2j}*extraversion_{ij}+e_{ij}\)</span>.</p>
+<p>In which <span class="math inline">\(\beta_{0j}=\gamma_{00}+\gamma_{01}*experience_j+u_{0j}\)</span> and <span class="math inline">\(\beta_{2j}= \gamma_{20}+\gamma_{21}*experience_j+u_{2j}\)</span></p>
+<p>Combined we get:</p>
+<p><span class="math display">\[Popularity_{ij}= \gamma_{00}+\gamma_{10}*sex_{ij}+\gamma_{20}*extraversion_{ij}+\gamma_{01}*experience_j+\gamma_{21}*extraversion_{ij}*experience_j+u_{2j}*extraversion_{ij}+u_{0j}+e_{ij}\]</span></p>
+<section id="do-you-understand-the-priors" class="level3">
+<h3 class="anchored" data-anchor-id="do-you-understand-the-priors">1.Do you understand the priors?</h3>
+<p>With the get_prior() command we can see which priors we can specify for this model.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-4_87142152bf2c1fe8b5733359477d3b30">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_prior</span>(popular <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> intercept <span class="sc">+</span> sex <span class="sc">+</span> extrav <span class="sc">+</span> texp <span class="sc">+</span> extrav<span class="sc">:</span>texp <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> extrav<span class="sc">|</span>class), <span class="at">data =</span> popular2data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Reserved variable name 'intercept' is deprecated. Please use
+'Intercept' instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                prior class        coef group resp dpar nlpar lb ub
+               (flat)     b                                        
+               (flat)     b      extrav                            
+               (flat)     b extrav:texp                            
+               (flat)     b   intercept                            
+               (flat)     b         sex                            
+               (flat)     b        texp                            
+               lkj(1)   cor                                        
+               lkj(1)   cor             class                      
+ student_t(3, 0, 2.5)    sd                                    0   
+ student_t(3, 0, 2.5)    sd             class                  0   
+ student_t(3, 0, 2.5)    sd      extrav class                  0   
+ student_t(3, 0, 2.5)    sd   Intercept class                  0   
+ student_t(3, 0, 2.5) sigma                                    0   
+       source
+      default
+ (vectorized)
+ (vectorized)
+ (vectorized)
+ (vectorized)
+ (vectorized)
+      default
+ (vectorized)
+      default
+ (vectorized)
+ (vectorized)
+ (vectorized)
+      default</code></pre>
+</div>
+</div>
+<p>In this tutorial we will only specify priors for:</p>
+<ol type="1">
+<li>The regression coefficient of extrav <span class="math inline">\(\gamma_{20}\)</span></li>
+<li>The regression coefficient of sex <span class="math inline">\(\gamma_{10}\)</span></li>
+<li>The regression coefficient of texp <span class="math inline">\(\gamma_{01}\)</span></li>
+<li>The regression coefficient of extrav:texp <span class="math inline">\(\gamma_{21}\)</span></li>
+<li>The intercept <span class="math inline">\(\gamma_{00}\)</span></li>
+</ol>
+<p>Since we are using a interaction effect and we are working with uncentered independent variables, the intercept will no longer be just a mean, but the value when all other values are zero even if this are impossible values. We can therefore not be very sure about the intercept and therefore we will give it a cauchy distribution with a shape parameter of 10. Based on earlier literature we might be fairly sure that that girls have a higher popularity than boys and will thus give its regression coefficient a normal distribution with a mean of 2 and a sigma (standard deviation) of .2. For teacher experience and extraverion we might be a bit less sure, because we are using interaction effects for these which means that the individual effects of these independent variables are now dependent on each other. Because of that, we decide to pick a wide normal distribution with a mean of 0 and a sigma (standard deviation) of 5. We are fairly sure about a negative interaction effect so we pick a normal distribution with a mean of -1 and a sigma (standard deviation) of .3 for the regression coefficient of extrav:texp.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-5_1c75b00597d7a927168703771b7d3b0e">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>PRIORS <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">set_prior</span>(<span class="st">"normal(0,5)"</span>,   <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav"</span>),</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(-1,.3)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav:texp"</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(2,.2)"</span>,  <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"sex"</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,5)"</span>,   <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"texp"</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"cauchy(0,10)"</span>,  <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"intercept"</span> ))</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">brm</span>(popular <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> intercept <span class="sc">+</span> sex <span class="sc">+</span> extrav <span class="sc">+</span> texp <span class="sc">+</span> extrav<span class="sc">:</span>texp <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> extrav<span class="sc">|</span>class), </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">data          =</span> popular2data,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">warmup        =</span> <span class="dv">1000</span>, </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">iter          =</span> <span class="dv">3000</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">chains        =</span> <span class="dv">3</span>, </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">control       =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.96</span>), </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior         =</span> PRIORS,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">save_all_pars =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">sample_prior  =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">cores         =</span> <span class="dv">3</span>, <span class="co"># the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">seed          =</span> <span class="dv">123</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="does-the-trace-plot-exhibit-convergence" class="level3">
+<h3 class="anchored" data-anchor-id="does-the-trace-plot-exhibit-convergence">2. Does the trace-plot exhibit convergence?</h3>
+<p>Before interpreting results, one should inspect the convergence of the chains that form the posterior distribution of the model parameters. A straightforward and common way to visualize convergence is the trace plot that illustrates the iterations of the chains from start to end.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-6_2044eb9b1f332792f315609fc094e79b">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>modeltranformed <span class="ot">&lt;-</span> <span class="fu">ggs</span>(model) <span class="co"># the ggs function transforms the BRMS output into a longformat tibble, that we can use to make different types of plots.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in custom.sort(D$Parameter): NAs introduced by coercion</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">filter</span>(modeltranformed, Parameter <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"b_intercept"</span>, <span class="st">"b_extrav"</span>, <span class="st">"b_sex"</span>, <span class="st">"b_extrav:texp"</span>, <span class="st">"b_texp"</span>, <span class="st">"sigma"</span>),</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>              Iteration <span class="sc">&gt;</span> <span class="dv">1000</span>),</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x   =</span> Iteration,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">y   =</span> value, </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">col =</span> <span class="fu">as.factor</span>(Chain)))<span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(Parameter <span class="sc">~</span> .,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">scale  =</span> <span class="st">'free_y'</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">switch =</span> <span class="st">'y'</span>)<span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Caterpillar Plots"</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">col   =</span> <span class="st">"Chains"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="WAMBS_multilevel_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Alternatively, you can simply make use of the built-in plotting capabilities of Rstan.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-7_c49e8f79f4d088b9e380747619010ab0">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"trace"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>No divergences to plot.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="WAMBS_multilevel_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can check if the chains convergenced by having a look at the convergence diagnostics. Two of these diagnostics of interest include the Gelman and Rubin diagnostic and the Geweke diagnostic.</p>
+<ul>
+<li>The Gelman-Rubin Diagnostic shows the PSRF values (using the within and between chain variability). You should look at the Upper CI/Upper limit, which are all should be close to 1. If they aren’t close to 1, you should use more iterations. Note: The Gelman and Rubin diagnostic is also automatically given in the summary of brms under the column Rhat</li>
+<li>The Geweke Diagnostic shows the z-scores for a test of equality of means between the first and last parts of each chain, which should be &lt;1.96. A separate statistic is calculated for each variable in each chain. In this way it check whether a chain has stabalized. If this is not the case, you should increase the number of iterations. In the plots you should check how often values exceed the boundary lines of the z-scores. Scores above 1.96 or below -1.96 mean that the two portions of the chain significantly differ and full chain convergence was not obtained.</li>
+</ul>
+<p>To obtain the Gelman and Rubin diagnostic use:</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-8_d488dea3eea94a86418cd71970941f9f">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>modelposterior <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(model) <span class="co"># with the as.mcmc() command we can use all the CODA package convergence statistics and plotting options</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: as.mcmc.brmsfit is deprecated and will eventually be removed.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.diag</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Potential scale reduction factors:
+
+              Point est. Upper C.I.
+b_intercept            1          1
+b_sex                  1          1
+b_extrav               1          1
+b_texp                 1          1
+b_extrav:texp          1          1
+
+Multivariate psrf
+
+1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="WAMBS_multilevel_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>To obtain the Geweke diagnostic use:</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-9_117c0b8d5c78b5a03bf4c8eede1bdd08">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geweke.diag</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+
+Fraction in 1st window = 0.1
+Fraction in 2nd window = 0.5 
+
+  b_intercept         b_sex      b_extrav        b_texp b_extrav:texp 
+      0.26992      -0.09085      -0.93934      -0.31848       0.66345 
+
+
+[[2]]
+
+Fraction in 1st window = 0.1
+Fraction in 2nd window = 0.5 
+
+  b_intercept         b_sex      b_extrav        b_texp b_extrav:texp 
+     -0.17063       0.37647       0.02433      -0.50138       0.98953 
+
+
+[[3]]
+
+Fraction in 1st window = 0.1
+Fraction in 2nd window = 0.5 
+
+  b_intercept         b_sex      b_extrav        b_texp b_extrav:texp 
+       -1.130         1.979         1.009         1.197        -1.411 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geweke.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="WAMBS_multilevel_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="WAMBS_multilevel_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="WAMBS_multilevel_files/figure-html/unnamed-chunk-9-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Now we see that the Gelman and Rubin diagnostic (PRSF) is close to 1 for all parameters and the the Geweke diagnostic is not &gt; 1.96.</p>
+</section>
+<section id="does-convergence-remain-after-doubling-the-number-of-iterations" class="level3">
+<h3 class="anchored" data-anchor-id="does-convergence-remain-after-doubling-the-number-of-iterations">3. Does convergence remain after doubling the number of iterations?</h3>
+<p>As is recommended in the WAMBS checklist, we double the amount of iterations to check for local convergence.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-10_c4905b68b8f82a60fef455b933dcacca">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>modeldoubleniter <span class="ot">&lt;-</span> <span class="fu">brm</span>(popular <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> intercept <span class="sc">+</span> sex <span class="sc">+</span> extrav <span class="sc">+</span> texp <span class="sc">+</span> extrav<span class="sc">:</span>texp <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> extrav<span class="sc">|</span>class), </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data          =</span> popular2data,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">warmup        =</span> <span class="dv">2000</span>, </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">iter          =</span> <span class="dv">6000</span>,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">chains        =</span> <span class="dv">3</span>, </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">control       =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.96</span>), </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior         =</span> PRIORS,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">save_all_pars =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">sample_prior  =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">cores         =</span> <span class="dv">3</span>, <span class="co"># the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">seed          =</span> <span class="dv">123</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-11_37f7ad660e5fc5333f4e95b16a8a33ed">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>modeldoubleniterposterior <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(modeldoubleniter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: as.mcmc.brmsfit is deprecated and will eventually be removed.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>modelposterior <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(model) <span class="co"># with the as.mcmc() command we can use all the CODA package convergence statistics and plotting options</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: as.mcmc.brmsfit is deprecated and will eventually be removed.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.diag</span>(modeldoubleniterposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Potential scale reduction factors:
+
+              Point est. Upper C.I.
+b_intercept            1          1
+b_sex                  1          1
+b_extrav               1          1
+b_texp                 1          1
+b_extrav:texp          1          1
+
+Multivariate psrf
+
+1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.plot</span>(modeldoubleniterposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="WAMBS_multilevel_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>You should again have a look at the above-mentioned convergence statistics, but we can also compute the relative bias to inspect if doubling the number of iterations influences the posterior parameter estimates (<span class="math inline">\(bias= 100*\frac{(model \; with \; double \; iteration \; - \; initial \; converged \; model )}{initial \; converged \; model}\)</span>). In order to preserve clarity we just calculate the bias of the two regression coefficients.</p>
+<p>You should combine the relative bias in combination with substantive knowledge about the metric of the parameter of interest to determine when levels of relative deviation are negligible or problematic. For example, with a regression coefficient of 0.001, a 5% relative deviation level might not be substantively relevant. However, with an intercept parameter of 50, a 10% relative deviation level might be quite meaningful. The specific level of relative deviation should be interpreted in the substantive context of the model. Some examples of interpretations are:</p>
+<ul>
+<li>if relative deviation is &lt; |5|%, then do not worry;</li>
+<li>if relative deviation &gt; |5|%, then rerun with 4x nr of iterations.</li>
+</ul>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-12_eb222be3ba464104fc866632462c436f">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">summary</span>(modeldoubleniter)<span class="sc">$</span>fixed <span class="sc">-</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed) <span class="sc">/</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed), <span class="dv">3</span>)[,<span class="st">"Estimate"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  0.154 -0.047  0.048  0.098  0.085</code></pre>
+</div>
+</div>
+<p>The relative bias is small enough (&lt;5%) not worry about it</p>
+</section>
+<section id="does-the-posterior-distribution-histogram-have-enough-information" class="level3">
+<h3 class="anchored" data-anchor-id="does-the-posterior-distribution-histogram-have-enough-information">4. Does the posterior distribution histogram have enough information?</h3>
+<p>By having a look at the postrior distribution density (or if you like histogram) we can check if it has enough information. For regression coefficients it ideally it is clearly centerered with smooth sloping tails.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-13_92fd7782ebca771db6aae3125c18c04c">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"hist"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="WAMBS_multilevel_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The different posterior distributions have enough information and more iterations are not necessary. They are all single peaked with smooth slopes. Posterior distributions do not have to be symmetrical, but in this example they seem to be.</p>
+</section>
+<section id="do-the-chains-exhibit-a-strong-degree-of-autocorrelation" class="level3">
+<h3 class="anchored" data-anchor-id="do-the-chains-exhibit-a-strong-degree-of-autocorrelation">5. Do the chains exhibit a strong degree of autocorrelation?</h3>
+<p>To obtain information about autocorrelation the following syntax can be used:</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-14_6f651442eb867b744a278758f6a80968">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autocorr.diag</span>(modelposterior[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">lags =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">50</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        b_intercept       b_sex     b_extrav      b_texp b_extrav:texp
+Lag 0   1.000000000  1.00000000  1.000000000  1.00000000  1.0000000000
+Lag 1   0.300317867 -0.29113786  0.107101013  0.30948196  0.1031609534
+Lag 2   0.189992162  0.11805308  0.110365403  0.18592973  0.0998611425
+Lag 3   0.090010330 -0.06092661  0.040276859  0.08921039  0.0236815997
+Lag 4   0.075402022  0.02602975  0.049017355  0.07684438  0.0433979202
+Lag 5   0.049147155 -0.02020423  0.010835270  0.04914180  0.0082980009
+Lag 10 -0.001930124  0.03368777 -0.003360492 -0.01638534 -0.0106363160
+Lag 50 -0.014314747  0.02635394 -0.005244666 -0.01770521 -0.0008149579</code></pre>
+</div>
+</div>
+<p>These results show that autocorrelation is quite stong after a few lags. This means it is important to make sure we ran the analysis with a lot of samples, because with a high autocorrelation it will take longer until the whole parameter space has been identified. For more informtation on autocorrelation check this <a href="https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210X.2011.00131.x">paper</a>.</p>
+</section>
+<section id="do-the-posterior-distributions-make-substantive-sense" class="level3">
+<h3 class="anchored" data-anchor-id="do-the-posterior-distributions-make-substantive-sense">6. Do the posterior distributions make substantive sense?</h3>
+<p>Looking at the posterior distributions we do not see any abnormalities. All posterior distributions are within reasonable bounds.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-15_a0d5af028126d2aaf2554cd1a20c3b28">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">filter</span>(modeltranformed, Parameter <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"b_intercept"</span>, <span class="st">"b_extrav"</span>,<span class="st">"b_sex"</span>), </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>              Iteration <span class="sc">&gt;</span> <span class="dv">1000</span>),</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x    =</span> value,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> Parameter))<span class="sc">+</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> .<span class="dv">5</span>)<span class="sc">+</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">col        =</span> <span class="st">"red"</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">size       =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">name   =</span> <span class="st">"Value"</span>,</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.2</span>, <span class="fl">1.5</span>))<span class="sc">+</span> </span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed[<span class="dv">1</span>,<span class="dv">3</span>], <span class="at">col =</span> <span class="st">"darkgreen"</span>, <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed[<span class="dv">1</span>,<span class="dv">4</span>], <span class="at">col =</span> <span class="st">"darkgreen"</span>, <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed[<span class="dv">2</span>,<span class="dv">3</span>], <span class="at">col =</span> <span class="st">"blue"</span>,      <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed[<span class="dv">2</span>,<span class="dv">4</span>], <span class="at">col =</span> <span class="st">"blue"</span>,      <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed[<span class="dv">3</span>,<span class="dv">3</span>], <span class="at">col =</span> <span class="st">"red"</span>,       <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed[<span class="dv">3</span>,<span class="dv">4</span>], <span class="at">col =</span> <span class="st">"red"</span>,       <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>()<span class="sc">+</span></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>   <span class="fu">scale_fill_manual</span>(<span class="at">name   =</span>  <span class="st">'Parameters'</span>, </span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"darkgreen"</span> , <span class="st">"lightblue"</span>), </span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> <span class="fu">c</span>(<span class="fu">expression</span>( <span class="st">" "</span>  <span class="sc">~</span>  gamma[Exraversion]), </span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">expression</span>( <span class="st">" "</span>  <span class="sc">~</span>  gamma[Intercept]),  </span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">expression</span>( <span class="st">" "</span>  <span class="sc">~</span>  gamma[Sex])))<span class="sc">+</span></span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Posterior Density of Parameters With 95% CCI lines (1)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="WAMBS_multilevel_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">filter</span>(modeltranformed, </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>              Parameter <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"b_texp"</span>,<span class="st">"b_extrav:texp"</span>),</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>              Iteration <span class="sc">&gt;</span> <span class="dv">1000</span>),</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x    =</span> value,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> Parameter))<span class="sc">+</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> .<span class="dv">5</span>)<span class="sc">+</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, </span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">col        =</span> <span class="st">"red"</span>, </span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">size       =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">25</span>))<span class="sc">+</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed[<span class="dv">4</span>,<span class="dv">3</span>], <span class="at">col =</span> <span class="st">"purple"</span>, <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed[<span class="dv">4</span>,<span class="dv">4</span>], <span class="at">col =</span> <span class="st">"purple"</span>, <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed[<span class="dv">5</span>,<span class="dv">3</span>], <span class="at">col =</span> <span class="st">"red"</span>,    <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed[<span class="dv">5</span>,<span class="dv">4</span>], <span class="at">col =</span> <span class="st">"red"</span>,    <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>()<span class="sc">+</span></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>     <span class="fu">scale_fill_manual</span>(<span class="at">name   =</span> <span class="st">'Parameters'</span>, </span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Darkred"</span>,<span class="st">"purple"</span>), </span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="fu">expression</span>( <span class="st">" "</span>  <span class="sc">~</span>  gamma[extrav<span class="sc">:</span>texp]), </span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">expression</span>( <span class="st">" "</span>  <span class="sc">~</span>  gamma[ texp])))<span class="sc">+</span></span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Posterior Density of Parameters With 95% CCI lines (2)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="WAMBS_multilevel_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Alternatively, you can simply make use of the built-in plotting capabilities of Rstan.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-16_7546f42960d2fe0ea1393767d9183972">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"dens"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="do-different-specification-of-the-multivariate-variance-priors-influence-the-results" class="level3">
+<h3 class="anchored" data-anchor-id="do-different-specification-of-the-multivariate-variance-priors-influence-the-results">7. Do different specification of the multivariate variance priors influence the results?</h3>
+<p>So far we have only set the priors for the regression coefficients and the intercept and have used the default BRMS priors for the standard deviations of group-level (‘random’) effects named (<strong>sd</strong>), the correlations of group-level (‘random’) effects (<strong>cor</strong>), and the residual standard deviation (<strong>sigma</strong>).</p>
+<p>From the BRMS manual we learn that:</p>
+<ol type="1">
+<li>The SD <em>“parameters are restricted to be non-negative and, by default, have a half student-t prior with 3 degrees of freedom and a scale parameter that depends on the standard deviation of the response after applying the link function. Minimally, the scale parameter is 10.”</em> 2.The cor prior <em>“lkj_corr_cholesky(eta)” or in short “lkj(eta)” with eta &gt; 0 is essentially the only prior for (Cholesky factors) of correlation matrices. If eta = 1 (the default) all correlations matrices are equally likely a priori. If eta &gt; 1, extreme correlations become less likely, whereas 0 &lt; eta &lt; 1 results in higher probabilities for extreme correlations”</em></li>
+<li><em>“By default, sigma has a half student-t prior that scales in the same way as the group-level standard deviations.”</em></li>
+</ol>
+<p>We can re-specify these priors a bit to see if doing so strongly influences the results.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-17_1581af3debed395ff6a74186b138d2f2">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>PRIORS2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">set_prior</span>(<span class="st">"normal(0,5)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav"</span>),</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(-1,.3)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav:texp"</span>),</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(2,.2)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"sex"</span>),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,5)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"texp"</span>),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"cauchy(0,10)"</span>,  <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"intercept"</span> ),</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"cauchy(0,2)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>),          <span class="co"># a half cauchy distribution (truncuated at 0) for the sd</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"lkj(2)"</span>, <span class="at">class =</span> <span class="st">"cor"</span>),              <span class="co"># a Cholesky of 2 for the correlation  </span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"inv_gamma(.5,.5)"</span>, <span class="at">class =</span> <span class="st">"sigma"</span>)) <span class="co"># an uniformative inverse gamma for the sigma. </span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>modeldifferentMVpriors <span class="ot">&lt;-</span> <span class="fu">brm</span>(popular <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> intercept <span class="sc">+</span> sex <span class="sc">+</span> extrav <span class="sc">+</span> texp <span class="sc">+</span> extrav<span class="sc">:</span>texp <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> extrav<span class="sc">|</span>class), </span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">data          =</span> popular2data,</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">warmup        =</span> <span class="dv">1000</span>, </span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">iter          =</span> <span class="dv">3000</span>,</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">chains        =</span> <span class="dv">3</span>, </span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">control       =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.96</span>), </span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior         =</span> PRIORS2,</span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">save_all_pars =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">sample_prior  =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">cores         =</span> <span class="dv">3</span>, <span class="co"># the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.</span></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">seed          =</span> <span class="dv">123</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-18_674cf5d365529fa81f2d5f16942e96ab">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modeldifferentMVpriors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav | class) 
+   Data: popular2data (Number of observations: 2000) 
+  Draws: 3 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup draws = 6000
+
+Group-Level Effects: 
+~class (Number of levels: 100) 
+                      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+sd(Intercept)             0.60      0.10     0.44     0.83 1.00      656
+sd(extrav)                0.04      0.03     0.00     0.10 1.01      170
+cor(Intercept,extrav)    -0.33      0.36    -0.80     0.57 1.00      696
+                      Tail_ESS
+sd(Intercept)             2549
+sd(extrav)                 755
+cor(Intercept,extrav)     1177
+
+Population-Level Effects: 
+            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+intercept      -1.21      0.26    -1.71    -0.68 1.00     2951     2906
+sex             1.26      0.04     1.19     1.33 1.00     8327     4127
+extrav          0.80      0.04     0.73     0.88 1.00     4601     4383
+texp            0.23      0.02     0.19     0.26 1.00     2812     3143
+extrav:texp    -0.02      0.00    -0.03    -0.02 1.00     4669     4706
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     0.75      0.01     0.72     0.77 1.00     4830     3851
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>We see that these new priors had little influence on the estimation of the regression coefficients, but we do see that the sds got smaller. This is because the half cauchy prior we used is weakly informative towards 0 compared to the default priors. Also, because we set the correlation prior quite a bit higher we get a lower estimated correlation between the random effects. To quantify these differences, we can also calculate the biases again.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-19_6d6a1d02f6856083515013b35b25d4b9">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">summary</span>(modeldifferentMVpriors)<span class="sc">$</span>fixed <span class="sc">-</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed) <span class="sc">/</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed), <span class="dv">3</span>)[,<span class="st">"Estimate"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  0.238 -0.042  0.096  0.098  0.221</code></pre>
+</div>
+</div>
+</section>
+<section id="is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors" class="level3">
+<h3 class="anchored" data-anchor-id="is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors">8. Is there a notable effect of the prior when compared with non-informative priors?</h3>
+<p>One might be interested in re-runinng the analysis, but with uninformartive priors simply to check if these priors had a large influence on the estimates. A large influence of informative prior is not per se problematic (even one of the strengths of a Bayesian analysis), but unlikely in a large dataset such as this one. We can specify priors as we did before, using the prior command in the <code>brm()</code> function.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-20_c79e4796cd7249cabd38cf5002215c33">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>PRIORSUNIFORMATIVE <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav"</span>),</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav:texp"</span>),</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"sex"</span>),</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"texp"</span>),</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"cauchy(0,10)"</span>,  <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"intercept"</span>))</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>modeluninformativepriors<span class="ot">&lt;-</span> <span class="fu">brm</span>(popular <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> intercept <span class="sc">+</span> sex <span class="sc">+</span> extrav <span class="sc">+</span> texp <span class="sc">+</span> extrav<span class="sc">:</span>texp <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> extrav<span class="sc">|</span>class), </span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">data          =</span> popular2data,</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">warmup        =</span> <span class="dv">1000</span>, </span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">iter          =</span> <span class="dv">3000</span>,</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">chains        =</span> <span class="dv">3</span>, </span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">control       =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.96</span>), </span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior         =</span> PRIORSUNIFORMATIVE,</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">save_all_pars =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">sample_prior  =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">cores         =</span> <span class="dv">3</span>, <span class="co"># the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.</span></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">seed          =</span> <span class="dv">123</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-21_c3f6ceac4a25d2a3376453b16a8d982f">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modeluninformativepriors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav | class) 
+   Data: popular2data (Number of observations: 2000) 
+  Draws: 3 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup draws = 6000
+
+Group-Level Effects: 
+~class (Number of levels: 100) 
+                      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+sd(Intercept)             0.62      0.11     0.45     0.85 1.00      687
+sd(extrav)                0.05      0.03     0.00     0.11 1.00      253
+cor(Intercept,extrav)    -0.41      0.41    -0.90     0.72 1.00     2108
+                      Tail_ESS
+sd(Intercept)             2709
+sd(extrav)                1312
+cor(Intercept,extrav)     1840
+
+Population-Level Effects: 
+            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+intercept      -1.21      0.26    -1.71    -0.70 1.00     3333     3993
+sex             1.24      0.04     1.17     1.31 1.00    11987     4364
+extrav          0.80      0.04     0.73     0.88 1.00     4551     4021
+texp            0.23      0.02     0.19     0.26 1.00     3310     3526
+extrav:texp    -0.02      0.00    -0.03    -0.02 1.00     4501     4103
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     0.75      0.01     0.72     0.77 1.00     5149     3949
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>We see only a small difference between the informative and uninformative priors. We see that the estimates are ‘pulled’ toward the mean of the informative priors we specified for the regression coefficients of sex and extrav:texp.</p>
+<p>We can also calculate a relative biases again. With the exception of the regression coefficient for sex, all estimated biases are less than 1%.</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-22_892521efea3d77ec493869087fa6b2e5">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">summary</span>(modeluninformativepriors)<span class="sc">$</span>fixed <span class="sc">-</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed) <span class="sc">/</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed), <span class="dv">3</span>)[,<span class="st">"Estimate"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  0.443 -1.967  0.336  0.416  0.441</code></pre>
+</div>
+</div>
+</section>
+<section id="are-the-results-stable-from-a-sensitivity-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="are-the-results-stable-from-a-sensitivity-analysis">9. Are the results stable from a sensitivity analysis?</h3>
+<p>If you still have time left, you can adjust the hyperparameters of the priors upward and downward and re-estimating the model with these varied priors to check for robustness.</p>
+<p>From the original paper:</p>
+<blockquote class="blockquote">
+<p>“If informative or weakly-informative priors are used, then we suggest running a sensitivity analysis of these priors. When subjective priors are in place, then there might be a discrepancy between results using different subjective prior settings. A sensitivity analysis for priors would entail adjusting the entire prior distribution (i.e., using a completely different prior distribution than before) or adjusting hyperparameters upward and downward and re-estimating the model with these varied priors. Several different hyperparameter specifications can be made in a sensitivity analysis, and results obtained will point toward the impact of small fluctuations in hyperparameter values. [.] The purpose of this sensitivity analysis is to assess how much of an impact the location of the mean hyperparameter for the prior has on the posterior. [.] Upon receiving results from the sensitivity analysis, assess the impact that fluctuations in the hyperparameter values have on the substantive conclusions. Results may be stable across the sensitivity analysis, or they may be highly instable based on substantive conclusions. Whatever the finding, this information is important to report in the results and discussion sections of a paper. We should also reiterate here that original priors should not be modified, despite the results obtained.”</p>
+</blockquote>
+</section>
+<section id="is-the-bayesian-way-of-interpreting-and-reporting-model-results-used" class="level3">
+<h3 class="anchored" data-anchor-id="is-the-bayesian-way-of-interpreting-and-reporting-model-results-used">10. Is the Bayesian way of interpreting and reporting model results used?</h3>
+<p>For a summary on how to interpret and report models, please refer to https://www.rensvandeschoot.com/bayesian-analyses-where-to-start-and-what-to-report/</p>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-23_fb02d58691deddc0547f07ccef82f549">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav | class) 
+   Data: popular2data (Number of observations: 2000) 
+  Draws: 3 chains, each with iter = 3000; warmup = 1000; thin = 1;
+         total post-warmup draws = 6000
+
+Group-Level Effects: 
+~class (Number of levels: 100) 
+                      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+sd(Intercept)             0.62      0.11     0.45     0.87 1.00      628
+sd(extrav)                0.05      0.03     0.00     0.11 1.01      214
+cor(Intercept,extrav)    -0.40      0.43    -0.92     0.76 1.00     2022
+                      Tail_ESS
+sd(Intercept)             2750
+sd(extrav)                 941
+cor(Intercept,extrav)     1379
+
+Population-Level Effects: 
+            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+intercept      -1.21      0.26    -1.71    -0.69 1.00     2328     2763
+sex             1.26      0.04     1.19     1.34 1.00    10959     4138
+extrav          0.80      0.04     0.73     0.88 1.00     3335     4082
+texp            0.23      0.02     0.19     0.26 1.00     2400     2521
+extrav:texp    -0.02      0.00    -0.03    -0.02 1.00     3665     4079
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     0.75      0.01     0.72     0.77 1.00     5495     4012
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>In the current model we see that:</p>
+<ul>
+<li>The estimate for the fixed intercept is <span class="math inline">\(-1.21 \; [-1.71; -0.69]\)</span></li>
+<li>The estimate for the fixed effect of sex is <span class="math inline">\(1.26 \; [1.19; 1.34]\)</span></li>
+<li>The estimate for the effect of teacher experience is <span class="math inline">\(0.23 \; [0.19; 0.26]\)</span></li>
+<li>The estimate for the mean (random) effect of extraversion is <span class="math inline">\(0.8 \; [0.73; 0.88]\)</span></li>
+<li>The estimate for the crosslevel interaction effect of extraversion and teacher experience is <span class="math inline">\(-0.02 \; [-0.03; -0.02]\)</span></li>
+</ul>
+<p>We can see that none of 95% Posterior Credible Intervals for these effects include zero, which means we are can be quite certain that all of the random and fixed effects are different from 0.</p>
+<section id="references" class="level4">
+<h4 class="anchored" data-anchor-id="references">References</h4>
+<p><a href="https://www.jstatsoft.org/article/view/v080i01">Burkner, P. C. (2017). brms: An R package for Bayesian multilevel models using Stan. Journal of Statistical Software, 80(1), 1-28.</a></p>
+<p><a href="https://www.ncbi.nlm.nih.gov/pubmed/26690773">Depaoli, S., Van de Schoot, R. (2017). Improving Transparency and Replication in Bayesian Statistics: The WAMBS-Checklist. Psychological Methods, 22(2), 240-261.</a></p>
+</section>
+</section>
+</section>
+<section id="original-computing-environment" class="level2">
+<h2 class="anchored" data-anchor-id="original-computing-environment">Original Computing Environment</h2>
+<div class="cell" data-hash="WAMBS_multilevel_cache/html/unnamed-chunk-25_b155dacbccb0fc21890514c96676ded2">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.2.1 (2022-06-23 ucrt)
+ os       Windows 10 x64 (build 19045)
+ system   x86_64, mingw32
+ ui       RTerm
+ language (EN)
+ collate  Dutch_Netherlands.utf8
+ ctype    Dutch_Netherlands.utf8
+ tz       Europe/Berlin
+ date     2023-07-03
+ pandoc   3.1.1 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ ! package        * version date (UTC) lib source
+   abind            1.4-5   2016-07-21 [1] CRAN (R 4.2.0)
+   assertthat       0.2.1   2019-03-21 [1] CRAN (R 4.2.1)
+   backports        1.4.1   2021-12-13 [1] CRAN (R 4.2.0)
+   base64enc        0.1-3   2015-07-28 [1] CRAN (R 4.2.0)
+   bayesplot        1.9.0   2022-03-10 [1] CRAN (R 4.2.1)
+   bridgesampling   1.1-2   2021-04-16 [1] CRAN (R 4.2.1)
+   brms           * 2.17.0  2022-04-13 [1] CRAN (R 4.2.1)
+   Brobdingnag      1.2-7   2022-02-03 [1] CRAN (R 4.2.1)
+   broom            1.0.0   2022-07-01 [1] CRAN (R 4.2.1)
+   cachem           1.0.6   2021-08-19 [1] CRAN (R 4.2.1)
+   callr            3.7.0   2021-04-20 [1] CRAN (R 4.2.1)
+   cellranger       1.1.0   2016-07-27 [1] CRAN (R 4.2.1)
+   checkmate        2.1.0   2022-04-21 [1] CRAN (R 4.2.1)
+   cli              3.6.1   2023-03-23 [1] CRAN (R 4.2.3)
+   coda           * 0.19-4  2020-09-30 [1] CRAN (R 4.2.1)
+   codetools        0.2-18  2020-11-04 [2] CRAN (R 4.2.1)
+   colorspace       2.0-3   2022-02-21 [1] CRAN (R 4.2.1)
+   colourpicker     1.1.1   2021-10-04 [1] CRAN (R 4.2.1)
+   crayon           1.5.1   2022-03-26 [1] CRAN (R 4.2.1)
+   crosstalk        1.2.0   2021-11-04 [1] CRAN (R 4.2.1)
+   curl             4.3.2   2021-06-23 [1] CRAN (R 4.2.1)
+   DBI              1.1.3   2022-06-18 [1] CRAN (R 4.2.1)
+   dbplyr           2.2.1   2022-06-27 [1] CRAN (R 4.2.1)
+   denstrip         1.5.4   2018-03-18 [1] CRAN (R 4.2.3)
+   devtools         2.4.5   2022-10-11 [1] CRAN (R 4.2.2)
+   digest           0.6.29  2021-12-01 [1] CRAN (R 4.2.1)
+   distributional   0.3.0   2022-01-05 [1] CRAN (R 4.2.1)
+   dplyr          * 1.1.1   2023-03-22 [1] CRAN (R 4.2.3)
+   DT               0.23    2022-05-10 [1] CRAN (R 4.2.1)
+   dygraphs         1.1.1.6 2018-07-11 [1] CRAN (R 4.2.1)
+   ellipsis         0.3.2   2021-04-29 [1] CRAN (R 4.2.1)
+   evaluate         0.15    2022-02-18 [1] CRAN (R 4.2.1)
+   fansi            1.0.3   2022-03-24 [1] CRAN (R 4.2.1)
+   farver           2.1.1   2022-07-06 [1] CRAN (R 4.2.1)
+   fastmap          1.1.0   2021-01-25 [1] CRAN (R 4.2.1)
+   forcats        * 0.5.1   2021-01-27 [1] CRAN (R 4.2.1)
+   fs               1.5.2   2021-12-08 [1] CRAN (R 4.2.1)
+   gargle           1.2.0   2021-07-02 [1] CRAN (R 4.2.1)
+   generics         0.1.3   2022-07-05 [1] CRAN (R 4.2.1)
+   GGally           2.1.2   2021-06-21 [1] CRAN (R 4.2.1)
+   ggmcmc         * 1.5.1.1 2021-02-10 [1] CRAN (R 4.2.1)
+   ggplot2        * 3.4.1   2023-02-10 [1] CRAN (R 4.2.3)
+   ggridges         0.5.3   2021-01-08 [1] CRAN (R 4.2.1)
+   glue             1.6.2   2022-02-24 [1] CRAN (R 4.2.1)
+   googledrive      2.0.0   2021-07-08 [1] CRAN (R 4.2.1)
+   googlesheets4    1.0.0   2021-07-21 [1] CRAN (R 4.2.1)
+   gridExtra        2.3     2017-09-09 [1] CRAN (R 4.2.1)
+   gtable           0.3.0   2019-03-25 [1] CRAN (R 4.2.1)
+   gtools           3.9.3   2022-07-11 [1] CRAN (R 4.2.1)
+   haven          * 2.5.0   2022-04-15 [1] CRAN (R 4.2.1)
+   hms              1.1.1   2021-09-26 [1] CRAN (R 4.2.1)
+   htmltools        0.5.5   2023-03-23 [1] CRAN (R 4.2.3)
+   htmlwidgets      1.5.4   2021-09-08 [1] CRAN (R 4.2.1)
+   httpuv           1.6.5   2022-01-05 [1] CRAN (R 4.2.1)
+   httr             1.4.3   2022-05-04 [1] CRAN (R 4.2.1)
+   igraph           1.3.2   2022-06-13 [1] CRAN (R 4.2.1)
+   inline           0.3.19  2021-05-31 [1] CRAN (R 4.2.1)
+   jsonlite         1.8.4   2022-12-06 [1] CRAN (R 4.2.3)
+   knitr            1.39    2022-04-26 [1] CRAN (R 4.2.1)
+   labeling         0.4.2   2020-10-20 [1] CRAN (R 4.2.0)
+   later            1.3.0   2021-08-18 [1] CRAN (R 4.2.1)
+   lattice          0.20-45 2021-09-22 [2] CRAN (R 4.2.1)
+   lifecycle        1.0.3   2022-10-07 [1] CRAN (R 4.2.3)
+   loo              2.5.1   2022-03-24 [1] CRAN (R 4.2.1)
+   lubridate        1.8.0   2021-10-07 [1] CRAN (R 4.2.1)
+   magrittr         2.0.3   2022-03-30 [1] CRAN (R 4.2.1)
+   markdown         1.5     2023-01-31 [1] CRAN (R 4.2.3)
+   Matrix           1.4-1   2022-03-23 [2] CRAN (R 4.2.1)
+   matrixStats      0.62.0  2022-04-19 [1] CRAN (R 4.2.1)
+   mcmcplots      * 0.4.3   2018-06-22 [1] CRAN (R 4.2.3)
+   memoise          2.0.1   2021-11-26 [1] CRAN (R 4.2.1)
+   mime             0.12    2021-09-28 [1] CRAN (R 4.2.0)
+   miniUI           0.1.1.1 2018-05-18 [1] CRAN (R 4.2.1)
+   modelr           0.1.8   2020-05-19 [1] CRAN (R 4.2.1)
+   munsell          0.5.0   2018-06-12 [1] CRAN (R 4.2.1)
+   mvtnorm          1.1-3   2021-10-08 [1] CRAN (R 4.2.0)
+   nlme             3.1-157 2022-03-25 [2] CRAN (R 4.2.1)
+   pillar           1.9.0   2023-03-22 [1] CRAN (R 4.2.3)
+   pkgbuild         1.3.1   2021-12-20 [1] CRAN (R 4.2.1)
+   pkgconfig        2.0.3   2019-09-22 [1] CRAN (R 4.2.1)
+   pkgload          1.3.0   2022-06-27 [1] CRAN (R 4.2.1)
+   plyr             1.8.7   2022-03-24 [1] CRAN (R 4.2.1)
+   posterior        1.2.2   2022-06-09 [1] CRAN (R 4.2.1)
+   prettyunits      1.1.1   2020-01-24 [1] CRAN (R 4.2.1)
+   processx         3.7.0   2022-07-07 [1] CRAN (R 4.2.1)
+   profvis          0.3.7   2020-11-02 [1] CRAN (R 4.2.1)
+   promises         1.2.0.1 2021-02-11 [1] CRAN (R 4.2.1)
+   ps               1.7.1   2022-06-18 [1] CRAN (R 4.2.1)
+   purrr          * 0.3.4   2020-04-17 [1] CRAN (R 4.2.1)
+   R6               2.5.1   2021-08-19 [1] CRAN (R 4.2.1)
+   RColorBrewer   * 1.1-3   2022-04-03 [1] CRAN (R 4.2.0)
+   Rcpp           * 1.0.9   2022-07-08 [1] CRAN (R 4.2.1)
+ D RcppParallel     5.1.5   2022-01-05 [1] CRAN (R 4.2.1)
+   readr          * 2.1.2   2022-01-30 [1] CRAN (R 4.2.1)
+   readxl           1.4.2   2023-02-09 [1] CRAN (R 4.2.3)
+   remotes          2.4.2   2021-11-30 [1] CRAN (R 4.2.1)
+   reprex           2.0.1   2021-08-05 [1] CRAN (R 4.2.1)
+   reshape          0.8.9   2022-04-12 [1] CRAN (R 4.2.1)
+   reshape2         1.4.4   2020-04-09 [1] CRAN (R 4.2.1)
+   rlang            1.1.0   2023-03-14 [1] CRAN (R 4.2.3)
+   rmarkdown        2.14    2022-04-25 [1] CRAN (R 4.2.1)
+   rstan            2.26.13 2022-06-25 [1] local
+   rstantools       2.2.0   2022-04-08 [1] CRAN (R 4.2.1)
+   rstudioapi       0.13    2020-11-12 [1] CRAN (R 4.2.1)
+   rvest            1.0.2   2021-10-16 [1] CRAN (R 4.2.1)
+   scales           1.2.0   2022-04-13 [1] CRAN (R 4.2.1)
+   sessioninfo      1.2.2   2021-12-06 [1] CRAN (R 4.2.1)
+   sfsmisc          1.1-15  2023-04-20 [1] CRAN (R 4.2.3)
+   shiny            1.7.1   2021-10-02 [1] CRAN (R 4.2.1)
+   shinyjs          2.1.0   2021-12-23 [1] CRAN (R 4.2.1)
+   shinystan        3.0.0   2022-08-16 [1] local
+   shinythemes      1.2.0   2021-01-25 [1] CRAN (R 4.2.1)
+   StanHeaders      2.26.13 2022-06-25 [1] local
+   stringi          1.7.8   2022-07-11 [1] CRAN (R 4.2.1)
+   stringr        * 1.4.0   2019-02-10 [1] CRAN (R 4.2.1)
+   tensorA          0.36.2  2020-11-19 [1] CRAN (R 4.2.0)
+   threejs          0.3.3   2020-01-21 [1] CRAN (R 4.2.1)
+   tibble         * 3.2.1   2023-03-20 [1] CRAN (R 4.2.3)
+   tidyr          * 1.2.0   2022-02-01 [1] CRAN (R 4.2.1)
+   tidyselect       1.2.0   2022-10-10 [1] CRAN (R 4.2.3)
+   tidyverse      * 1.3.2   2022-07-18 [1] CRAN (R 4.2.1)
+   tzdb             0.3.0   2022-03-28 [1] CRAN (R 4.2.1)
+   urlchecker       1.0.1   2021-11-30 [1] CRAN (R 4.2.2)
+   usethis          2.1.6   2022-05-25 [1] CRAN (R 4.2.1)
+   utf8             1.2.2   2021-07-24 [1] CRAN (R 4.2.1)
+   V8               4.2.0   2022-05-14 [1] CRAN (R 4.2.1)
+   vctrs            0.6.1   2023-03-22 [1] CRAN (R 4.2.3)
+   withr            2.5.0   2022-03-03 [1] CRAN (R 4.2.1)
+   xfun             0.38    2023-03-24 [1] CRAN (R 4.2.3)
+   xml2             1.3.3   2021-11-30 [1] CRAN (R 4.2.1)
+   xtable           1.8-4   2019-04-21 [1] CRAN (R 4.2.1)
+   xts              0.12.1  2020-09-09 [1] CRAN (R 4.2.1)
+   yaml             2.3.5   2022-02-21 [1] CRAN (R 4.2.0)
+   zoo              1.8-10  2022-04-15 [1] CRAN (R 4.2.1)
+
+ [1] C:/Users/5507553/Documents/r_default/Rpackages
+ [2] C:/Program Files/R/R-4.2.1/library
+
+ D ── DLL MD5 mismatch, broken installation.
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    if (id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        return container.innerHTML
+      } else {
+        return note.innerHTML;
+      }
+    } else {
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      try { hash = new URL(url).hash; } catch {}
+      const id = hash.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note !== null) {
+        try {
+          const html = processXRef(id, note);
+          instance.setContent(html);
+        } finally {
+          instance.enable();
+          instance.show();
+        }
+      } else {
+        // See if we can fetch this
+        fetch(url.split('#')[0])
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.getElementById(id);
+          console.log(htmlDoc.body.innerHTML);
+          if (note !== null) {
+            const html = processXRef(id, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

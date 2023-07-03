@@ -213,7 +213,7 @@ For the exercise, click <a href="content/tuesday/Piors_BRMS.html" target="_blank
 
 In this tutorial you will be following the steps of the WAMBS – checklist to analyze the cross level interaction model we did in the BRMS Tutorial. 
 
-To begin the exercise, click [here](https://www.rensvandeschoot.com/brms-wambs/). The underlying code for this exercise can be accessed on [GitHub](https://github.com/Rensvandeschoot/Tutorials/blob/master/multilevel/WAMBS%20multilevel.Rmd).
+For the exercise, click <a href="content/tuesday/Wambs_multilevel.html" target="_blank">here</a>.
 
 
 ## Column 2
