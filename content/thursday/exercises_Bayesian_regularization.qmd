@@ -1,0 +1,449 @@
+---
+title: "Exercises on Bayesian regularized regression"
+author: "Sara van Erp"
+format: html
+bibliography: references.bib 
+---
+
+With these exercises, you will gain a practical understanding of different shrinkage priors and how to run a Bayesian regularized linear regression analysis using `brms`. In addition, we will consider the use of prior sensitivity analysis in Bayesian (regularized) analyses. Some knowledge of Bayesian analysis and familiarity with `brms` is assumed.
+
+## Preliminaries
+
+First, we load several packages to run the analyses and visualize the data and results. We also set a random seed so that the results are reproducible.
+
+```{r}
+#| echo: true
+#| message: false
+library(purrr)
+library(tidyr)
+library(ggplot2)
+library(GGally)
+library(brms)
+library(projpred)
+library(bayesplot)
+
+set.seed(03072023)
+```
+
+## Data: Abalone shells
+
+![](abalone.jpg){width="50%"}
+
+[Abalone](https://en.wikipedia.org/wiki/Abalone) are marine snails. Usually, the age of abalone is determined by cutting the shell, staining it, and counting the number of rings through a microscope. Adding 1.5 to the number of rings gives the age of the snail in years. In these exercises, we will try to circumvent this time-consuming task by predicting the age of abalone on alternative measurements which are easier to obtain.
+
+The data [@abalone] can be downloaded [here](https://archive.ics.uci.edu/dataset/1/abalone). In addition to the number of rings, which we will try to predict, the data set includes one categorical variable (*Sex*^[Fun fact: to determine the sex of an abalone, it is held out of the water with the holes along the bottom. The abalone will usually get tired and fall to the side so that the reproductive organ becomes visible. Females have a green reproductive organ, while males have a beige reproductive organ.]) and seven continuous measurements. See the [description](https://archive.ics.uci.edu/dataset/1/abalone) of the data set for more details on these variables.
+
+After you have downloaded the data and saved it in your working directory, load the data:
+
+```{r}
+dat <- read.table("./abalone.data", sep = ",")
+dim(dat)
+```
+
+As you can see, the data contains 4177 observations of nine variables. To keep the computation time feasible, we will work with a subset of 100 observations for our training data.
+
+```{r}
+obs.train <- sample.int(nrow(dat), size = 100, replace = FALSE)
+train <- dat[obs.train, ]
+```
+
+Before doing any analyses, it is a good idea to get familiar with your data. Although there are many different aspects you can look at (and many different ways of doing so), some things to focus on are: missing data, potential errors in the data, outliers, scales of the variables, and distributions.
+
+```{r}
+head(train)
+summary(train)
+```
+
+Variable 1 is actually a factor, so let's recode it and let's change the variable names so that they are easier to interpret:
+
+```{r}
+train$V1 <- as.factor(train$V1)
+colnames(train) <- c("Sex", "Length", "Diameter", "Height",
+                     "Whole_weight", "Shucked_weight", "Viscera_weight",
+                     "Shell_weight", "Rings")
+```
+
+We can now visualize the data in different ways. We can, for example, consider the marginal distributions of the variables:
+
+```{r}
+#| message: false
+train %>%
+  ggplot(aes(Sex)) +
+  geom_bar()
+
+train %>%
+  keep(is.numeric) %>% 
+  gather() %>% 
+  ggplot(aes(value)) +
+  facet_wrap(~ key, scales = "free") +
+  geom_histogram()
+```
+
+We can also visualize the bivariate relationships between variables. The code below shows paired scatterplots on the lower diagonal, correlations on the upper diagonal and marginal distributions on the diagonal. 
+
+Recreate this plot and try to separate the plots based on the categorical variable *Sex* (hint: you can add a colour variable via the `aes()` function as in a regular `ggplot`.
+
+```{r}
+#| message: false
+ggpairs(train)
+```
+
+### Assumptions
+
+Since we will be running a linear regression model to predict the age of the abalone, you should check the assumptions of the model first. We will not review the assumptions of regression analysis in detail here, but some observations based on the preliminary visualizations are worth noting. First, the lower diagonal indicates some non-linear bivariate relationships. However, these exist between the dependent variables rather than the independent and dependent variables so that should not be an issue.
+Second, correlations between the dependent variables are quite high. This **multicollinearity** is good to be aware of because in traditional regression analysis, this can cause the variance of the estimated regression coefficients to increase. Fortunately, one of the advantages of using regularization is that it will reduce the variance by introducing some bias.
+In addition to these observations, it is always a good idea to check your data for outliers since these can heavily influence the results. If variables contain observations that are theoretically impossible, these can be removed. Otherwise, it is recommended to run the analysis with and without outliers to assess the robustness of the results to the removal of outliers.
+Finally, in traditional linear regression analysis, it is assumed that the residuals are normally distributed with a constant variance $\sigma^2$. This assumption underlies the Bayesian regression model as well. However, violations of this assumption are less problematic since the Bayesian framework does not rely on p-values and posterior predictive checks can be used to indicate potential violations.
+
+## Predicting the age of abalone without regularization
+
+For reference, we will start with a Bayesian regression analysis without regularization. In this application, this is possible because we have more observations than variables in our model. However, as the number of observations per variable decreases, regularization becomes more useful to avoid overfitting and ultimately, as the number of variables exceeds the number of observations, regularization is needed to run the model [@McNeish2015]. Apart from the issue of overfitting, regularization is useful to identify which variables are important in predicting the outcome, in this case: the age of abalone.
+
+Run a regression analysis on the training data, using all variables to predict the age of abalone (i.e., the *Rings* variable). Do you recall which priors `brms` uses by default? How could you check which priors are being used?
+
+```{r}
+#| message: false
+#| eval: false
+#| code-fold: true
+#| code-summary: "Show the code"
+#| cache: true
+fit_default <- brm(Rings ~ ., data = train)
+prior_summary(fit_default) 
+```
+
+We would like to select those variables that are most important in predicting abalone age. One way of doing this is by considering the 95% credible interval. This Bayesian equivalent of the classical confidence interval can be interpreted as being the interval in which the true value lies with 95% probability. If zero is included in this interval for a given predictor, we might therefore conclude that it is likely that the true effect is zero and exclude that predictor. Consider the 95% credible intervals: which predictors would you exclude and which predictors would be retained? Write this down for future reference. 
+
+```{r}
+#| message: false
+#| eval: false
+#| code-fold: true
+#| code-summary: "Show the code"
+#| cache: true
+summary(fit_default)
+# Selected predictors: SexM and Shell_weight
+```
+
+## Predicting the age of abalone with regularization
+We will now run the analysis with regularization. We focus on the most simple shrinkage prior possible: a normal prior with a small variance^[It has been shown that posterior mean estimates using the normal prior are equivalent to estimates using the traditional ridge penalty [@HoerlKennard1970]]. 
+
+In `brms`, the normal prior is specified with a mean and standard deviation. So if we wish to specify a prior with a variance of $\sigma^2 = 0.01$, we should take the square root of this value (`sqrt(0.01)`) to obtain the standard deviation $\sigma$. We can add the prior by adding the argument `prior = prior(normal(0, 0.1)` to the `brm` call. Run the regularized analysis and use the 95% credible intervals to decide which variables are relevant in predicting the age of abalone. While you are waiting for the model to compile and sample, think about what results you would expect. Specifically, do you think we will select less or more variables compared to the previous, default analysis? 
+
+```{r}
+#| message: false
+#| code-fold: true
+#| code-summary: "Show the code"
+#| cache: true
+fit_ridge <- brm(Rings ~ ., data = train,
+                 prior = prior(normal(0, 0.1)),
+                 refresh = 0, silent = 2)
+```
+
+```{r}
+#| message: false
+#| code-fold: true
+#| code-summary: "Show the code"
+#| cache: true
+#| eval: false
+summary(fit_ridge)
+# None of the variables are selected
+```
+We have now applied a very influential shrinkage prior, resulting in a large amount of regularization. As a result, the posterior distributions are narrowly concentrated around zero. This can be seen in the summary, based on the small estimated regression coefficients and narrow credible intervals. However, an advantage of the Bayesian framework is that we can also plot the posterior distributions. With the code below we compare the posterior densities for three parameters with and without regularization. The `prob` argument is used to specify the shaded probability in the density. Do you see the influence of the normal shrinkage prior reflected in the plotted posterior densities? 
+
+```{r}
+#| eval: false
+mcmc_areas(fit_default,
+           pars = c("b_Diameter", "b_Whole_weight", "b_Shell_weight"),
+           prob_outer = 1, prob = 0.95)
+
+mcmc_areas(fit_ridge,
+           pars = c("b_Diameter", "b_Whole_weight", "b_Shell_weight"),
+           prob_outer = 1, prob = 0.95)
+```
+
+Similar plots can be created for the other parameters in the model: regression coefficients can be named using `b_variable_name` and the residual error standard deviation is named `sigma`. Consider the posterior densities for `sigma` across both fitobjects; are they equal? Do you expect them to be equal based on the prior distributions? 
+
+```{r}
+#| message: false
+#| eval: false
+#| code-fold: true
+#| code-summary: "Show the code"
+#| cache: true
+mcmc_areas(fit_default,
+           pars = c("sigma"),
+           prob_outer = 1, prob = 0.95)
+prior_summary(fit_default)
+
+mcmc_areas(fit_ridge,
+           pars = c("sigma"),
+           prob_outer = 1, prob = 0.95)
+prior_summary(fit_default)
+
+# The posterior densities are not the same, but the priors are. 
+# The shrinkage prior influences the regression coefficients by 
+# pulling them to zero which in turn influences the residuals and 
+# thus the residual standard deviation, which is larger for the 
+# shrinkage prior.
+```
+
+## Prior sensitivity analysis: Considering various shrinkage priors
+So far we have only considered a normal shrinkage prior with a small variance. This prior exerted a lot of influence on the results, pulling all regression coefficients to zero. We will now investigate a few other shrinkage priors to get a feeling of their shrinkage behaviors. 
+
+`brms` offers a lot of flexibility in terms of prior distributions: you can define any distribution that is available in `Stan` as a prior. `?set_prior` offers detailed documentation and various examples. Here, we will consider three options that, in addition to the normal prior used previously, offer a variety of shrinkage behaviors:
+
+* *Student-t prior*: compared to the normal prior, this prior has heavier tails and thus allows substantial coefficients to escape the shrinkage more. The heaviness of the tails is directly related to the degrees of freedom parameter `nu`, with smaller degrees of freedom leading to heavier tails.
+* *Laplace prior*: whereas the normal prior is the Bayesian equivalent of the traditional ridge penalty, the Laplace prior is the equivalent of the traditional lasso penalty. `brms` even has a specific function to set up this prior, which is used below.
+* *Regularized horseshoe prior*: this prior can be seen as most advanced. It is very peaked at zero, but also has very heavy tails. This makes this prior especially suitable to shrink the small, irrelevant effects to zero while keeping the substantial, relevant effects large. 
+
+Before using these priors, let's visualize them to understand their behavior a bit better. First, we need draws from the prior distributions. To obtain these, we run `brms` using the argument `sample_prior = "only"`. This will result in a fitobject containing only draws from the prior distribution. Use the code below to sample from the three shrinkage priors. 
+
+```{r}
+#| message: false
+prior_t <- brm(Rings ~ ., data = train,
+             prior = set_prior("student_t(3, 0, 0.1)", class = "b"),
+             sample_prior = "only",
+             refresh = 0, silent = 2) 
+
+prior_lasso <- brm(Rings ~ ., data = train,
+             prior = set_prior(lasso(df = 1, scale = 1), class = "b"),
+             sample_prior = "only",
+             refresh = 0, silent = 2)
+
+prior_hs <- brm(Rings ~ ., data = train,
+             prior = set_prior(horseshoe(df = 1, scale_global = 1,
+                                     df_global = 1, scale_slab = 2,
+                                     df_slab = 4, par_ratio = NULL,
+                                     autoscale = TRUE), class = "b"),
+             sample_prior = "only",
+             refresh = 0, silent = 2)
+```
+
+Next, you can use the `mcmc_areas` function to plot the prior distributions for specific parameters. However, it can be more insightful to plot the prior distributions together in one figure. To do this, we first need to combine the prior draws. Then, we can plot the prior for a specific regression coefficient, for example `b_Height`:
+
+```{r}
+#| message: false
+draws_t <- as_draws_df(prior_t)
+draws_t$prior <- "t"
+draws_lasso <- as_draws_df(prior_lasso)
+draws_lasso$prior <- "lasso"
+draws_hs <- as_draws_df(prior_hs)
+draws_hs$prior <- "hs"
+
+sel <- c("b_SexI", "b_SexM", "b_Length", "b_Diameter", "b_Height", 
+          "b_Whole_weight", "b_Shucked_weight", "b_Viscera_weight",
+          "b_Shell_weight", "prior")
+draws <- rbind.data.frame(draws_t[, sel], 
+                          draws_lasso[, sel], 
+                          draws_hs[, sel])
+
+ggplot(draws, aes(b_Height, colour=prior)) +
+  geom_density() 
+```
+
+This way, we can compare different parametric forms and see, for example, that with these settings the lasso and horseshoe priors generally look quite similarly whereas Student's t prior has much lighter tails. 
+
+We can also adapt the hyperparameters of each prior. For the next exercise, pick one of the shrinkage priors (ridge, Student's t, lasso, or horseshoe) and adapt the hyperparameters. Consider three or four different settings. For the lasso and horseshoe you can review the documentation for an interpretation of the hyperparameters via `?lasso` or `?horseshoe`. Note that the location of each prior should remain at zero to ensure shrinkage towards zero. Visualize the prior for different hyperparameter settings and try to reason whether you would expect different results in terms of shrinkage towards zero and, ultimately, variable selection. In addition to visualizing the prior distribution itself, you can also perform prior predictive checks and visualize possible distributions of data generated for a specific data set (see day 3).
+
+### Comparing results across different priors
+Now that we have a good idea of the different shrinkage prior distributions, we can run the analysis for different prior specifications and compare the outcome of interest, in our case: the selection of variables to predict abalone age. Run the analysis with Student's t, the lasso, and horseshoe priors specified above. You can also add one or more of the priors you investigated yourself. Compare the amount of shrinkage, for example by looking at the estimated regression coefficients or the full posteriors, as well as the number of selected variables based on the 95% credible intervals. Do the results differ across different shrinkage priors and are the differences in line with your intuition regarding the shrinkage behaviors of the priors?
+
+
+```{r}
+#| message: false
+#| eval: false
+#| code-fold: true
+#| code-summary: "Show the code"
+fit_t <- brm(Rings ~ ., data = train,
+             prior = set_prior("student_t(3, 0, 0.1)", class = "b"))
+# Indicates no relevant variables (like the ridge)
+
+fit_lasso <- brm(Rings ~ ., data = train,
+             prior = set_prior(lasso(df = 1, scale = 1), class = "b"))
+# Selects SexM, Shell_weight, and Shucked_weight
+
+fit_hs <- brm(Rings ~ ., data = train,
+             prior = set_prior(horseshoe(df = 1, scale_global = 1,
+                                     df_global = 1, scale_slab = 2,
+                                     df_slab = 4, par_ratio = NULL,
+                                     autoscale = TRUE), class = "b"))
+# Selects SexM and Shell_weight
+
+# Visualize differences
+draws_ridge <- as_draws_df(fit_ridge)
+draws_ridge$prior <- "ridge"
+draws_t <- as_draws_df(fit_t)
+draws_t$prior <- "t"
+draws_lasso <- as_draws_df(fit_lasso)
+draws_lasso$prior <- "lasso"
+draws_hs <- as_draws_df(fit_hs)
+draws_hs$prior <- "hs"
+
+sel <- c("b_SexI", "b_SexM", "b_Length", "b_Diameter", "b_Height", 
+          "b_Whole_weight", "b_Shucked_weight", "b_Viscera_weight",
+          "b_Shell_weight", "prior")
+draws <- rbind.data.frame(draws_ridge[, sel],
+                          draws_t[, sel], 
+                          draws_lasso[, sel], 
+                          draws_hs[, sel])
+draws$id <- 1:nrow(draws)
+draws_long <- gather(draws, 
+                     key = "parameter",
+                     value = "value",
+                     -prior)
+
+ggplot(draws_long, aes(value, colour=prior)) +
+  geom_density() +
+  facet_wrap(~ parameter, scales = "free")
+# We see very similar results for the ridge and Student's t; these priors shrink coefficients heavily, with no escape for larger coefficients. The lasso and horseshoe also show similar results and less shrinkage for some parameters, as we would expect based on the prior plots.
+```
+
+## Did we forget anything?
+So far, we have done a lot: we have investigated different shrinkage priors and compared their influence in predicting abalone age. We have seen that different types of shrinkage priors have different prior densities which result in different shrinkage behaviors and ultimately, different results. 
+However, as you considered the potential influence of the shrinkage priors you might already have wondered about the role that the scales of the variables play. This is actually a very important point in Bayesian analysis in general, and even more so in Bayesian regularization in particular. The scale of the variables will influence the plausible parameter space of the regression coefficients and this will influence the informativeness of the prior distribution. To illustrate this, consider one variable in our data set, the `Length` of the shells. In this data set, `Length` is measured in millimeter and if we use this variable in a simple linear regression to predict the abalone age, we get an estimated regression coefficient of 14.  
+
+```{r}
+fit <- lm(Rings ~ Length, data = train)
+summary(fit)
+```
+
+We can view this estimate as the general, unregularized estimate so using flat priors. You can check this by running the same analysis with `brms` and its default priors.
+
+```{r}
+#| message: false
+#| eval: false
+#| code-fold: true
+#| code-summary: "Show the code"
+fit <- brm(Rings ~ Length, data = train)
+summary(fit)
+```
+
+Now consider a normal shrinkage prior with a standard deviation of $\sigma = 10$. This prior looks like this:
+
+```{r}
+plot(density(rnorm(100000, 0, sd = 10)))
+```
+
+You can see that most of the prior mass lies between -20 and 20. How much influence do you think this prior will exert on the regression coefficient of `Length`, that is estimated to be around 14 when using flat priors? You can check your intuition by running the analysis.
+
+```{r}
+#| message: false
+#| eval: false
+#| code-fold: true
+#| code-summary: "Show the code"
+fit <- brm(Rings ~ Length, data = train,
+           prior = set_prior("normal(0, 10)", class = "b"))
+summary(fit)
+# There is practically no influence of this prior; it is relatively uninformative given the scale of the variable.
+```
+
+Suppose that `Length` was measured in centimeters instead of millimeters. Let's create a new variable, `Length_cm`:
+
+```{r}
+train_new <- train
+train_new$Length_cm <- train_new$Length/10
+```
+
+Now, our normal(0, 10) prior is much more informative!
+
+```{r}
+#| message: false
+#| eval: false
+#| code-fold: true
+#| code-summary: "Show the code"
+fit1 <- lm(Rings ~ Length_cm, data = train_new)
+summary(fit1)
+
+fit2 <- brm(Rings ~ Length_cm, data = train_new,
+           prior = set_prior("normal(0, 10)", class = "b"))
+summary(fit2)
+# Now, the effect is shrunken heavily!
+```
+
+You can imagine that if we have variables measured on different scales, say one variable in cm and another in mm, that specifying one common shrinkage prior (or even a prior in general) is not a good idea because the informativeness of the prior, and thus the amount of shrinkage, will depend on the scale of the variable. Therefore, it is highly recommended to always standardize your variables before applying regularization. This makes it easier to specify one general shrinkage prior for all coefficients.
+
+Rerun the analysis with the original ridge shrinkage prior but this time first scaling the data.
+
+```{r}
+#| message: false
+#| code-fold: true
+#| code-summary: "Show the code"
+
+train_scaled <- data.frame(scale(train[, -1], center = TRUE, scale = TRUE))
+train_scaled$Sex <- train$Sex
+
+fit_ridge_scaled <- brm(Rings ~ ., data = train_scaled,
+             prior = set_prior(lasso(df = 1, scale = 1), class = "b"),
+             refresh = 0, silent = 2)
+summary(fit_ridge_scaled)
+# Now, we would select Shell_weight and Shucked_weight based on the 95% CI!
+
+mcmc_areas(fit_ridge, pars = c("b_Shell_weight", "b_Shucked_weight"), prob = 0.95, prob_outer = 1)
+mcmc_areas(fit_ridge_scaled, pars = c("b_Shell_weight", "b_Shucked_weight"), prob = 0.95, prob_outer = 1)
+
+```
+
+## Projection predictive variable selection
+
+One of the main goals of our analysis is to select which variables are important in predicting the age of abalone. In traditional regularized regression, a penalty such as the lasso is able to set regression coefficients to exactly zero. However, in the Bayesian framework where we rely on posterior summary statistics such as the mean or median, regularized estimates will never be exactly zero. We thus need an additional step to perform variable selection. Up until now, we have used the marginal 95% credible interval to do so, but there are alternatives. One alternative would be to use a cut-off for the estimate, for example 0.1 and select a parameter if its regression coefficient exceeds this value. However, as you can imagine, the choice of cut-off value is rather arbitrary. Actually, the credible interval criterion we have considered thus far is also a rather arbitrary criterion: why use the 95% interval and not the 80% interval? Or the 88.8% interval?^[The choice of the confidence level is related to the Type 1 error rate: we choose the 95% CI to obtain a Type 1 error rate of 5%. Yet in practice, this choice is almost never made explicitly. In addition, @vanErpOberskiMulder2019 have shown that the level of the CI that provides the optimal selection accuracy differs across data generating conditions.]
+
+An alternative variable selection method is projection predictive variable selection. The basic idea behind this method is that the best possible prediction will be obtained when all variables are used. However, this model is not very parsimonious so we use this model as a reference and then look for a simpler model that gives similar answers to the full model in terms of predictive ability. By doing so, a more parsimonious model is obtained.^[See @PiironenVehtari2017a for a more detailed overview of different model selection methods.]
+
+The projection predictive method is implemented in the `projpred` package. To perform the variable selection, two functions can be used: `varsel` and `cv_varsel`. The latter function performs cross-validation by first searching for the best submodel given a specific number of predictors on a training set and subsequently evaluating the predictive performance of the submodels on a test set. This cross-validation approach is recommended over `varsel` to avoid overfitting. However, `cv_varsel` is also much slower compared to `varsel`, so for the purpose of these exercises we will rely on the faster `varsel` function. 
+
+First, we run the variable selection for the original model with the normal shrinkage prior. We then obtain the optimal model size and check which predictors should be included given this optimal model size. 
+
+```{r}
+vs <- varsel(fit_ridge_scaled)
+nsel <- suggest_size(vs)
+ranking(vs, nterms_max = nsel)
+```
+
+Note that the `suggest_size` function is easy to use, but: it provides only a heuristic for determining optimal model size. A better approach is to plot a performance statistic, which can be easily done as follows:
+
+```{r}
+plot(vs)
+```
+
+By default, `elpd`, the expected log predictive density is plotted. The important thing to consider is when this value levels off: that indicates that the performance does not change as we include more predictors. Thus, based on this plot we can conclude that we can obtain sufficient predictive performance with two predictors, the same number as suggested by the `suggest_size` function.
+
+Now, compare the selected variables to those selected using the other shrinkage priors we considered in the sensitivity analysis. Are there big differences? Do the selected variables differ greatly from those selected based on the 95% credible intervals?
+
+## Going beyond variable selection: Evaluating the model
+
+So far, we have focused solely on determining the number of variables to select and assessing whether this number varies when using different shrinkage priors or different selection criteria. Before performing variable selection, we can also consider how well our model fits the data, for example by considering a posterior predictive check. 
+
+Perform a visual posterior predictive check for the model after regularization with the normal prior.
+
+```{r}
+#| message: false
+#| eval: false
+#| code-fold: true
+#| code-summary: "Show the code"
+ppc <- pp_check(fit_ridge_scaled, ndraws = 100)
+plot(ppc)
+```
+
+You could also assess the final model, after variable selection. To do so, rerun the analysis using only the selected variables (based on the projection predictive method). Make sure you do not use shrinkage priors this time; we have already used the shrinkage to select the variables, now we simply want to estimate the effects of the selected variables without shrinkage. Perform a posterior predictive check. Do we still get sensible results?
+
+```{r}
+#| message: false
+#| eval: false
+#| code-fold: true
+#| code-summary: "Show the code"
+fit_sel <- brm(Rings ~ Whole_weight + Sex, data = train_scaled)
+ppc_sel <- pp_check(fit_sel, ndraws = 100)
+plot(ppc_sel)
+```
+
+## Recap
+
+In these exercise, you have seen the effects of different shrinkage priors in a Bayesian regularized linear regression analysis and compared different ways of selecting variables. Ultimately, the goal of the analysis is to decide which variables are important in predicting a certain outcome but also to be confident that the results are robust. The prior sensitivity analysis can help in this regard although it is important to note that in some cases, results will differ across different shrinkage priors. This illustrates the importance of understanding your prior and the influence it has on the results. So make sure you think carefully about your (shrinkage) prior distribution; make sure you understand it and its influence on the results; and report your results in a transparent manner.
+
+## Further exercises
+
+The best way to consolidate your understanding of these methods is to practice. So download some data online (for example from the [UC Irvine Machine Learning Repository](https://archive.ics.uci.edu)) or use your own data and apply the methods. From here it would be especially interesting to look at data with a larger number of predictors or a binary outcome. The latter requires you to run a regularized logistic regression model. You can do so in `brms` by specifying `family = bernoulli(link = "logit")`. 
+
+## Original computing environment
+
+```{r}
+devtools::session_info()
+```
