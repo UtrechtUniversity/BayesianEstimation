@@ -47,6 +47,4 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
-
-# Temporary ignore some content folders
-content/wednesday
+content/wednesday/prior_posterior_predictive_practical.RData

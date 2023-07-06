@@ -37,17 +37,28 @@ On the other hand, posterior predictive checks are like the grand finale. They l
 These checks are like superpowers. They enable us to understand our model better, ensure it's working as expected, and decide on any tweaks if needed. So buckle up and let's dive deeper into the fascinating realm of predictive checking!
 
 
- 
+## Loading packages
+
+First things first. We need some packages. 
+
+```{r}
+# Load required packages
+library(tidyverse)
+library(brms)
+library(bayesplot)
+```
+
+::: callout-note
+If you are getting the error: *Error: .onLoad failed in loadNamespace() for 'dbplyr', details: call: setClass(cl, contains = c(prevClass, "VIRTUAL"), where = where) error: error in contained classes ("character") for class "ident"; class definition removed from 'dbplyr'* the brms package is loaded before the tidyverse package. Please restart R and load them in the order, tidyverse first brms second.
+:::
+
 
 ## Prior Predictive Checking
 
 Let's imagine that the Dutch news reports an increase in bike thefts and we want to investigate the relation between bike thefts and the increase in temperature. Let's start by generating the simulated data. We simulate the number of bike thefts in a small village on a hundred random days. Please note, we are simplyfing the model, not taking any dependency between days into account and act as if seasonal changes in weather can happen overnight. 
 
-```{r}
+```{r sim-data1}
 #| echo: true
-# Load required packages
-library(tidyverse)
-library(brms)
 set.seed(23)
 
 # Generate simulated data
@@ -56,7 +67,9 @@ temperature <- runif(n, min = 0, max = 30) # Random temperatures between 0 and 3
 intercept <- 10
 slope <- 0.5
 noise_sd <- 3
-bike_thefts <- intercept + slope * temperature + rnorm(n, sd = noise_sd)
+# round to whole numbers
+bike_thefts <- (intercept + slope * temperature + rnorm(n, sd = noise_sd)) %>%
+  round(., 0)
 
 data <- tibble(temperature = temperature, bike_thefts = bike_thefts)
 ```
@@ -86,9 +99,13 @@ ggplot(data, aes(x = temperature, y = bike_thefts)) +
 
 <br>
 
-Now that we have our simulated data, let's define our model and priors in brms and fit the data. See if you can do if yourself before looking at the solutions. *Hint:* check out `?priors` and `?brm` to specify the priors and call the model. How do you get only samples from the prior? 
+Now that we have our simulated data, let's define our model and priors in brms and fit the data. See if you can do if yourself before looking at the solutions. 
 
-```{r}
+::: 
+*Hint:* check out `?priors` and `?brm` to specify the priors and call the model. How do you get only samples from the prior? 
+:::
+
+```{r fit-prior-only}
 #| echo: true
 #| code-fold: true
 #| cache: true
@@ -101,95 +118,412 @@ priors <- prior(normal(10, 5), class = "Intercept") +
 # this makes sure we are going to look at the prior predictive samples. 
 fit <- brm(bike_thefts ~ temperature, data = data, 
            prior = priors, family = gaussian(),
-           sample_prior = "only")
+           sample_prior = "only", seed = 555)
 ```
 
 Great, once we've fit our model, we can use the `pp_check` function in `brms` to look at the prior predictive checks. These are build upon work in the `bayesplot` package, you could use those functions directly, but it requires some more effort. 
 
-There are many types that can be utilized, to get more information on this we can run:
-
-```{r}
-## get an overview of all valid types
-pp_check(fit, type = "xyz")
-```
+There are many types that can be utilized. In @tbl-ppcheckoptions you can find the type options. These call functions from the `bayesplot` package. You can look these up by using these in combination with two prefixes (also an argument in the `pp_check` function), `ppc` (posterior predictive check) or `ppd` (posterior predictive distribution), the latter being the same as the former except that the observed data is not shown. The use for instance `?bayesplot::ppc_bars` to get more information for the function from `bayesplot`.
 
 
-The most basic thing we can look at is to see what possible distributions of the data are simulated. 
+| **Types**                |                   |                   |                |
+|---------------------------|---------------------------|---------------------------|-------------------------|
+| bars                      | error_scatter_avg_vs_x    | intervals                 | scatter                 |
+| bars_grouped              | freqpoly                  | intervals_grouped         | scatter_avg             |
+| boxplot                   | freqpoly_grouped          | km_overlay                | scatter_avg_grouped     |
+| dens                      | hist                      | km_overlay_grouped        | stat                    |
+| dens_overlay              | intervals                 | loo_intervals             | stat_2d                 |
+| dens_overlay_grouped      | intervals_grouped         | loo_pit                   | stat_freqpoly           |
+| ecdf_overlay              | km_overlay                | loo_pit_overlay           | stat_freqpoly_grouped   |
+| ecdf_overlay_grouped      | km_overlay_grouped        | loo_pit_qq                | stat_grouped            |
+| error_binned              | loo_intervals             | loo_ribbon                | violin_grouped          |
+| error_hist                | loo_pit                   | ribbon                    |                         |
+| error_hist_grouped        | loo_pit_overlay           | ribbon_grouped            |                         |
+| error_scatter             | loo_pit_qq                | rootogram                 |                         |
+| error_scatter_avg         | loo_ribbon                | scatter                   |                         |
+| error_scatter_avg_grouped | ribbon                    | scatter_avg               |                         |
+|                           | ribbon_grouped            | scatter_avg_grouped       |                         |
+
+: Options for `pp_check` argument `type = `.  {#tbl-ppcheckoptions}
+
+
+We will for now use the helper function `pp_check` from `brms` so we don't have to extract and manipulate data. The most basic thing we can look at is to see what possible distributions of the data are simulated. 
 
 ```{r}
 pp_check(fit, prefix = "ppd", ndraws = 100)
 ```
 
-We can also look at what summary statistics these data produce. For instance, what mean of standard deviations. 
+Note that we didn't specify any type. If we don't specify the type `dens_overlay` is used. 
+
+```{r}
+pp_check(fit, type = "dens_overlay", prefix = "ppd", ndraws = 100)
+```
+
+We see that our priors indicate that distributions of possible data of stolen bikes include negative numbers. That would not be something realistic. We could adjust our model to not allow negative values. This could be done by adjusting the priors so that these values do not occurs or changing a distribution. We could also restrict values to be positive by means of truncation. The formula would change into `bike_thefts | resp_trunc(lb = 0) ~ temperature`. Unfortunately, truncated distributions are harder to work with and interpret, [sometimes leading to computational issues](https://discourse.mc-stan.org/t/nas-produced-in-posterior-predict-for-truncated-model/26986). So for now, we will not truncate our model, but look a bit further to see if this is a true problem. In any case, we want our models to cover the range of values that are plausible, and many predicted distributions are falling between 0 and 50 bikes stolen, which given our small village example is plausible. However, the predicted distributions seem narrow, perhaps we can look at summary statistics of the predicted distribtuions to get more information. 
+
+We can see summary statistics for the predicted distributions by using `type = stat`. For instance, what about the means or standard deviations of these distributions. 
 
 ```{r}
 pp_check(fit, prefix = "ppd", type = "stat", stat = "mean")
 pp_check(fit, prefix = "ppd", type = "stat", stat = "sd")
 ```
-
 Or maybe what combinations of the two.
 
 ```{r}
 pp_check(fit, prefix = "ppd", type = "stat_2d")
 ```
 
-
-
-- Introduction to Prior Distributions  
-- Setting up a model with BRMS
-- Generating data and fitting the model  
-- Conducting prior predictive checks
-- Visualizing prior predictive checks with Bayesplot
-  
-## Posterior Predictive Checking
-
-- Introduction to Posterior Distributions  
-- Conducting posterior inference  
-- Conducting posterior predictive checks
-- Visualizing posterior predictive checks with Bayesplot  
-
-## Case Study: Applying Prior and Posterior Predictive Checks on Real-World Data {#sec-case-study}
-
+We see that most models produce positive means with small standard deviations. Perhaps we think these values are plausible, especially since they produce a broad range of possibilities. Perhaps we think we need to adjust our model a bit. Let's say that we would like to imply a bit more bike thefts on average and more uncertainty. We could adjust our priors to incorporate this. We also specify a broader prior on the residuals. To see which prior was used originally by default we can check this.
 
 ```{r}
-library(brms)
-library(bayesplot)
-data <- read.csv("content/wednesday/time_data.csv")
-fit_ar <-  brm(data = data,
-            loglt ~ 1 + trialnr + trialtype + ar(gr = id, cov = TRUE))
-
-
-# pp_check(fit, prefix = "ppd", type = "stat", stat = "mean")
-bayesplot::color_scheme_set(scheme = "viridisA")
-pp_check(fit_ar, prefix = "ppc", type = "intervals_grouped", group = "id",
-         prob = 0.5, prob_outer = 0.95) + ylim(2.5, 5) 
-
-fit_ml <-  brm(data = data,
-            loglt ~ 1 + trialnr + trialtype + (1 + trialnr + trialtype | id))
-
-pp_check(fit_ml, prefix = "ppc", type = "intervals_grouped", group = "id",
-         prob = 0.5, prob_outer = 0.95) + ylim(2.5, 5) 
-
-fit_ml_ar <-  brm(data = data,
-            loglt ~ 1 + trialnr + trialtype + (1 + trialtype | id) + 
-  ar(gr = id, cov = TRUE))
-
-pp_check(fit_ml_ar, prefix = "ppc", type = "intervals_grouped", group = "id",
-         prob = 0.5, prob_outer = 0.95) + ylim(2.5, 5) 
-
+fit$prior
 ```
 
 
-- Selecting and Preprocessing a Real-World Dataset
-    - Applying BRMS for Model Creation and Fitting
-    - Prior and Posterior Predictive Checking on the Dataset
-    - Visualizing and Interpreting the Results with Bayesplot
+```{r wider-priors}
+#| echo: true
+#| code-fold: true
+#| cache: true
+#| class: output
+priors2 <- prior(normal(15, 7), class = "Intercept") + 
+  prior(normal(0, 2), class = "b") + 
+  prior(student_t(3, 0, 10), class = "sigma")
 
-## Conclusion and Further Resources
+# Specify and fit the model, note the sample_prior = "only" 
+# this makes sure we are going to look at the prior predictive samples. 
+fit2 <- brm(bike_thefts ~ temperature, data = data, 
+           prior = priors2, family = gaussian(),
+           sample_prior = "only", seed = 555)
 
-- Summary of what has been learned  
-- Potential issues and their solutions  
-- Pointers to further resources for learning
+```
+
+Now let's check what changed. 
+
+```{r}
+#| layout-ncol: 2
+
+# note that we add titles and ensure the limits of the x asis are equal. 
+pp_check(fit, type = "dens_overlay", prefix = "ppd", ndraws = 100) + 
+  ggtitle("Original priors") + xlim(-50, 100) + ylim(0, 0.5)
+pp_check(fit2, type = "dens_overlay", prefix = "ppd", ndraws = 100) + 
+  ggtitle("New priors") + xlim(-50, 100) + ylim(0, 0.5)
+```
+
+The new priors seem much more flat and wide, but it's hard to see. Maybe checking the statistics will help more. 
+
+```{r}
+#| layout-ncol: 2
+pp_check(fit, prefix = "ppd", type = "stat_2d") + 
+  ggtitle("Original priors") + xlim(-20, 40) + ylim(0, 150)
+pp_check(fit2, prefix = "ppd", type = "stat_2d") + 
+  ggtitle("New priors")  + xlim(-20, 40) + ylim(0, 150)
+```
+
+We indeed see much more spread in the predicted summary statistics, indicating more uncertainty beforehand. The new priors indicate a bit higher expected means and more variance in the predicted datasets. This is what we wanted and now we are happy with our priors and we can fit our model with our "observed" (simulated) data. 
+
+## Posterior Predictive Checking
+
+The first step before we can do posterior predictive checking is to obtain the posterior. We change the `sample_prior = 'only'` argument into `sample_prior = 'yes'` so that the priors are saved and we fit the data using our new priors.   
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| cache: true
+#| class: output
+fit3 <- brm(bike_thefts ~ temperature, data = data, 
+           prior = priors2, family = gaussian(),
+           sample_prior = "yes", seed = 555)
+```
+
+Now let's look at the summary of the model. With `brms` we can just call the fit object. 
+
+```{r}
+fit3
+```
+
+How well are we estimating? Remember that we simuated the data, so we know the true parameter values. These were `intercept = 10`, `slope = 0.5` and `noise_sd = 3`. The model finds these values back very accurately. Great! We could check the model fit and computation. For instance, get some chain plots. And did you know that you could change the color scheme's using `color_scheme_set()`. You can even set it such that the colors are adjusted to account for the common form of colorblindness and rely less on red-green contrast. These scheme's are called "viridis" and there are more options. Let's see some options we could use. 
+
+```{r}
+bayesplot::color_scheme_view(scheme = c("blue", "red", "green", 
+                                        "viridis", "viridisA"))
+```
+
+After that quick sidestep, let's plot related to our posteriors.
+
+```{r}
+color_scheme_set("viridis")
+mcmc_plot(fit3, type = "trace")
+mcmc_plot(fit3, type = "dens")
+mcmc_plot(fit3, type = "intervals")
+mcmc_plot(fit3, type = "acf")
+```
+
+Convergence seems well, the densities are nice and smooth and there is little autocorrelation. But we already had some indications for this. Did you notice that in the output for the fit object we already got information on `Rhat` and the effective sample size for each parameter? These already gave indications that everything was going well. 
+
+Now let's look at the posterior predictive checks. We can use the `pp_check` function again. This time however, we do posterior predictive checks. We already used are data, so it might be nice to also compare what the model look like compared to our observed data. For that, we use `prefix = ppc`.
+
+
+```{r}
+pp_check(fit3, type = "dens_overlay", prefix = "ppc", ndraws = 100)
+```
+
+If we see this, we can see that the datasets that are predicted by the model are very similar to our observed dataset. That's a good sign. Now let's investigate this a bit closer still. 
+
+```{r}
+pp_check(fit3, prefix = "ppc", type = "stat_2d")
+```
+
+Our observed data also is similar to the predicted data if you look at the mean and sd of those generated datasets using the posterior draws. This is great, but it's compared to the data we also used to fit the model with. How would we perform against new data? How about we simulate a bit more new data and see. We use a different seed and sample 50 new cases. We use the same data generating mechanism of course. 
+
+
+```{r sim-data2}
+set.seed(95)
+# Generate simulated data
+n_new <- 50
+temperature_new <- runif(n_new, min = 0, max = 30) # Random temperatures between 0 and 30
+intercept <- 10
+slope <- 0.5
+noise_sd <- 3
+# round to whole numbers
+bike_thefts_new <- (intercept + slope * temperature_new + rnorm(n_new, sd = noise_sd)) %>%
+  round(., 0)
+
+data_new <- tibble(temperature = temperature_new, bike_thefts = bike_thefts_new)
+```
+
+We don't run the model again, we make use of the fit model we had. 
+
+```{r}
+pp_check(fit3, type = "dens_overlay", prefix = "ppc", ndraws = 100,
+         newdata = data_new)
+pp_check(fit3, prefix = "ppc", type = "stat_2d",
+         newdata = data_new)
+```
+
+Great, with new data we also do well!
+
+## Did we learn?
+
+Now did we learn more about the parameters? Our model did well to predict our existing data and new data. But did we decrease our uncertainty about the parameters in this model? We can provide some nice insights into this. We also sampled from the priors so we can easily visualize this. 
+
+```{r}
+mcmc_plot(fit3, type = "dens", variable = c("prior_Intercept", "b_Intercept")) + 
+  xlim(-10, 40)
+mcmc_plot(fit3, type = "dens", variable = c("prior_b", "b_temperature")) + 
+  xlim(-6, 6)
+mcmc_plot(fit3, type = "dens", variable = c("prior_sigma", "sigma")) + 
+  xlim(0, 100)
+```
+
+We could also express this in terms of posterior shrinkage[^1] using
+
+$$
+s = 1 - \frac{\sigma^2_\text{posterior}}{\sigma^2_\text{prior}}.
+$$
+To calculate this we can use the following code.
+
+```{r}
+# to get the parameter estimates. Note that Est.Error is sd not variance. 
+posterior_summary(fit3)
+# intercept shrinkage:
+1 - ((posterior_summary(fit3)[1, 2]^2) / (posterior_summary(fit3)[4, 2]^2) )
+# regression coefficient temperature shrinkage: 
+1 - ((posterior_summary(fit3)[2, 2]^2) / (posterior_summary(fit3)[5, 2]^2) )
+```
+
+For both parameters we greatly reduced the uncertainty that we had. Awesome. 
+
+[^1]: See for instance: Schulz, S., Zondervan-Zwijnenburg, M., Nelemans, S. A., Veen, D., Oldehinkel, A. J., Branje, S., & Meeus, W. (2021). Systematically defined informative priors in Bayesian estimation: An empirical application on the transmission of internalizing symptoms through mother-adolescent interaction behavior. *Frontiers in Psychology*, 12, 620802. https://doi.org/10.3389/fpsyg.2021.620802
+
+
+## Case Study: Applying Prior and Posterior Predictive Checks on Real-World Data {#sec-case-study}
+
+In this case study we will see how posterior predictive checks can help to decide if a model is useful. We will analyze part of a dataset that investigates infants' speech discrimination performance[^2]. In short, can infants make a distinction between sounds originating from the (parents') native language compared to sounds not from that language. For each infant there are 12 sequential trials for which the log of the fixation time is recorded. There are 2 different trial types (coded 0 for non-native and 1 for the native language contrast). We look at 12 infants. 
+
+[^2]: de Klerk, M., Veen, D., Wijnen, F., & de Bree, E. (2019). A step forward: Bayesian hierarchical modelling as a tool in assessment of individual discrimination performance. *Infant Behavior and Development*, 57, 101345.
+
+
+First, to get the data load in the `time_data.csv` file. 
+
+```{r}
+#| eval: false
+data <- read.csv("time_data.csv")
+data$trialtype <- factor(data$trialtype)
+```
+
+Or simple run the following code.
+
+```{r}
+data <- structure(list(X = 1:144, id = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 4L, 4L, 4L, 
+4L, 4L, 4L, 4L, 4L, 4L, 4L, 4L, 4L, 5L, 5L, 5L, 5L, 5L, 5L, 5L, 
+5L, 5L, 5L, 5L, 5L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 
+6L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 8L, 8L, 8L, 
+8L, 8L, 8L, 8L, 8L, 8L, 8L, 8L, 8L, 9L, 9L, 9L, 9L, 9L, 9L, 9L, 
+9L, 9L, 9L, 9L, 9L, 10L, 10L, 10L, 10L, 10L, 10L, 10L, 10L, 10L, 
+10L, 10L, 10L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, 
+11L, 11L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 
+12L), trialnr = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 
+12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 
+3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 
+6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 
+9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 
+12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 
+3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 
+6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 
+9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 
+12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L), trialtype = c(1L, 
+0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 
+1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 
+1L, 1L, 0L, 0L, 1L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 
+0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 
+1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 
+1L, 1L, 0L, 0L, 1L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 0L, 
+1L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 0L, 1L, 1L, 1L, 0L, 
+1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 
+1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L), 
+    loglt = c(3.44839710345777, 3.53237213356788, 3.61573968861916, 
+    3.44138088491651, 3.5081255360832, 4.15812115033749, 3.65176244738011, 
+    4.2520759437998, 4.03277987919124, 4.20782279900151, 3.57818060962778, 
+    4.11417714024445, 3.52853106063541, 3.58489634413745, 3.39252108993193, 
+    3.58478337899651, 3.41077723337721, 3.878751520173, 3.73134697554595, 
+    3.56655533088305, 3.71466499286254, 3.61341894503457, 3.73703353133388, 
+    3.67951874369579, 4.09933527768596, 3.78333176288742, 4.00004342727686, 
+    3.92556990954338, 3.64483232882564, 3.38756777941719, 3.68565218411552, 
+    3.51851393987789, 4.17577265960154, 3.90260113066653, 3.89597473235906, 
+    4.06220580881971, 4.10744740952361, 4.24306286480481, 4.17163870853082, 
+    3.816042340922, 4.24659704910637, 3.69469292633148, 4.22980978295254, 
+    4.48023697181947, 3.83853427051187, 3.56631962152481, 3.7521253072979, 
+    4.08159931273294, 4.1814433955419, 3.46119828862249, 3.80861603542699, 
+    3.78247262416629, 3.71264970162721, 3.62065647981962, 3.66426580014768, 
+    3.64345267648619, 3.34222522936079, 3.28645646974698, 3.29600666931367, 
+    3.87174801899187, 3.53794495929149, 3.72558497227069, 3.81298016603948, 
+    4.1026394836913, 4.01127432890473, 4.15962734065867, 4.17851652373358, 
+    4.34629428204135, 4.02966780267532, 4.01770097122412, 4.23709111227397, 
+    4.03977092693158, 3.67200544502295, 3.77312792403333, 3.76767522402796, 
+    3.80726435527611, 3.75966784468963, 3.97206391600802, 4.27323283404305, 
+    3.9843022319799, 3.94235534970768, 3.73134697554595, 3.81070286094712, 
+    3.68502478510571, 4.05556944006099, 4.15878451772342, 3.58103894877217, 
+    3.98815747255675, 3.88326385958497, 3.85229696582693, 3.61225390609644, 
+    3.32325210017169, 3.3809344633307, 3.62479757896076, 3.45224657452044, 
+    3.38792346697344, 3.91301868374796, 4.02657411815033, 3.74826557266874, 
+    4.08145532782257, 3.76110053895814, 3.24674470972384, 3.80807586809131, 
+    3.59604700754544, 3.63718942214876, 3.82885315967664, 3.6728364541714, 
+    3.8318697742805, 3.62900161928699, 3.72566666031418, 3.95104594813582, 
+    3.79504537042112, 4.21769446020538, 3.85925841746731, 3.68975269613916, 
+    4.14044518834787, 3.63508143601087, 3.50542132758328, 3.5856862784525, 
+    4.03116599966066, 3.57645653240562, 4.11843007712209, 3.93343666782628, 
+    4.08282126093933, 4.57753775449384, 3.76745271809777, 3.52166101511207, 
+    3.93464992290071, 4.08055433898877, 4.34228447422575, 4.02251085043403, 
+    4.45086469237977, 4.60527271532368, 4.16307188200382, 3.96950909859657, 
+    3.89702195606036, 4.0774042463981, 4.28291652679515, 4.36674038984291, 
+    4.35274191502075, 4.0321350468799, 4.04528385139514, 4.19035971626532, 
+    4.09624938318961)), class = "data.frame", row.names = c(NA, 
+-144L))
+data$trialtype <- factor(data$trialtype)
+```
+
+Let's take a quick look at the data.
+
+```{r}
+#| layout-ncol: 2
+ggplot(aes(x = trialtype, y = loglt, col = trialtype), data = data) + 
+         geom_point()
+ggplot(aes(x = trialtype, y = loglt, col = trialtype), data = data) + 
+         geom_violin()
+```
+
+Looking at the violin plot and boxplot, there might be a slight difference between the two trial types. There might also not be. We could also look at this on an individual level.
+
+```{r}
+ggplot(aes(x = trialtype, y = loglt, col = trialtype), data = data) + 
+    geom_violin() + facet_wrap(vars(id))
+```
+
+Now we are going to rely on the default priors in brms and look how we can use posterior predictive checks to help us change our model. The first model we are going to try and explain the log looking time by using trial number (time) and trial type. We also include an autoregressive effect over time as infants might experience fatigue during the experiment and this might build up over time. 
+
+
+```{r ar-model-case-study}
+#| echo: true
+#| code-fold: true
+#| cache: true
+#| class: output
+fit_ar <-  brm(data = data,
+               loglt ~ 1 + trialnr + trialtype + 
+                 ar(time = trialnr, gr = id, cov = TRUE),
+               sample_prior = "yes", seed = 383)
+```
+
+Now let's look at the results. 
+
+```{r}
+fit_ar
+plot(fit_ar)
+```
+
+Fitting seems to have gone well. Nicely mixed chain plots, smooth densities, nice Rhat and Effective sample size. Let's look at the posterior predictives. 
+
+```{r}
+#| layout-ncol: 2
+pp_check(fit_ar, ndraws = 100)
+pp_check(fit_ar, type = "stat_2d")
+```
+
+If we look at the posterior predictive plots that we used before, all seems quite well. But, we are looking at a very aggregated level. Perhaps we should zoom in a little bit. We use the `intervals_grouped` type of plot so we can look for each individual on each timepoint how the predictions look. 
+
+```{r}
+pp_check(fit_ar, prefix = "ppc", type = "intervals_grouped", group = "id",
+         prob = 0.5, prob_outer = 0.95) + ylim(2.5, 5) 
+```
+
+This is great, we see for each individual each time point the predictions. And what turns out? Our model is doing a terrible job. We are basically predicting the same thing for each timepoint of each individual with very very tiny shifts based on the trial type. We just predict with enough uncertainty and capture most measurements. Not a useful model at all actually. 
+
+So what can we change? We didn't include any multilevel structure, whilst the data follows a multilevel structure, namely trials within individuals. Let's try a different model. Let us make random effect for the intercept, the trial number and the trial type. This model is a bit different, we are for instance modelling the trial numbers as random effect but are not including an autoregressive effect. But, we are taking the hierarchical structure of the data more into account. Let's try. 
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| cache: true
+#| class: output
+fit_ml <-  brm(data = data,
+            loglt ~ 1 + trialnr + trialtype + (1 + trialnr + trialtype | id),
+            sample_prior = "yes", seed = 12351)
+```
+
+Let's go through the same first checks.
+
+```{r}
+fit_ml
+plot(fit_ml, variable = c("b_Intercept", "b_trialnr", "b_trialtype1"))
+```
+
+First signs look okay. Nicely mixed chain plots, smooth densities, nice Rhat and Effective sample size. Let's look at the posterior predictives. 
+
+```{r}
+#| layout-ncol: 2
+pp_check(fit_ml, type = "dens_overlay_grouped", ndraws = 100, group = "trialtype")
+pp_check(fit_ml, type = "stat_2d")
+```
+
+Okay, if we split out per trial type our model doesn't fully capture all bumps but it's not to bad. The general mean and sd are captured well. Now let's check out where we encountered problems last time. 
+
+```{r}
+pp_check(fit_ml, prefix = "ppc", type = "intervals_grouped", group = "id",
+         prob = 0.5, prob_outer = 0.95) + ylim(2.5, 5) 
+```
+
+We are now at least making differentiation between trial numbers, individuals and trends within individuals. See for instance the contrast between infant number 1 and infant number 8. If you'd look closely these predictions are also more specific compared to the earlier predictions, the uncertainty intervals are less wide. We still seem to capture most data points. Therefore, we can conclude that we made an improvement in the model. A next step could be to include autoregressive effects for example and see if the model further improves. 
+
+We hope this example illustrates that we need to think at what level we want to check our model. Perhaps on an overall level we are doing fine, but if we are interested in data at a individual level or even at a trial level, we need to look how we are doing there. Posterior predictive checks can help to identify what is going on (e.g. we do not differentiate between individuals). We can adjust and hopefully improve our models based on that information. 
+
+
+
+<!-- ## Conclusion and Further Resources -->
+
+<!-- - Summary of what has been learned   -->
+<!-- - Potential issues and their solutions   -->
+<!-- - Pointers to further resources for learning -->
 
 
 ## Original Computing Environment
@@ -198,3 +532,7 @@ pp_check(fit_ml_ar, prefix = "ppc", type = "intervals_grouped", group = "id",
 devtools::session_info()
 ```
 
+```{r}
+#| include: false
+save.image('prior_posterior_predictive_practical.RData')
+```
