@@ -144,23 +144,48 @@ overflow-y: scroll;
 <p>First things first. We need some packages.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-2_dc094f32787b5eb3433e4bdea1ea8b8c">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required packages</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>This is bayesplot version 1.9.0</code></pre>
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+✔ ggplot2 3.4.1     ✔ purrr   0.3.4
+✔ tibble  3.2.1     ✔ dplyr   1.1.1
+✔ tidyr   1.2.0     ✔ stringr 1.4.0
+✔ readr   2.1.2     ✔ forcats 0.5.1</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>- Online documentation and vignettes at mc-stan.org/bayesplot</code></pre>
+<pre><code>Warning: package 'ggplot2' was built under R version 4.2.3</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>- bayesplot theme set to bayesplot::theme_default()</code></pre>
+<pre><code>Warning: package 'tibble' was built under R version 4.2.3</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>   * Does _not_ affect other ggplot2 plots</code></pre>
+<pre><code>Warning: package 'dplyr' was built under R version 4.2.3</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>   * See ?bayesplot_theme_set for details on theme setting</code></pre>
+<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Rcpp
+Loading 'brms' package (version 2.17.0). Useful instructions
+can be found by typing help('brms'). A more detailed introduction
+to the package is available through vignette('brms_overview').
+
+Attaching package: 'brms'
+
+The following object is masked from 'package:stats':
+
+    ar</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is bayesplot version 1.9.0
+- Online documentation and vignettes at mc-stan.org/bayesplot
+- bayesplot theme set to bayesplot::theme_default()
+   * Does _not_ affect other ggplot2 plots
+   * See ?bayesplot_theme_set for details on theme setting</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -181,24 +206,24 @@ Note
 <h2 class="anchored" data-anchor-id="prior-predictive-checking">Prior Predictive Checking</h2>
 <p>Let’s imagine that the Dutch news reports an increase in bike thefts and we want to investigate the relation between bike thefts and the increase in temperature. Let’s start by generating the simulated data. We simulate the number of bike thefts in a small village on a hundred random days. Please note, we are simplyfing the model, not taking any dependency between days into account and act as if seasonal changes in weather can happen overnight.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/sim-data1_aafa1cd2273c8cf757af26dd876497be">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">23</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate simulated data</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>temperature <span class="ot">&lt;-</span> <span class="fu">runif</span>(n, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">30</span>) <span class="co"># Random temperatures between 0 and 30</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>intercept <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>slope <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>noise_sd <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># round to whole numbers</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>bike_thefts <span class="ot">&lt;-</span> (intercept <span class="sc">+</span> slope <span class="sc">*</span> temperature <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> noise_sd)) <span class="sc">%&gt;%</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(., <span class="dv">0</span>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">temperature =</span> temperature, <span class="at">bike_thefts =</span> bike_thefts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">23</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate simulated data</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>temperature <span class="ot">&lt;-</span> <span class="fu">runif</span>(n, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">30</span>) <span class="co"># Random temperatures between 0 and 30</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>intercept <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>slope <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>noise_sd <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># round to whole numbers</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>bike_thefts <span class="ot">&lt;-</span> (intercept <span class="sc">+</span> slope <span class="sc">*</span> temperature <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> noise_sd)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(., <span class="dv">0</span>)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">temperature =</span> temperature, <span class="at">bike_thefts =</span> bike_thefts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s take a quick look at our data to get a feel for what they look like.</p>
 <p>Firstly, we can get summary statistics for our data.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-3_a49dc5b75707a2214f92071273aee3ae">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  temperature       bike_thefts   
  Min.   : 0.5915   Min.   : 4.00  
@@ -211,7 +236,7 @@ Note
 </div>
 <p>Next, let’s take a look at the first few rows of the data.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-4_5c988b7a5f546874c607823e72cd1c30">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 2
   temperature bike_thefts
@@ -226,10 +251,10 @@ Note
 </div>
 <p>Finally, let’s visualize our data. We’ll create a scatterplot to see if there’s a visible correlation between the temperature and the number of bike thefts.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-5_76987660eb2222233df1b6e6bcd6b84f">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> temperature, <span class="at">y =</span> bike_thefts)) <span class="sc">+</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Temperature"</span>, <span class="at">y =</span> <span class="st">"Bike thefts"</span>) <span class="sc">+</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> temperature, <span class="at">y =</span> bike_thefts)) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Temperature"</span>, <span class="at">y =</span> <span class="st">"Bike thefts"</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -240,15 +265,15 @@ Note
 <div class="cell output" data-hash="prior_posterior_predictive_practical_cache/html/fit-prior-only_d9c3321f3fc1f471bde1dc6b631fd754">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define priors</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>priors <span class="ot">&lt;-</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">10</span>, <span class="dv">5</span>), <span class="at">class =</span> <span class="st">"Intercept"</span>) <span class="sc">+</span> </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify and fit the model, note the sample_prior = "only" </span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># this makes sure we are going to look at the prior predictive samples. </span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(bike_thefts <span class="sc">~</span> temperature, <span class="at">data =</span> data, </span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> priors, <span class="at">family =</span> <span class="fu">gaussian</span>(),</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">sample_prior =</span> <span class="st">"only"</span>, <span class="at">seed =</span> <span class="dv">555</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define priors</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>priors <span class="ot">&lt;-</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">10</span>, <span class="dv">5</span>), <span class="at">class =</span> <span class="st">"Intercept"</span>) <span class="sc">+</span> </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify and fit the model, note the sample_prior = "only" </span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># this makes sure we are going to look at the prior predictive samples. </span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(bike_thefts <span class="sc">~</span> temperature, <span class="at">data =</span> data, </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> priors, <span class="at">family =</span> <span class="fu">gaussian</span>(),</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">sample_prior =</span> <span class="st">"only"</span>, <span class="at">seed =</span> <span class="dv">555</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Compiling Stan program...</code></pre>
@@ -260,8 +285,8 @@ Note
 <pre><code>
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 2.2e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.22 seconds.
+Chain 1: Gradient evaluation took 2e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -285,8 +310,8 @@ Chain 1:
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 3e-06 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.03 seconds.
+Chain 2: Gradient evaluation took 2e-06 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -310,8 +335,8 @@ Chain 2:
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
 Chain 3: 
-Chain 3: Gradient evaluation took 3e-06 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.03 seconds.
+Chain 3: Gradient evaluation took 2e-06 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
 Chain 3: Adjust your expectations accordingly!
 Chain 3: 
 Chain 3: 
@@ -335,8 +360,8 @@ Chain 3:
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
 Chain 4: 
-Chain 4: Gradient evaluation took 3e-06 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.03 seconds.
+Chain 4: Gradient evaluation took 2e-06 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
 Chain 4: Adjust your expectations accordingly!
 Chain 4: 
 Chain 4: 
@@ -353,8 +378,8 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 0.014 seconds (Warm-up)
-Chain 4:                0.013 seconds (Sampling)
+Chain 4:  Elapsed Time: 0.013 seconds (Warm-up)
+Chain 4:                0.014 seconds (Sampling)
 Chain 4:                0.027 seconds (Total)
 Chain 4: </code></pre>
 </div>
@@ -474,14 +499,14 @@ Chain 4: </code></pre>
 </div>
 <p>We will for now use the helper function <code>pp_check</code> from <code>brms</code> so we don’t have to extract and manipulate data. The most basic thing we can look at is to see what possible distributions of the data are simulated.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-6_3e92e3c9cd6c9f3454d9ccf8eb23e3c9">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Note that we didn’t specify any type. If we don’t specify the type <code>dens_overlay</code> is used.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-7_671959355c02ee1350dd56c6e4ca8cdc">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -489,7 +514,7 @@ Chain 4: </code></pre>
 <p>We see that our priors indicate that distributions of possible data of stolen bikes include negative numbers. That would not be something realistic. We could adjust our model to not allow negative values. This could be done by adjusting the priors so that these values do not occurs or changing a distribution. We could also restrict values to be positive by means of truncation. The formula would change into <code>bike_thefts | resp_trunc(lb = 0) ~ temperature</code>. Unfortunately, truncated distributions are harder to work with and interpret, <a href="https://discourse.mc-stan.org/t/nas-produced-in-posterior-predict-for-truncated-model/26986">sometimes leading to computational issues</a>. So for now, we will not truncate our model, but look a bit further to see if this is a true problem. In any case, we want our models to cover the range of values that are plausible, and many predicted distributions are falling between 0 and 50 bikes stolen, which given our small village example is plausible. However, the predicted distributions seem narrow, perhaps we can look at summary statistics of the predicted distribtuions to get more information.</p>
 <p>We can see summary statistics for the predicted distributions by using <code>type = stat</code>. For instance, what about the means or standard deviations of these distributions.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-8_61759c69305132e7588d005783ef0932">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat"</span>, <span class="at">stat =</span> <span class="st">"mean"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat"</span>, <span class="at">stat =</span> <span class="st">"mean"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'stat' by default.</code></pre>
 </div>
@@ -499,7 +524,7 @@ Chain 4: </code></pre>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat"</span>, <span class="at">stat =</span> <span class="st">"sd"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat"</span>, <span class="at">stat =</span> <span class="st">"sd"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'stat' by default.
 `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
@@ -510,7 +535,7 @@ Chain 4: </code></pre>
 </div>
 <p>Or maybe what combinations of the two.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-9_4479fe8a25d88325f335bbe1150029c1">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'stat_2d' by default.</code></pre>
 </div>
@@ -520,7 +545,7 @@ Chain 4: </code></pre>
 </div>
 <p>We see that most models produce positive means with small standard deviations. Perhaps we think these values are plausible, especially since they produce a broad range of possibilities. Perhaps we think we need to adjust our model a bit. Let’s say that we would like to imply a bit more bike thefts on average and more uncertainty. We could adjust our priors to incorporate this. We also specify a broader prior on the residuals. To see which prior was used originally by default we can check this.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-10_a542e55713131d1c1f064a6d7d43da8b">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>prior</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span>prior</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                prior     class        coef group resp dpar nlpar lb ub
          normal(0, 1)         b                                        
@@ -537,15 +562,15 @@ Chain 4: </code></pre>
 <div class="cell output" data-hash="prior_posterior_predictive_practical_cache/html/wider-priors_7f6079668c46edb3d09c60d3fc88f819">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>priors2 <span class="ot">&lt;-</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">15</span>, <span class="dv">7</span>), <span class="at">class =</span> <span class="st">"Intercept"</span>) <span class="sc">+</span> </span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="at">class =</span> <span class="st">"b"</span>) <span class="sc">+</span> </span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">student_t</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> <span class="st">"sigma"</span>)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify and fit the model, note the sample_prior = "only" </span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co"># this makes sure we are going to look at the prior predictive samples. </span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(bike_thefts <span class="sc">~</span> temperature, <span class="at">data =</span> data, </span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> priors2, <span class="at">family =</span> <span class="fu">gaussian</span>(),</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">sample_prior =</span> <span class="st">"only"</span>, <span class="at">seed =</span> <span class="dv">555</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>priors2 <span class="ot">&lt;-</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">15</span>, <span class="dv">7</span>), <span class="at">class =</span> <span class="st">"Intercept"</span>) <span class="sc">+</span> </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="at">class =</span> <span class="st">"b"</span>) <span class="sc">+</span> </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior</span>(<span class="fu">student_t</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> <span class="st">"sigma"</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify and fit the model, note the sample_prior = "only" </span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="co"># this makes sure we are going to look at the prior predictive samples. </span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(bike_thefts <span class="sc">~</span> temperature, <span class="at">data =</span> data, </span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> priors2, <span class="at">family =</span> <span class="fu">gaussian</span>(),</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">sample_prior =</span> <span class="st">"only"</span>, <span class="at">seed =</span> <span class="dv">555</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Compiling Stan program...</code></pre>
@@ -557,8 +582,8 @@ Chain 4: </code></pre>
 <pre><code>
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 1.8e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.18 seconds.
+Chain 1: Gradient evaluation took 1.9e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.19 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -575,15 +600,15 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.019 seconds (Warm-up)
-Chain 1:                0.018 seconds (Sampling)
-Chain 1:                0.037 seconds (Total)
+Chain 1:  Elapsed Time: 0.024 seconds (Warm-up)
+Chain 1:                0.023 seconds (Sampling)
+Chain 1:                0.047 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 4e-06 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.04 seconds.
+Chain 2: Gradient evaluation took 2e-06 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -600,15 +625,15 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.017 seconds (Warm-up)
-Chain 2:                0.017 seconds (Sampling)
-Chain 2:                0.034 seconds (Total)
+Chain 2:  Elapsed Time: 0.022 seconds (Warm-up)
+Chain 2:                0.023 seconds (Sampling)
+Chain 2:                0.045 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
 Chain 3: 
-Chain 3: Gradient evaluation took 4e-06 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.04 seconds.
+Chain 3: Gradient evaluation took 2e-06 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
 Chain 3: Adjust your expectations accordingly!
 Chain 3: 
 Chain 3: 
@@ -625,15 +650,15 @@ Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 0.018 seconds (Warm-up)
-Chain 3:                0.014 seconds (Sampling)
-Chain 3:                0.032 seconds (Total)
+Chain 3:  Elapsed Time: 0.022 seconds (Warm-up)
+Chain 3:                0.018 seconds (Sampling)
+Chain 3:                0.04 seconds (Total)
 Chain 3: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
 Chain 4: 
-Chain 4: Gradient evaluation took 3e-06 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.03 seconds.
+Chain 4: Gradient evaluation took 2e-06 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
 Chain 4: Adjust your expectations accordingly!
 Chain 4: 
 Chain 4: 
@@ -650,24 +675,24 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 0.017 seconds (Warm-up)
-Chain 4:                0.017 seconds (Sampling)
-Chain 4:                0.034 seconds (Total)
+Chain 4:  Elapsed Time: 0.021 seconds (Warm-up)
+Chain 4:                0.022 seconds (Sampling)
+Chain 4:                0.043 seconds (Total)
 Chain 4: </code></pre>
 </div>
 </div>
 <p>Now let’s check what changed.</p>
 <div>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># note that we add titles and ensure the limits of the x asis are equal. </span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span> </span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Original priors"</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">100</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># note that we add titles and ensure the limits of the x asis are equal. </span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span> </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Original priors"</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">100</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 59 rows containing non-finite values (`stat_density()`).</code></pre>
+<pre><code>Warning: Removed 26 rows containing non-finite values (`stat_density()`).</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit2, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span> </span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"New priors"</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">100</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit2, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span> </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"New priors"</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">100</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 102 rows containing non-finite values (`stat_density()`).</code></pre>
+<pre><code>Warning: Removed 149 rows containing non-finite values (`stat_density()`).</code></pre>
 </div>
 <div class="cell quarto-layout-panel" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-11_64348f742ecd31c66ec16a54045bd5d9">
 <div class="quarto-layout-row quarto-layout-valign-top">
@@ -682,13 +707,13 @@ Chain 4: </code></pre>
 </div>
 <p>The new priors seem much more flat and wide, but it’s hard to see. Maybe checking the statistics will help more.</p>
 <div>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>) <span class="sc">+</span> </span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Original priors"</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">40</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">150</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>) <span class="sc">+</span> </span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Original priors"</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">40</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">150</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'stat_2d' by default.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit2, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>) <span class="sc">+</span> </span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"New priors"</span>)  <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">40</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">150</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit2, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>) <span class="sc">+</span> </span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"New priors"</span>)  <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">40</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">150</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'stat_2d' by default.</code></pre>
 </div>
@@ -714,9 +739,9 @@ Chain 4: </code></pre>
 <div class="cell output" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-13_9ff8b67436c10e59675090c9a311cc14">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>fit3 <span class="ot">&lt;-</span> <span class="fu">brm</span>(bike_thefts <span class="sc">~</span> temperature, <span class="at">data =</span> data, </span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> priors2, <span class="at">family =</span> <span class="fu">gaussian</span>(),</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">sample_prior =</span> <span class="st">"yes"</span>, <span class="at">seed =</span> <span class="dv">555</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>fit3 <span class="ot">&lt;-</span> <span class="fu">brm</span>(bike_thefts <span class="sc">~</span> temperature, <span class="at">data =</span> data, </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> priors2, <span class="at">family =</span> <span class="fu">gaussian</span>(),</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">sample_prior =</span> <span class="st">"yes"</span>, <span class="at">seed =</span> <span class="dv">555</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Compiling Stan program...</code></pre>
@@ -728,8 +753,8 @@ Chain 4: </code></pre>
 <pre><code>
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 2.5e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.25 seconds.
+Chain 1: Gradient evaluation took 4.5e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.45 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -746,15 +771,15 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.018 seconds (Warm-up)
-Chain 1:                0.018 seconds (Sampling)
-Chain 1:                0.036 seconds (Total)
+Chain 1:  Elapsed Time: 0.021 seconds (Warm-up)
+Chain 1:                0.021 seconds (Sampling)
+Chain 1:                0.042 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 5e-06 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.05 seconds.
+Chain 2: Gradient evaluation took 1.1e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -771,15 +796,15 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.018 seconds (Warm-up)
-Chain 2:                0.013 seconds (Sampling)
-Chain 2:                0.031 seconds (Total)
+Chain 2:  Elapsed Time: 0.021 seconds (Warm-up)
+Chain 2:                0.015 seconds (Sampling)
+Chain 2:                0.036 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
 Chain 3: 
-Chain 3: Gradient evaluation took 5e-06 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.05 seconds.
+Chain 3: Gradient evaluation took 9e-06 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.09 seconds.
 Chain 3: Adjust your expectations accordingly!
 Chain 3: 
 Chain 3: 
@@ -796,15 +821,15 @@ Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 0.018 seconds (Warm-up)
-Chain 3:                0.017 seconds (Sampling)
-Chain 3:                0.035 seconds (Total)
+Chain 3:  Elapsed Time: 0.022 seconds (Warm-up)
+Chain 3:                0.02 seconds (Sampling)
+Chain 3:                0.042 seconds (Total)
 Chain 3: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
 Chain 4: 
-Chain 4: Gradient evaluation took 5e-06 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.05 seconds.
+Chain 4: Gradient evaluation took 6e-06 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.06 seconds.
 Chain 4: Adjust your expectations accordingly!
 Chain 4: 
 Chain 4: 
@@ -821,15 +846,15 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 0.019 seconds (Warm-up)
-Chain 4:                0.018 seconds (Sampling)
-Chain 4:                0.037 seconds (Total)
+Chain 4:  Elapsed Time: 0.021 seconds (Warm-up)
+Chain 4:                0.02 seconds (Sampling)
+Chain 4:                0.041 seconds (Total)
 Chain 4: </code></pre>
 </div>
 </div>
 <p>Now let’s look at the summary of the model. With <code>brms</code> we can just call the fit object.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-14_fbfecd7065f450de9f8cb0f45c66b9bd">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>fit3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>fit3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -840,12 +865,12 @@ Formula: bike_thefts ~ temperature
 
 Population-Level Effects: 
             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept      10.33      0.63     9.11    11.57 1.00     4148     2543
-temperature     0.50      0.03     0.44     0.57 1.00     4127     2953
+Intercept      10.33      0.63     9.10    11.54 1.00     4001     2844
+temperature     0.50      0.03     0.44     0.57 1.00     3990     3078
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     3.01      0.22     2.61     3.48 1.00     3628     3102
+sigma     3.00      0.22     2.61     3.47 1.00     4001     2937
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -854,31 +879,31 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <p>How well are we estimating? Remember that we simuated the data, so we know the true parameter values. These were <code>intercept = 10</code>, <code>slope = 0.5</code> and <code>noise_sd = 3</code>. The model finds these values back very accurately. Great! We could check the model fit and computation. For instance, get some chain plots. And did you know that you could change the color scheme’s using <code>color_scheme_set()</code>. You can even set it such that the colors are adjusted to account for the common form of colorblindness and rely less on red-green contrast. These scheme’s are called “viridis” and there are more options. Let’s see some options we could use.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-15_2ec8084692bad6aafd6b0c7f3f9a9740">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">color_scheme_view</span>(<span class="at">scheme =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"red"</span>, <span class="st">"green"</span>, </span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>                                        <span class="st">"viridis"</span>, <span class="st">"viridisA"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">color_scheme_view</span>(<span class="at">scheme =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"red"</span>, <span class="st">"green"</span>, </span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>                                        <span class="st">"viridis"</span>, <span class="st">"viridisA"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>After that quick sidestep, let’s plot related to our posteriors.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-16_9af28bb348143666fdb42e1b9d257543">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">color_scheme_set</span>(<span class="st">"viridis"</span>)</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"trace"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">color_scheme_set</span>(<span class="st">"viridis"</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"trace"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>No divergences to plot.</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"dens"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"dens"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"intervals"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"intervals"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-16-3.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"acf"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"acf"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-16-4.png" class="img-fluid" width="672"></p>
 </div>
@@ -886,14 +911,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>Convergence seems well, the densities are nice and smooth and there is little autocorrelation. But we already had some indications for this. Did you notice that in the output for the fit object we already got information on <code>Rhat</code> and the effective sample size for each parameter? These already gave indications that everything was going well.</p>
 <p>Now let’s look at the posterior predictive checks. We can use the <code>pp_check</code> function again. This time however, we do posterior predictive checks. We already used are data, so it might be nice to also compare what the model look like compared to our observed data. For that, we use <code>prefix = ppc</code>.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-17_867d7e41e7f32e8f2c77eb0940544dc7">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit3, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit3, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>If we see this, we can see that the datasets that are predicted by the model are very similar to our observed dataset. That’s a good sign. Now let’s investigate this a bit closer still.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-18_f29f4047fc88ac8959ae077a9d1c14f3">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit3, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit3, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'stat_2d' by default.</code></pre>
 </div>
@@ -903,28 +928,28 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <p>Our observed data also is similar to the predicted data if you look at the mean and sd of those generated datasets using the posterior draws. This is great, but it’s compared to the data we also used to fit the model with. How would we perform against new data? How about we simulate a bit more new data and see. We use a different seed and sample 50 new cases. We use the same data generating mechanism of course.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/sim-data2_d43a9ede0455d927af0c6ac3c89306f4">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">95</span>)</span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate simulated data</span></span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>n_new <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>temperature_new <span class="ot">&lt;-</span> <span class="fu">runif</span>(n_new, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">30</span>) <span class="co"># Random temperatures between 0 and 30</span></span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>intercept <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>slope <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
-<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>noise_sd <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a><span class="co"># round to whole numbers</span></span>
-<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>bike_thefts_new <span class="ot">&lt;-</span> (intercept <span class="sc">+</span> slope <span class="sc">*</span> temperature_new <span class="sc">+</span> <span class="fu">rnorm</span>(n_new, <span class="at">sd =</span> noise_sd)) <span class="sc">%&gt;%</span></span>
-<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(., <span class="dv">0</span>)</span>
-<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>data_new <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">temperature =</span> temperature_new, <span class="at">bike_thefts =</span> bike_thefts_new)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">95</span>)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate simulated data</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>n_new <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>temperature_new <span class="ot">&lt;-</span> <span class="fu">runif</span>(n_new, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">30</span>) <span class="co"># Random temperatures between 0 and 30</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>intercept <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>slope <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>noise_sd <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="co"># round to whole numbers</span></span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>bike_thefts_new <span class="ot">&lt;-</span> (intercept <span class="sc">+</span> slope <span class="sc">*</span> temperature_new <span class="sc">+</span> <span class="fu">rnorm</span>(n_new, <span class="at">sd =</span> noise_sd)) <span class="sc">%&gt;%</span></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(., <span class="dv">0</span>)</span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a>data_new <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">temperature =</span> temperature_new, <span class="at">bike_thefts =</span> bike_thefts_new)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We don’t run the model again, we make use of the fit model we had.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-19_2fcfb4deb48666c8bdd84ed0fefa891e">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit3, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>,</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">newdata =</span> data_new)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit3, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>,</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">newdata =</span> data_new)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit3, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>,</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">newdata =</span> data_new)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit3, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">type =</span> <span class="st">"stat_2d"</span>,</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">newdata =</span> data_new)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'stat_2d' by default.</code></pre>
 </div>
@@ -938,8 +963,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <h2 class="anchored" data-anchor-id="did-we-learn">Did we learn?</h2>
 <p>Now did we learn more about the parameters? Our model did well to predict our existing data and new data. But did we decrease our uncertainty about the parameters in this model? We can provide some nice insights into this. We also sampled from the priors so we can easily visualize this.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-20_99a31ff15b9af2c6e4c0b6b82d8951f8">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"dens"</span>, <span class="at">variable =</span> <span class="fu">c</span>(<span class="st">"prior_Intercept"</span>, <span class="st">"b_Intercept"</span>)) <span class="sc">+</span> </span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">40</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"dens"</span>, <span class="at">variable =</span> <span class="fu">c</span>(<span class="st">"prior_Intercept"</span>, <span class="st">"b_Intercept"</span>)) <span class="sc">+</span> </span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">40</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Scale for x is already present.
 Adding another scale for x, which will replace the existing scale.</code></pre>
@@ -947,8 +972,8 @@ Adding another scale for x, which will replace the existing scale.</code></pre>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"dens"</span>, <span class="at">variable =</span> <span class="fu">c</span>(<span class="st">"prior_b"</span>, <span class="st">"b_temperature"</span>)) <span class="sc">+</span> </span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">6</span>, <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"dens"</span>, <span class="at">variable =</span> <span class="fu">c</span>(<span class="st">"prior_b"</span>, <span class="st">"b_temperature"</span>)) <span class="sc">+</span> </span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">6</span>, <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Scale for x is already present.
 Adding another scale for x, which will replace the existing scale.</code></pre>
@@ -956,8 +981,8 @@ Adding another scale for x, which will replace the existing scale.</code></pre>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"dens"</span>, <span class="at">variable =</span> <span class="fu">c</span>(<span class="st">"prior_sigma"</span>, <span class="st">"sigma"</span>)) <span class="sc">+</span> </span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit3, <span class="at">type =</span> <span class="st">"dens"</span>, <span class="at">variable =</span> <span class="fu">c</span>(<span class="st">"prior_sigma"</span>, <span class="st">"sigma"</span>)) <span class="sc">+</span> </span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Scale for x is already present.
 Adding another scale for x, which will replace the existing scale.</code></pre>
@@ -971,8 +996,8 @@ Adding another scale for x, which will replace the existing scale.</code></pre>
 s = 1 - \frac{\sigma^2_\text{posterior}}{\sigma^2_\text{prior}}.
 \]</span> To calculate this we can use the following code.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-21_3baec109bd0b9e2fbaa169e202f406e9">
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># to get the parameter estimates. Note that Est.Error is sd not variance. </span></span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_summary</span>(fit3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># to get the parameter estimates. Note that Est.Error is sd not variance. </span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_summary</span>(fit3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                     Estimate   Est.Error         Q2.5        Q97.5
 b_Intercept       10.32895039  0.63071345    9.0974081   11.5410679
@@ -984,13 +1009,13 @@ prior_sigma       11.13692146 13.47537195    0.3279672   42.2762933
 lprior            -7.29879435  0.02314467   -7.3481454   -7.2566895
 lp__            -257.31765536  1.25905926 -260.6388871 -255.8920972</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># intercept shrinkage:</span></span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> ((<span class="fu">posterior_summary</span>(fit3)[<span class="dv">1</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (<span class="fu">posterior_summary</span>(fit3)[<span class="dv">4</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># intercept shrinkage:</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> ((<span class="fu">posterior_summary</span>(fit3)[<span class="dv">1</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (<span class="fu">posterior_summary</span>(fit3)[<span class="dv">4</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.9919617</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># regression coefficient temperature shrinkage: </span></span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> ((<span class="fu">posterior_summary</span>(fit3)[<span class="dv">2</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (<span class="fu">posterior_summary</span>(fit3)[<span class="dv">5</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># regression coefficient temperature shrinkage: </span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> ((<span class="fu">posterior_summary</span>(fit3)[<span class="dv">2</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (<span class="fu">posterior_summary</span>(fit3)[<span class="dv">5</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.9997008</code></pre>
 </div>
@@ -999,89 +1024,89 @@ lp__            -257.31765536  1.25905926 -260.6388871 -255.8920972</code></pre>
 </section>
 <section id="sec-case-study" class="level2">
 <h2 class="anchored" data-anchor-id="sec-case-study">Case Study: Applying Prior and Posterior Predictive Checks on Real-World Data</h2>
-<p>In this case study we will see how posterior predictive checks can help to decide if a model is useful. We will analyze part of a dataset that investigates infants’ speech discrimination performance[2^]. In short, can infants make a distinction between sounds originating from the (parents’) native language compared to sounds not from that language. For each infant there are 12 sequential trials for which the log of the fixation time is recorded. There are 2 different trial types (coded 0 for non-native and 1 for the native language contrast). We look at 12 infants.</p>
+<p>In this case study we will see how posterior predictive checks can help to decide if a model is useful. We will analyze part of a dataset that investigates infants’ speech discrimination performance<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. In short, can infants make a distinction between sounds originating from the (parents’) native language compared to sounds not from that language. For each infant there are 12 sequential trials for which the log of the fixation time is recorded. There are 2 different trial types (coded 0 for non-native and 1 for the native language contrast). We look at 12 infants.</p>
 <p>First, to get the data load in the <code>time_data.csv</code> file.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-22_4bc88b90ddb56598f888fd5b4ba8fcc1">
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"time_data.csv"</span>)</span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>trialtype <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>trialtype)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"time_data.csv"</span>)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>trialtype <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>trialtype)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Or simple run the following code.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-23_fe0e38b9df2aac2b4c46b78a1b62efb9">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">list</span>(<span class="at">X =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">144</span>, <span class="at">id =</span> <span class="fu">c</span>(1L, 1L, 1L, 1L, 1L, 1L, 1L, </span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, </span>
-<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>2L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 4L, 4L, 4L, </span>
-<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>4L, 4L, 4L, 4L, 4L, 4L, 4L, 4L, 4L, 5L, 5L, 5L, 5L, 5L, 5L, 5L, </span>
-<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>5L, 5L, 5L, 5L, 5L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, </span>
-<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>6L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 8L, 8L, 8L, </span>
-<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>8L, 8L, 8L, 8L, 8L, 8L, 8L, 8L, 8L, 9L, 9L, 9L, 9L, 9L, 9L, 9L, </span>
-<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>9L, 9L, 9L, 9L, 9L, 10L, 10L, 10L, 10L, 10L, 10L, 10L, 10L, 10L, </span>
-<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>10L, 10L, 10L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, </span>
-<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>11L, 11L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, </span>
-<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>12L), <span class="at">trialnr =</span> <span class="fu">c</span>(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, </span>
-<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, </span>
-<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, </span>
-<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, </span>
-<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, </span>
-<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, </span>
-<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, </span>
-<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a>6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, </span>
-<span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, </span>
-<span id="cb73-20"><a href="#cb73-20" aria-hidden="true" tabindex="-1"></a>12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L), <span class="at">trialtype =</span> <span class="fu">c</span>(1L, </span>
-<span id="cb73-21"><a href="#cb73-21" aria-hidden="true" tabindex="-1"></a>0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, </span>
-<span id="cb73-22"><a href="#cb73-22" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, </span>
-<span id="cb73-23"><a href="#cb73-23" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 0L, 1L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, </span>
-<span id="cb73-24"><a href="#cb73-24" aria-hidden="true" tabindex="-1"></a>0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, </span>
-<span id="cb73-25"><a href="#cb73-25" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, </span>
-<span id="cb73-26"><a href="#cb73-26" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 0L, 1L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 0L, </span>
-<span id="cb73-27"><a href="#cb73-27" aria-hidden="true" tabindex="-1"></a>1L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 0L, 1L, 1L, 1L, 0L, </span>
-<span id="cb73-28"><a href="#cb73-28" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, </span>
-<span id="cb73-29"><a href="#cb73-29" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L), </span>
-<span id="cb73-30"><a href="#cb73-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">loglt =</span> <span class="fu">c</span>(<span class="fl">3.44839710345777</span>, <span class="fl">3.53237213356788</span>, <span class="fl">3.61573968861916</span>, </span>
-<span id="cb73-31"><a href="#cb73-31" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.44138088491651</span>, <span class="fl">3.5081255360832</span>, <span class="fl">4.15812115033749</span>, <span class="fl">3.65176244738011</span>, </span>
-<span id="cb73-32"><a href="#cb73-32" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.2520759437998</span>, <span class="fl">4.03277987919124</span>, <span class="fl">4.20782279900151</span>, <span class="fl">3.57818060962778</span>, </span>
-<span id="cb73-33"><a href="#cb73-33" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.11417714024445</span>, <span class="fl">3.52853106063541</span>, <span class="fl">3.58489634413745</span>, <span class="fl">3.39252108993193</span>, </span>
-<span id="cb73-34"><a href="#cb73-34" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.58478337899651</span>, <span class="fl">3.41077723337721</span>, <span class="fl">3.878751520173</span>, <span class="fl">3.73134697554595</span>, </span>
-<span id="cb73-35"><a href="#cb73-35" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.56655533088305</span>, <span class="fl">3.71466499286254</span>, <span class="fl">3.61341894503457</span>, <span class="fl">3.73703353133388</span>, </span>
-<span id="cb73-36"><a href="#cb73-36" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.67951874369579</span>, <span class="fl">4.09933527768596</span>, <span class="fl">3.78333176288742</span>, <span class="fl">4.00004342727686</span>, </span>
-<span id="cb73-37"><a href="#cb73-37" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.92556990954338</span>, <span class="fl">3.64483232882564</span>, <span class="fl">3.38756777941719</span>, <span class="fl">3.68565218411552</span>, </span>
-<span id="cb73-38"><a href="#cb73-38" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.51851393987789</span>, <span class="fl">4.17577265960154</span>, <span class="fl">3.90260113066653</span>, <span class="fl">3.89597473235906</span>, </span>
-<span id="cb73-39"><a href="#cb73-39" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.06220580881971</span>, <span class="fl">4.10744740952361</span>, <span class="fl">4.24306286480481</span>, <span class="fl">4.17163870853082</span>, </span>
-<span id="cb73-40"><a href="#cb73-40" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.816042340922</span>, <span class="fl">4.24659704910637</span>, <span class="fl">3.69469292633148</span>, <span class="fl">4.22980978295254</span>, </span>
-<span id="cb73-41"><a href="#cb73-41" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.48023697181947</span>, <span class="fl">3.83853427051187</span>, <span class="fl">3.56631962152481</span>, <span class="fl">3.7521253072979</span>, </span>
-<span id="cb73-42"><a href="#cb73-42" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.08159931273294</span>, <span class="fl">4.1814433955419</span>, <span class="fl">3.46119828862249</span>, <span class="fl">3.80861603542699</span>, </span>
-<span id="cb73-43"><a href="#cb73-43" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.78247262416629</span>, <span class="fl">3.71264970162721</span>, <span class="fl">3.62065647981962</span>, <span class="fl">3.66426580014768</span>, </span>
-<span id="cb73-44"><a href="#cb73-44" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.64345267648619</span>, <span class="fl">3.34222522936079</span>, <span class="fl">3.28645646974698</span>, <span class="fl">3.29600666931367</span>, </span>
-<span id="cb73-45"><a href="#cb73-45" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.87174801899187</span>, <span class="fl">3.53794495929149</span>, <span class="fl">3.72558497227069</span>, <span class="fl">3.81298016603948</span>, </span>
-<span id="cb73-46"><a href="#cb73-46" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.1026394836913</span>, <span class="fl">4.01127432890473</span>, <span class="fl">4.15962734065867</span>, <span class="fl">4.17851652373358</span>, </span>
-<span id="cb73-47"><a href="#cb73-47" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.34629428204135</span>, <span class="fl">4.02966780267532</span>, <span class="fl">4.01770097122412</span>, <span class="fl">4.23709111227397</span>, </span>
-<span id="cb73-48"><a href="#cb73-48" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.03977092693158</span>, <span class="fl">3.67200544502295</span>, <span class="fl">3.77312792403333</span>, <span class="fl">3.76767522402796</span>, </span>
-<span id="cb73-49"><a href="#cb73-49" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.80726435527611</span>, <span class="fl">3.75966784468963</span>, <span class="fl">3.97206391600802</span>, <span class="fl">4.27323283404305</span>, </span>
-<span id="cb73-50"><a href="#cb73-50" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.9843022319799</span>, <span class="fl">3.94235534970768</span>, <span class="fl">3.73134697554595</span>, <span class="fl">3.81070286094712</span>, </span>
-<span id="cb73-51"><a href="#cb73-51" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.68502478510571</span>, <span class="fl">4.05556944006099</span>, <span class="fl">4.15878451772342</span>, <span class="fl">3.58103894877217</span>, </span>
-<span id="cb73-52"><a href="#cb73-52" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.98815747255675</span>, <span class="fl">3.88326385958497</span>, <span class="fl">3.85229696582693</span>, <span class="fl">3.61225390609644</span>, </span>
-<span id="cb73-53"><a href="#cb73-53" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.32325210017169</span>, <span class="fl">3.3809344633307</span>, <span class="fl">3.62479757896076</span>, <span class="fl">3.45224657452044</span>, </span>
-<span id="cb73-54"><a href="#cb73-54" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.38792346697344</span>, <span class="fl">3.91301868374796</span>, <span class="fl">4.02657411815033</span>, <span class="fl">3.74826557266874</span>, </span>
-<span id="cb73-55"><a href="#cb73-55" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.08145532782257</span>, <span class="fl">3.76110053895814</span>, <span class="fl">3.24674470972384</span>, <span class="fl">3.80807586809131</span>, </span>
-<span id="cb73-56"><a href="#cb73-56" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.59604700754544</span>, <span class="fl">3.63718942214876</span>, <span class="fl">3.82885315967664</span>, <span class="fl">3.6728364541714</span>, </span>
-<span id="cb73-57"><a href="#cb73-57" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.8318697742805</span>, <span class="fl">3.62900161928699</span>, <span class="fl">3.72566666031418</span>, <span class="fl">3.95104594813582</span>, </span>
-<span id="cb73-58"><a href="#cb73-58" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.79504537042112</span>, <span class="fl">4.21769446020538</span>, <span class="fl">3.85925841746731</span>, <span class="fl">3.68975269613916</span>, </span>
-<span id="cb73-59"><a href="#cb73-59" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.14044518834787</span>, <span class="fl">3.63508143601087</span>, <span class="fl">3.50542132758328</span>, <span class="fl">3.5856862784525</span>, </span>
-<span id="cb73-60"><a href="#cb73-60" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.03116599966066</span>, <span class="fl">3.57645653240562</span>, <span class="fl">4.11843007712209</span>, <span class="fl">3.93343666782628</span>, </span>
-<span id="cb73-61"><a href="#cb73-61" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.08282126093933</span>, <span class="fl">4.57753775449384</span>, <span class="fl">3.76745271809777</span>, <span class="fl">3.52166101511207</span>, </span>
-<span id="cb73-62"><a href="#cb73-62" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.93464992290071</span>, <span class="fl">4.08055433898877</span>, <span class="fl">4.34228447422575</span>, <span class="fl">4.02251085043403</span>, </span>
-<span id="cb73-63"><a href="#cb73-63" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.45086469237977</span>, <span class="fl">4.60527271532368</span>, <span class="fl">4.16307188200382</span>, <span class="fl">3.96950909859657</span>, </span>
-<span id="cb73-64"><a href="#cb73-64" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.89702195606036</span>, <span class="fl">4.0774042463981</span>, <span class="fl">4.28291652679515</span>, <span class="fl">4.36674038984291</span>, </span>
-<span id="cb73-65"><a href="#cb73-65" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.35274191502075</span>, <span class="fl">4.0321350468799</span>, <span class="fl">4.04528385139514</span>, <span class="fl">4.19035971626532</span>, </span>
-<span id="cb73-66"><a href="#cb73-66" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.09624938318961</span>)), <span class="at">class =</span> <span class="st">"data.frame"</span>, <span class="at">row.names =</span> <span class="fu">c</span>(<span class="cn">NA</span>, </span>
-<span id="cb73-67"><a href="#cb73-67" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span>144L))</span>
-<span id="cb73-68"><a href="#cb73-68" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>trialtype <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>trialtype)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">list</span>(<span class="at">X =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">144</span>, <span class="at">id =</span> <span class="fu">c</span>(1L, 1L, 1L, 1L, 1L, 1L, 1L, </span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, </span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>2L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 3L, 4L, 4L, 4L, </span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>4L, 4L, 4L, 4L, 4L, 4L, 4L, 4L, 4L, 5L, 5L, 5L, 5L, 5L, 5L, 5L, </span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>5L, 5L, 5L, 5L, 5L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, 6L, </span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>6L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 7L, 8L, 8L, 8L, </span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>8L, 8L, 8L, 8L, 8L, 8L, 8L, 8L, 8L, 9L, 9L, 9L, 9L, 9L, 9L, 9L, </span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>9L, 9L, 9L, 9L, 9L, 10L, 10L, 10L, 10L, 10L, 10L, 10L, 10L, 10L, </span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a>10L, 10L, 10L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, 11L, </span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a>11L, 11L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, </span>
+<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a>12L), <span class="at">trialnr =</span> <span class="fu">c</span>(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, </span>
+<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a>12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, </span>
+<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a>3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, </span>
+<span id="cb77-14"><a href="#cb77-14" aria-hidden="true" tabindex="-1"></a>6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, </span>
+<span id="cb77-15"><a href="#cb77-15" aria-hidden="true" tabindex="-1"></a>9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, </span>
+<span id="cb77-16"><a href="#cb77-16" aria-hidden="true" tabindex="-1"></a>12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, </span>
+<span id="cb77-17"><a href="#cb77-17" aria-hidden="true" tabindex="-1"></a>3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, </span>
+<span id="cb77-18"><a href="#cb77-18" aria-hidden="true" tabindex="-1"></a>6L, 7L, 8L, 9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, </span>
+<span id="cb77-19"><a href="#cb77-19" aria-hidden="true" tabindex="-1"></a>9L, 10L, 11L, 12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, </span>
+<span id="cb77-20"><a href="#cb77-20" aria-hidden="true" tabindex="-1"></a>12L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L), <span class="at">trialtype =</span> <span class="fu">c</span>(1L, </span>
+<span id="cb77-21"><a href="#cb77-21" aria-hidden="true" tabindex="-1"></a>0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, </span>
+<span id="cb77-22"><a href="#cb77-22" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, </span>
+<span id="cb77-23"><a href="#cb77-23" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 0L, 1L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, </span>
+<span id="cb77-24"><a href="#cb77-24" aria-hidden="true" tabindex="-1"></a>0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, </span>
+<span id="cb77-25"><a href="#cb77-25" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, </span>
+<span id="cb77-26"><a href="#cb77-26" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 0L, 1L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 0L, </span>
+<span id="cb77-27"><a href="#cb77-27" aria-hidden="true" tabindex="-1"></a>1L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 0L, 1L, 1L, 1L, 0L, </span>
+<span id="cb77-28"><a href="#cb77-28" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, </span>
+<span id="cb77-29"><a href="#cb77-29" aria-hidden="true" tabindex="-1"></a>1L, 1L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L), </span>
+<span id="cb77-30"><a href="#cb77-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">loglt =</span> <span class="fu">c</span>(<span class="fl">3.44839710345777</span>, <span class="fl">3.53237213356788</span>, <span class="fl">3.61573968861916</span>, </span>
+<span id="cb77-31"><a href="#cb77-31" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.44138088491651</span>, <span class="fl">3.5081255360832</span>, <span class="fl">4.15812115033749</span>, <span class="fl">3.65176244738011</span>, </span>
+<span id="cb77-32"><a href="#cb77-32" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.2520759437998</span>, <span class="fl">4.03277987919124</span>, <span class="fl">4.20782279900151</span>, <span class="fl">3.57818060962778</span>, </span>
+<span id="cb77-33"><a href="#cb77-33" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.11417714024445</span>, <span class="fl">3.52853106063541</span>, <span class="fl">3.58489634413745</span>, <span class="fl">3.39252108993193</span>, </span>
+<span id="cb77-34"><a href="#cb77-34" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.58478337899651</span>, <span class="fl">3.41077723337721</span>, <span class="fl">3.878751520173</span>, <span class="fl">3.73134697554595</span>, </span>
+<span id="cb77-35"><a href="#cb77-35" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.56655533088305</span>, <span class="fl">3.71466499286254</span>, <span class="fl">3.61341894503457</span>, <span class="fl">3.73703353133388</span>, </span>
+<span id="cb77-36"><a href="#cb77-36" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.67951874369579</span>, <span class="fl">4.09933527768596</span>, <span class="fl">3.78333176288742</span>, <span class="fl">4.00004342727686</span>, </span>
+<span id="cb77-37"><a href="#cb77-37" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.92556990954338</span>, <span class="fl">3.64483232882564</span>, <span class="fl">3.38756777941719</span>, <span class="fl">3.68565218411552</span>, </span>
+<span id="cb77-38"><a href="#cb77-38" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.51851393987789</span>, <span class="fl">4.17577265960154</span>, <span class="fl">3.90260113066653</span>, <span class="fl">3.89597473235906</span>, </span>
+<span id="cb77-39"><a href="#cb77-39" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.06220580881971</span>, <span class="fl">4.10744740952361</span>, <span class="fl">4.24306286480481</span>, <span class="fl">4.17163870853082</span>, </span>
+<span id="cb77-40"><a href="#cb77-40" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.816042340922</span>, <span class="fl">4.24659704910637</span>, <span class="fl">3.69469292633148</span>, <span class="fl">4.22980978295254</span>, </span>
+<span id="cb77-41"><a href="#cb77-41" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.48023697181947</span>, <span class="fl">3.83853427051187</span>, <span class="fl">3.56631962152481</span>, <span class="fl">3.7521253072979</span>, </span>
+<span id="cb77-42"><a href="#cb77-42" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.08159931273294</span>, <span class="fl">4.1814433955419</span>, <span class="fl">3.46119828862249</span>, <span class="fl">3.80861603542699</span>, </span>
+<span id="cb77-43"><a href="#cb77-43" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.78247262416629</span>, <span class="fl">3.71264970162721</span>, <span class="fl">3.62065647981962</span>, <span class="fl">3.66426580014768</span>, </span>
+<span id="cb77-44"><a href="#cb77-44" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.64345267648619</span>, <span class="fl">3.34222522936079</span>, <span class="fl">3.28645646974698</span>, <span class="fl">3.29600666931367</span>, </span>
+<span id="cb77-45"><a href="#cb77-45" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.87174801899187</span>, <span class="fl">3.53794495929149</span>, <span class="fl">3.72558497227069</span>, <span class="fl">3.81298016603948</span>, </span>
+<span id="cb77-46"><a href="#cb77-46" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.1026394836913</span>, <span class="fl">4.01127432890473</span>, <span class="fl">4.15962734065867</span>, <span class="fl">4.17851652373358</span>, </span>
+<span id="cb77-47"><a href="#cb77-47" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.34629428204135</span>, <span class="fl">4.02966780267532</span>, <span class="fl">4.01770097122412</span>, <span class="fl">4.23709111227397</span>, </span>
+<span id="cb77-48"><a href="#cb77-48" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.03977092693158</span>, <span class="fl">3.67200544502295</span>, <span class="fl">3.77312792403333</span>, <span class="fl">3.76767522402796</span>, </span>
+<span id="cb77-49"><a href="#cb77-49" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.80726435527611</span>, <span class="fl">3.75966784468963</span>, <span class="fl">3.97206391600802</span>, <span class="fl">4.27323283404305</span>, </span>
+<span id="cb77-50"><a href="#cb77-50" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.9843022319799</span>, <span class="fl">3.94235534970768</span>, <span class="fl">3.73134697554595</span>, <span class="fl">3.81070286094712</span>, </span>
+<span id="cb77-51"><a href="#cb77-51" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.68502478510571</span>, <span class="fl">4.05556944006099</span>, <span class="fl">4.15878451772342</span>, <span class="fl">3.58103894877217</span>, </span>
+<span id="cb77-52"><a href="#cb77-52" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.98815747255675</span>, <span class="fl">3.88326385958497</span>, <span class="fl">3.85229696582693</span>, <span class="fl">3.61225390609644</span>, </span>
+<span id="cb77-53"><a href="#cb77-53" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.32325210017169</span>, <span class="fl">3.3809344633307</span>, <span class="fl">3.62479757896076</span>, <span class="fl">3.45224657452044</span>, </span>
+<span id="cb77-54"><a href="#cb77-54" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.38792346697344</span>, <span class="fl">3.91301868374796</span>, <span class="fl">4.02657411815033</span>, <span class="fl">3.74826557266874</span>, </span>
+<span id="cb77-55"><a href="#cb77-55" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.08145532782257</span>, <span class="fl">3.76110053895814</span>, <span class="fl">3.24674470972384</span>, <span class="fl">3.80807586809131</span>, </span>
+<span id="cb77-56"><a href="#cb77-56" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.59604700754544</span>, <span class="fl">3.63718942214876</span>, <span class="fl">3.82885315967664</span>, <span class="fl">3.6728364541714</span>, </span>
+<span id="cb77-57"><a href="#cb77-57" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.8318697742805</span>, <span class="fl">3.62900161928699</span>, <span class="fl">3.72566666031418</span>, <span class="fl">3.95104594813582</span>, </span>
+<span id="cb77-58"><a href="#cb77-58" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.79504537042112</span>, <span class="fl">4.21769446020538</span>, <span class="fl">3.85925841746731</span>, <span class="fl">3.68975269613916</span>, </span>
+<span id="cb77-59"><a href="#cb77-59" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.14044518834787</span>, <span class="fl">3.63508143601087</span>, <span class="fl">3.50542132758328</span>, <span class="fl">3.5856862784525</span>, </span>
+<span id="cb77-60"><a href="#cb77-60" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.03116599966066</span>, <span class="fl">3.57645653240562</span>, <span class="fl">4.11843007712209</span>, <span class="fl">3.93343666782628</span>, </span>
+<span id="cb77-61"><a href="#cb77-61" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.08282126093933</span>, <span class="fl">4.57753775449384</span>, <span class="fl">3.76745271809777</span>, <span class="fl">3.52166101511207</span>, </span>
+<span id="cb77-62"><a href="#cb77-62" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.93464992290071</span>, <span class="fl">4.08055433898877</span>, <span class="fl">4.34228447422575</span>, <span class="fl">4.02251085043403</span>, </span>
+<span id="cb77-63"><a href="#cb77-63" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.45086469237977</span>, <span class="fl">4.60527271532368</span>, <span class="fl">4.16307188200382</span>, <span class="fl">3.96950909859657</span>, </span>
+<span id="cb77-64"><a href="#cb77-64" aria-hidden="true" tabindex="-1"></a>    <span class="fl">3.89702195606036</span>, <span class="fl">4.0774042463981</span>, <span class="fl">4.28291652679515</span>, <span class="fl">4.36674038984291</span>, </span>
+<span id="cb77-65"><a href="#cb77-65" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.35274191502075</span>, <span class="fl">4.0321350468799</span>, <span class="fl">4.04528385139514</span>, <span class="fl">4.19035971626532</span>, </span>
+<span id="cb77-66"><a href="#cb77-66" aria-hidden="true" tabindex="-1"></a>    <span class="fl">4.09624938318961</span>)), <span class="at">class =</span> <span class="st">"data.frame"</span>, <span class="at">row.names =</span> <span class="fu">c</span>(<span class="cn">NA</span>, </span>
+<span id="cb77-67"><a href="#cb77-67" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span>144L))</span>
+<span id="cb77-68"><a href="#cb77-68" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>trialtype <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>trialtype)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s take a quick look at the data.</p>
 <div>
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> trialtype, <span class="at">y =</span> loglt, <span class="at">col =</span> trialtype), <span class="at">data =</span> data) <span class="sc">+</span> </span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>         <span class="fu">geom_point</span>()</span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> trialtype, <span class="at">y =</span> loglt, <span class="at">col =</span> trialtype), <span class="at">data =</span> data) <span class="sc">+</span> </span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">geom_violin</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> trialtype, <span class="at">y =</span> loglt, <span class="at">col =</span> trialtype), <span class="at">data =</span> data) <span class="sc">+</span> </span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>         <span class="fu">geom_point</span>()</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> trialtype, <span class="at">y =</span> loglt, <span class="at">col =</span> trialtype), <span class="at">data =</span> data) <span class="sc">+</span> </span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">geom_violin</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-24_a956c8905d496fd36f8160aaf85aa5bd">
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -1095,18 +1120,21 @@ lp__            -257.31765536  1.25905926 -260.6388871 -255.8920972</code></pre>
 </div>
 <p>Looking at the violin plot and boxplot, there might be a slight difference between the two trial types. There might also not be. We could also look at this on an individual level.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-25_e6d14fce18aaadac279838b27ecb67a4">
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> trialtype, <span class="at">y =</span> loglt, <span class="at">col =</span> trialtype), <span class="at">data =</span> data) <span class="sc">+</span> </span>
-<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_violin</span>() <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(id))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> trialtype, <span class="at">y =</span> loglt, <span class="at">col =</span> trialtype), <span class="at">data =</span> data) <span class="sc">+</span> </span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_violin</span>() <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(id))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Now we are going to rely on the default priors in brms and look how we can use posterior predictive checks to help us change our model. The first model we are going to try and explain the log looking time by using trial number (time) and trial type. We also include an autoregressive effect over time as infants might experience fatigue during the experiment and this might build up over time.</p>
-<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/ar-model-case-study_e145141a7e2f8a81106596bdb2366aa2">
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>fit_ar <span class="ot">&lt;-</span>  <span class="fu">brm</span>(<span class="at">data =</span> data,</span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>               loglt <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> trialnr <span class="sc">+</span> trialtype <span class="sc">+</span> </span>
-<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">ar</span>(<span class="at">time =</span> trialnr, <span class="at">gr =</span> id, <span class="at">cov =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">sample_prior =</span> <span class="st">"yes"</span>, <span class="at">seed =</span> <span class="dv">383</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell output" data-hash="prior_posterior_predictive_practical_cache/html/ar-model-case-study_bee857e94328f5382fb164980decd9e3">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>fit_ar <span class="ot">&lt;-</span>  <span class="fu">brm</span>(<span class="at">data =</span> data,</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>               loglt <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> trialnr <span class="sc">+</span> trialtype <span class="sc">+</span> </span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">ar</span>(<span class="at">time =</span> trialnr, <span class="at">gr =</span> id, <span class="at">cov =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">sample_prior =</span> <span class="st">"yes"</span>, <span class="at">seed =</span> <span class="dv">383</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Compiling Stan program...</code></pre>
 </div>
@@ -1117,8 +1145,8 @@ lp__            -257.31765536  1.25905926 -260.6388871 -255.8920972</code></pre>
 <pre><code>
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 0.000143 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.43 seconds.
+Chain 1: Gradient evaluation took 0.000144 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 1.44 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -1135,15 +1163,15 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.489 seconds (Warm-up)
-Chain 1:                0.439 seconds (Sampling)
-Chain 1:                0.928 seconds (Total)
+Chain 1:  Elapsed Time: 0.389 seconds (Warm-up)
+Chain 1:                0.349 seconds (Sampling)
+Chain 1:                0.738 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 7.5e-05 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.75 seconds.
+Chain 2: Gradient evaluation took 6.7e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.67 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -1160,15 +1188,15 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.522 seconds (Warm-up)
-Chain 2:                0.401 seconds (Sampling)
-Chain 2:                0.923 seconds (Total)
+Chain 2:  Elapsed Time: 0.413 seconds (Warm-up)
+Chain 2:                0.31 seconds (Sampling)
+Chain 2:                0.723 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
 Chain 3: 
-Chain 3: Gradient evaluation took 0.000116 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 1.16 seconds.
+Chain 3: Gradient evaluation took 6.7e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.67 seconds.
 Chain 3: Adjust your expectations accordingly!
 Chain 3: 
 Chain 3: 
@@ -1185,15 +1213,15 @@ Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 0.505 seconds (Warm-up)
-Chain 3:                0.44 seconds (Sampling)
-Chain 3:                0.945 seconds (Total)
+Chain 3:  Elapsed Time: 0.391 seconds (Warm-up)
+Chain 3:                0.343 seconds (Sampling)
+Chain 3:                0.734 seconds (Total)
 Chain 3: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
 Chain 4: 
-Chain 4: Gradient evaluation took 7.6e-05 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.76 seconds.
+Chain 4: Gradient evaluation took 8.2e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.82 seconds.
 Chain 4: Adjust your expectations accordingly!
 Chain 4: 
 Chain 4: 
@@ -1210,15 +1238,15 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 0.567 seconds (Warm-up)
-Chain 4:                0.401 seconds (Sampling)
-Chain 4:                0.968 seconds (Total)
+Chain 4:  Elapsed Time: 0.412 seconds (Warm-up)
+Chain 4:                0.323 seconds (Sampling)
+Chain 4:                0.735 seconds (Total)
 Chain 4: </code></pre>
 </div>
 </div>
 <p>Now let’s look at the results.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-26_069b4e24fb08f1d4e487adccf70bf909">
-<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>fit_ar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>fit_ar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1241,15 +1269,15 @@ Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit_ar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit_ar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Fitting seems to have gone well. Nicely mixed chain plots, smooth densities, nice Rhat and Effective sample size. Let’s look at the posterior predictives.</p>
 <div>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ar, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ar, <span class="at">type =</span> <span class="st">"stat_2d"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ar, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ar, <span class="at">type =</span> <span class="st">"stat_2d"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'stat_2d' by default.</code></pre>
 </div>
@@ -1266,8 +1294,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <p>If we look at the posterior predictive plots that we used before, all seems quite well. But, we are looking at a very aggregated level. Perhaps we should zoom in a little bit. We use the <code>intervals_grouped</code> type of plot so we can look for each individual on each timepoint how the predictions look.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-28_74b529b787482e1cfc434a8a15103021">
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ar, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">type =</span> <span class="st">"intervals_grouped"</span>, <span class="at">group =</span> <span class="st">"id"</span>,</span>
-<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">prob =</span> <span class="fl">0.5</span>, <span class="at">prob_outer =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="fl">2.5</span>, <span class="dv">5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ar, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">type =</span> <span class="st">"intervals_grouped"</span>, <span class="at">group =</span> <span class="st">"id"</span>,</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">prob =</span> <span class="fl">0.5</span>, <span class="at">prob_outer =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="fl">2.5</span>, <span class="dv">5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'intervals_grouped' by default.</code></pre>
 </div>
@@ -1277,10 +1305,13 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <p>This is great, we see for each individual each time point the predictions. And what turns out? Our model is doing a terrible job. We are basically predicting the same thing for each timepoint of each individual with very very tiny shifts based on the trial type. We just predict with enough uncertainty and capture most measurements. Not a useful model at all actually.</p>
 <p>So what can we change? We didn’t include any multilevel structure, whilst the data follows a multilevel structure, namely trials within individuals. Let’s try a different model. Let us make random effect for the intercept, the trial number and the trial type. This model is a bit different, we are for instance modelling the trial numbers as random effect but are not including an autoregressive effect. But, we are taking the hierarchical structure of the data more into account. Let’s try.</p>
-<div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-29_866a43f04f2d83461c70bc7ef1941697">
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>fit_ml <span class="ot">&lt;-</span>  <span class="fu">brm</span>(<span class="at">data =</span> data,</span>
-<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>            loglt <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> trialnr <span class="sc">+</span> trialtype <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> trialnr <span class="sc">+</span> trialtype <span class="sc">|</span> id),</span>
-<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">sample_prior =</span> <span class="st">"yes"</span>, <span class="at">seed =</span> <span class="dv">12351</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell output" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-29_65ebfe5432303cb438ddb62bccbbddfd">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>fit_ml <span class="ot">&lt;-</span>  <span class="fu">brm</span>(<span class="at">data =</span> data,</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>            loglt <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> trialnr <span class="sc">+</span> trialtype <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> trialnr <span class="sc">+</span> trialtype <span class="sc">|</span> id),</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">sample_prior =</span> <span class="st">"yes"</span>, <span class="at">seed =</span> <span class="dv">12351</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Compiling Stan program...</code></pre>
 </div>
@@ -1291,8 +1322,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <pre><code>
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 6.9e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.69 seconds.
+Chain 1: Gradient evaluation took 7.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.77 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -1309,15 +1340,15 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 1.74 seconds (Warm-up)
-Chain 1:                0.72 seconds (Sampling)
-Chain 1:                2.46 seconds (Total)
+Chain 1:  Elapsed Time: 1.742 seconds (Warm-up)
+Chain 1:                0.811 seconds (Sampling)
+Chain 1:                2.553 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 3e-05 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.3 seconds.
+Chain 2: Gradient evaluation took 3.5e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.35 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -1334,15 +1365,15 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 1.742 seconds (Warm-up)
-Chain 2:                0.878 seconds (Sampling)
-Chain 2:                2.62 seconds (Total)
+Chain 2:  Elapsed Time: 2.158 seconds (Warm-up)
+Chain 2:                1.053 seconds (Sampling)
+Chain 2:                3.211 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
 Chain 3: 
-Chain 3: Gradient evaluation took 3.4e-05 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.34 seconds.
+Chain 3: Gradient evaluation took 3.7e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.37 seconds.
 Chain 3: Adjust your expectations accordingly!
 Chain 3: 
 Chain 3: 
@@ -1359,15 +1390,15 @@ Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 1.706 seconds (Warm-up)
-Chain 3:                0.713 seconds (Sampling)
-Chain 3:                2.419 seconds (Total)
+Chain 3:  Elapsed Time: 2.136 seconds (Warm-up)
+Chain 3:                0.88 seconds (Sampling)
+Chain 3:                3.016 seconds (Total)
 Chain 3: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
 Chain 4: 
-Chain 4: Gradient evaluation took 2.9e-05 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.29 seconds.
+Chain 4: Gradient evaluation took 3.7e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.37 seconds.
 Chain 4: Adjust your expectations accordingly!
 Chain 4: 
 Chain 4: 
@@ -1384,15 +1415,15 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 1.937 seconds (Warm-up)
-Chain 4:                1.045 seconds (Sampling)
-Chain 4:                2.982 seconds (Total)
+Chain 4:  Elapsed Time: 2.369 seconds (Warm-up)
+Chain 4:                1.259 seconds (Sampling)
+Chain 4:                3.628 seconds (Total)
 Chain 4: </code></pre>
 </div>
 </div>
 <p>Let’s go through the same first checks.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-30_66dc4310602edb5833c95abe520146c3">
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>fit_ml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>fit_ml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1432,15 +1463,15 @@ Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit_ml, <span class="at">variable =</span> <span class="fu">c</span>(<span class="st">"b_Intercept"</span>, <span class="st">"b_trialnr"</span>, <span class="st">"b_trialtype1"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit_ml, <span class="at">variable =</span> <span class="fu">c</span>(<span class="st">"b_Intercept"</span>, <span class="st">"b_trialnr"</span>, <span class="st">"b_trialtype1"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="prior_posterior_predictive_practical_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>First signs look okay. Nicely mixed chain plots, smooth densities, nice Rhat and Effective sample size. Let’s look at the posterior predictives.</p>
 <div>
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ml, <span class="at">type =</span> <span class="st">"dens_overlay_grouped"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>, <span class="at">group =</span> <span class="st">"trialtype"</span>)</span>
-<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ml, <span class="at">type =</span> <span class="st">"stat_2d"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ml, <span class="at">type =</span> <span class="st">"dens_overlay_grouped"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>, <span class="at">group =</span> <span class="st">"trialtype"</span>)</span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ml, <span class="at">type =</span> <span class="st">"stat_2d"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'stat_2d' by default.</code></pre>
 </div>
@@ -1457,8 +1488,8 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <p>Okay, if we split out per trial type our model doesn’t fully capture all bumps but it’s not to bad. The general mean and sd are captured well. Now let’s check out where we encountered problems last time.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-32_5e4447a2eba414f32625947e70f74e76">
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ml, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">type =</span> <span class="st">"intervals_grouped"</span>, <span class="at">group =</span> <span class="st">"id"</span>,</span>
-<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">prob =</span> <span class="fl">0.5</span>, <span class="at">prob_outer =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="fl">2.5</span>, <span class="dv">5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_ml, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">type =</span> <span class="st">"intervals_grouped"</span>, <span class="at">group =</span> <span class="st">"id"</span>,</span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">prob =</span> <span class="fl">0.5</span>, <span class="at">prob_outer =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="fl">2.5</span>, <span class="dv">5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Using all posterior draws for ppc type 'intervals_grouped' by default.</code></pre>
 </div>
@@ -1468,7 +1499,6 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <p>We are now at least making differentiation between trial numbers, individuals and trends within individuals. See for instance the contrast between infant number 1 and infant number 8. If you’d look closely these predictions are also more specific compared to the earlier predictions, the uncertainty intervals are less wide. We still seem to capture most data points. Therefore, we can conclude that we made an improvement in the model. A next step could be to include autoregressive effects for example and see if the model further improves.</p>
 <p>We hope this example illustrates that we need to think at what level we want to check our model. Perhaps on an overall level we are doing fine, but if we are interested in data at a individual level or even at a trial level, we need to look how we are doing there. Posterior predictive checks can help to identify what is going on (e.g.&nbsp;we do not differentiate between individuals). We can adjust and hopefully improve our models based on that information.</p>
-<p>[2^]: de Klerk, M., Veen, D., Wijnen, F., &amp; de Bree, E. (2019). A step forward: Bayesian hierarchical modelling as a tool in assessment of individual discrimination performance. <em>Infant Behavior and Development</em>, 57, 101345.</p>
 <!-- ## Conclusion and Further Resources -->
 <!-- - Summary of what has been learned   -->
 <!-- - Potential issues and their solutions   -->
@@ -1477,7 +1507,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="original-computing-environment" class="level2">
 <h2 class="anchored" data-anchor-id="original-computing-environment">Original Computing Environment</h2>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-33_298174998417011aa649e90890931715">
-<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>─ Session info ───────────────────────────────────────────────────────────────
  setting  value
@@ -1635,6 +1665,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <hr>
 <ol>
 <li id="fn1"><p>See for instance: Schulz, S., Zondervan-Zwijnenburg, M., Nelemans, S. A., Veen, D., Oldehinkel, A. J., Branje, S., &amp; Meeus, W. (2021). Systematically defined informative priors in Bayesian estimation: An empirical application on the transmission of internalizing symptoms through mother-adolescent interaction behavior. <em>Frontiers in Psychology</em>, 12, 620802. https://doi.org/10.3389/fpsyg.2021.620802<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>de Klerk, M., Veen, D., Wijnen, F., &amp; de Bree, E. (2019). A step forward: Bayesian hierarchical modelling as a tool in assessment of individual discrimination performance. <em>Infant Behavior and Development</em>, 57, 101345.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </aside>
 
