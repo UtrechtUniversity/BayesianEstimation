@@ -175,7 +175,7 @@ prior_summary(fit_default)
 
 mcmc_areas(fit_ridge,
            pars = c("sigma"),
-           prob_outer = 1, prob = 0.95)
+           prob_outer = 1, prob = 0.95) + xlim(1, 4.5)
 prior_summary(fit_default)
 
 # The posterior densities are not the same, but the priors are. 
