@@ -159,7 +159,7 @@ Note that we didn't specify any type. If we don't specify the type `dens_overlay
 pp_check(fit, type = "dens_overlay", prefix = "ppd", ndraws = 100)
 ```
 
-We see that our priors indicate that distributions of possible data of stolen bikes include negative numbers. That would not be something realistic. We could adjust our model to not allow negative values. This could be done by adjusting the priors so that these values do not occur. We could also restrict values to be positive by means of truncation. The formula would change into `bike_thefts | resp_trunc(lb = 0) ~ temperature`. Unfortunately, truncated distributions are harder to work with and interpret, [sometimes leading to computational issues](https://discourse.mc-stan.org/t/nas-produced-in-posterior-predict-for-truncated-model/26986). So for now, we will not truncate our model, but look a bit further to see if this is a true problem. In any case, we want our models to cover the range of values that are plausible, and many predicted distributions are falling between 0 and 50 bikes stolen, which given our small village example is plausible. However, the predicted distributions seem narrow, perhaps we can look at summary statistics of the predicted distribtuions to get more information. 
+We see that our priors indicate that distributions of possible data of stolen bikes include negative numbers. That would not be something realistic. We could adjust our model to not allow negative values. This could be done by adjusting the priors so that these values do not occur. We could also restrict values to be positive by means of truncation. The formula would change into `bike_thefts | resp_trunc(lb = 0) ~ temperature`. Unfortunately, truncated distributions are harder to work with and interpret, [sometimes leading to computational issues](https://discourse.mc-stan.org/t/nas-produced-in-posterior-predict-for-truncated-model/26986). So for now, we will not truncate our model, but look a bit further to see if this is a true problem. In any case, we want our models to cover the range of values that are plausible, and many predicted distributions are falling between 0 and 50 bikes stolen, which given our small village example is plausible. However, the predicted distributions seem narrow, perhaps we can look at summary statistics of the predicted distributions to get more information. 
 
 We can see summary statistics for the predicted distributions by using `type = stat`. For instance, what about the means or standard deviations of these distributions. 
 
@@ -173,7 +173,7 @@ Or maybe what combinations of the two.
 pp_check(fit, prefix = "ppd", type = "stat_2d")
 ```
 
-We see that most models produce positive means with small standard deviations. Perhaps we think these values are plausible, especially since they produce a broad range of possibilities. Perhaps we think we need to adjust our model a bit. Let's say that we would like to imply a bit more bike thefts on average and more uncertainty. We could adjust our priors to incorporate this. We also specify a broader prior on the residuals. To see which prior was used originally by default we can check this.
+We see that most models produce positive means with small standard deviations. Perhaps we think these values are plausible, especially since they produce a broad range of possibilities. Perhaps we think we need to adjust our model a bit. Let's say that we would like to imply a bit more bike thefts on average and more uncertainty. We could adjust our priors to incorporate this. We also specify a broader prior on the residuals. To see which prior was used originally by default we can extract the prior from the fitobject:
 
 ```{r}
 fit$prior
@@ -219,7 +219,7 @@ pp_check(fit2, prefix = "ppd", type = "stat_2d") +
   ggtitle("New priors")  + xlim(-20, 40) + ylim(0, 150)
 ```
 
-We indeed see much more spread in the predicted summary statistics, indicating more uncertainty beforehand. The new priors indicate a bit higher expected means and more variance in the predicted datasets. This is what we wanted and now we are happy with our priors and we can fit our model with our "observed" (simulated) data. 
+We indeed see much more spread in the predicted summary statistics, indicating more uncertainty beforehand. The new priors indicate a bit higher expected means and more variance in the predicted data sets. This is what we wanted and now we are happy with our priors and we can fit our model with our "observed" (simulated) data. 
 
 ## Posterior Predictive Checking
 
@@ -241,14 +241,14 @@ Now let's look at the summary of the model. With `brms` we can just call the fit
 fit3
 ```
 
-How well are we estimating? Remember that we simuated the data, so we know the true parameter values. These were `intercept = 10`, `slope = 0.5` and `noise_sd = 3`. The model finds these values back very accurately. Great! We could check the model fit and computation. For instance, get some chain plots. And did you know that you could change the color scheme's using `color_scheme_set()`. You can even set it such that the colors are adjusted to account for the common form of colorblindness and rely less on red-green contrast. These scheme's are called "viridis" and there are more options. Let's see some options we could use. 
+How well are we estimating? Remember that we simulated the data, so we know the true parameter values. These were `intercept = 10`, `slope = 0.5` and `noise_sd = 3`. The model finds these values back very accurately. Great! We could check the model fit and computation. For instance, get some chain plots. And did you know that you could change the color schemes using `color_scheme_set()`? You can even set it such that the colors are adjusted to account for the common form of colorblindness and rely less on red-green contrast. These schemes are called "viridis" and there are more options. Let's see some options we could use. 
 
 ```{r}
 bayesplot::color_scheme_view(scheme = c("blue", "red", "green", 
                                         "viridis", "viridisA"))
 ```
 
-After that quick sidestep, let's plot related to our posteriors.
+After that quick sidestep, let's plot our posteriors.
 
 ```{r}
 color_scheme_set("viridis")
@@ -258,16 +258,16 @@ mcmc_plot(fit3, type = "intervals")
 mcmc_plot(fit3, type = "acf")
 ```
 
-Convergence seems well, the densities are nice and smooth and there is little autocorrelation. But we already had some indications for this. Did you notice that in the output for the fit object we already got information on `Rhat` and the effective sample size for each parameter? These already gave indications that everything was going well. 
+Convergence seems well, the densities are nice and smooth and there is little autocorrelation. But we already had some indications for this. Did you notice that in the output for the fit object we already got information on `Rhat` and the effective sample size for each parameter? These indicated that everything was going well. 
 
-Now let's look at the posterior predictive checks. We can use the `pp_check` function again. This time however, we do posterior predictive checks. We already used are data, so it might be nice to also compare what the model look like compared to our observed data. For that, we use `prefix = ppc`.
+Now let's look at the posterior predictive checks. We can use the `pp_check` function again. This time however, we do posterior predictive checks. We already used our data, so it might be nice to also compare what the model looks like compared to our observed data. For that, we use `prefix = ppc`.
 
 
 ```{r}
 pp_check(fit3, type = "dens_overlay", prefix = "ppc", ndraws = 100)
 ```
 
-If we see this, we can see that the datasets that are predicted by the model are very similar to our observed dataset. That's a good sign. Now let's investigate this a bit closer still. 
+We can see that the data sets that are predicted by the model are very similar to our observed data set. That's a good sign. Let's do some additional investigations.
 
 ```{r}
 pp_check(fit3, prefix = "ppc", type = "stat_2d")
