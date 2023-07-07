@@ -236,7 +236,7 @@ draws <- rbind.data.frame(draws_t[, sel],
                           draws_hs[, sel])
 
 ggplot(draws, aes(b_Height, colour=prior)) +
-  geom_density() 
+  geom_density() + xlim(-5, 5)
 ```
 
 This way, we can compare different parametric forms and see, for example, that with these settings the lasso and horseshoe priors generally look quite similarly whereas Student's t prior has much lighter tails. 
