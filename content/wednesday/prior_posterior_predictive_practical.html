@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Duco Veen &amp; Sara van Erp">
+<meta name="author" content="Duco Veen">
 
 <title>Prior and Posterior Predictive Checking in Bayesian Estimation</title>
 <style>
@@ -87,7 +87,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#prior-predictive-checking" id="toc-prior-predictive-checking" class="nav-link" data-scroll-target="#prior-predictive-checking">Prior Predictive Checking</a></li>
   <li><a href="#posterior-predictive-checking" id="toc-posterior-predictive-checking" class="nav-link" data-scroll-target="#posterior-predictive-checking">Posterior Predictive Checking</a></li>
   <li><a href="#did-we-learn" id="toc-did-we-learn" class="nav-link" data-scroll-target="#did-we-learn">Did we learn?</a></li>
-  <li><a href="#sec-case-study" id="toc-sec-case-study" class="nav-link" data-scroll-target="#sec-case-study">Case Study: Applying Prior and Posterior Predictive Checks on Real-World Data</a></li>
+  <li><a href="#sec-case-study" id="toc-sec-case-study" class="nav-link" data-scroll-target="#sec-case-study">Case Study: Applying Posterior Predictive Checks on infants’ speech discrimination data</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   <li><a href="#original-computing-environment" id="toc-original-computing-environment" class="nav-link" data-scroll-target="#original-computing-environment">Original Computing Environment</a></li>
   </ul>
 </nav>
@@ -106,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Duco Veen &amp; Sara van Erp </p>
+             <p>Duco Veen </p>
           </div>
   </div>
     
@@ -1023,7 +1024,7 @@ lp__            -257.31765536  1.25905926 -260.6388871 -255.8920972</code></pre>
 <p>For both parameters we greatly reduced the uncertainty that we had. Awesome.</p>
 </section>
 <section id="sec-case-study" class="level2">
-<h2 class="anchored" data-anchor-id="sec-case-study">Case Study: Applying Prior and Posterior Predictive Checks on Real-World Data</h2>
+<h2 class="anchored" data-anchor-id="sec-case-study">Case Study: Applying Posterior Predictive Checks on infants’ speech discrimination data</h2>
 <p>In this case study we will see how posterior predictive checks can help to decide if a model is useful. We will analyze part of a dataset that investigates infants’ speech discrimination performance<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. In short, can infants make a distinction between sounds originating from the (parents’) native language compared to sounds not from that language. For each infant there are 12 sequential trials for which the log of the fixation time is recorded. There are 2 different trial types (coded 0 for non-native and 1 for the native language contrast). We look at 12 infants.</p>
 <p>First, to get the data load in the <code>time_data.csv</code> file.</p>
 <div class="cell" data-hash="prior_posterior_predictive_practical_cache/html/unnamed-chunk-22_4bc88b90ddb56598f888fd5b4ba8fcc1">
@@ -1499,10 +1500,10 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <p>We are now at least making differentiation between trial numbers, individuals and trends within individuals. See for instance the contrast between infant number 1 and infant number 8. If you’d look closely these predictions are also more specific compared to the earlier predictions, the uncertainty intervals are less wide. We still seem to capture most data points. Therefore, we can conclude that we made an improvement in the model. A next step could be to include autoregressive effects for example and see if the model further improves.</p>
 <p>We hope this example illustrates that we need to think at what level we want to check our model. Perhaps on an overall level we are doing fine, but if we are interested in data at a individual level or even at a trial level, we need to look how we are doing there. Posterior predictive checks can help to identify what is going on (e.g.&nbsp;we do not differentiate between individuals). We can adjust and hopefully improve our models based on that information.</p>
-<!-- ## Conclusion and Further Resources -->
-<!-- - Summary of what has been learned   -->
-<!-- - Potential issues and their solutions   -->
-<!-- - Pointers to further resources for learning -->
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>In this comprehensive tutorial, we’ve navigated through the realm of predictive checking in Bayesian estimation using the <code>brms</code> package. We started by understanding the importance and roles of prior and posterior predictive checking in a Bayesian workflow. Using a simulated case of Dutch bike thefts, we grasped how prior predictive checking enables us to assess our model and its priors before applying them to real data. We also demonstrated how to adjust our model based on these checks. In the case of posterior predictive checking, we saw how it allows us to evaluate how well the model fits the observed data and how it performs against new data. In our case study, we applied posterior predictive checks on infants’ speech discrimination data. Through this process, we were able to evaluate the validity of our model and improve it by incorporating a multilevel structure. As this tutorial comes to a close, we hope that the concepts, techniques, and code examples shared equip you to confidently apply predictive checking in your Bayesian analyses.</p>
 </section>
 <section id="original-computing-environment" class="level2">
 <h2 class="anchored" data-anchor-id="original-computing-environment">Original Computing Environment</h2>

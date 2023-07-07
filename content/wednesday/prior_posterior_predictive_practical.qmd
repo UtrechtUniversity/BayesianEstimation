@@ -3,7 +3,7 @@ title: "Prior and Posterior Predictive Checking in Bayesian Estimation"
 format: 
   html:
     toc: true
-author: Duco Veen & Sara van Erp
+author: Duco Veen 
 
 execute: 
   echo: true
@@ -336,7 +336,7 @@ For both parameters we greatly reduced the uncertainty that we had. Awesome.
 [^1]: See for instance: Schulz, S., Zondervan-Zwijnenburg, M., Nelemans, S. A., Veen, D., Oldehinkel, A. J., Branje, S., & Meeus, W. (2021). Systematically defined informative priors in Bayesian estimation: An empirical application on the transmission of internalizing symptoms through mother-adolescent interaction behavior. *Frontiers in Psychology*, 12, 620802. https://doi.org/10.3389/fpsyg.2021.620802
 
 
-## Case Study: Applying Prior and Posterior Predictive Checks on Real-World Data {#sec-case-study}
+## Case Study: Applying Posterior Predictive Checks on infants' speech discrimination data {#sec-case-study}
 
 In this case study we will see how posterior predictive checks can help to decide if a model is useful. We will analyze part of a dataset that investigates infants' speech discrimination performance[^2]. In short, can infants make a distinction between sounds originating from the (parents') native language compared to sounds not from that language. For each infant there are 12 sequential trials for which the log of the fixation time is recorded. There are 2 different trial types (coded 0 for non-native and 1 for the native language contrast). We look at 12 infants. 
 
@@ -519,11 +519,11 @@ We hope this example illustrates that we need to think at what level we want to 
 
 
 
-<!-- ## Conclusion and Further Resources -->
+## Conclusion 
 
-<!-- - Summary of what has been learned   -->
-<!-- - Potential issues and their solutions   -->
-<!-- - Pointers to further resources for learning -->
+In this comprehensive tutorial, we've navigated through the realm of predictive checking in Bayesian estimation using the `brms` package. We started by understanding the importance and roles of prior and posterior predictive checking in a Bayesian workflow. Using a simulated case of Dutch bike thefts, we grasped how prior predictive checking enables us to assess our model and its priors before applying them to real data. We also demonstrated how to adjust our model based on these checks. In the case of posterior predictive checking, we saw how it allows us to evaluate how well the model fits the observed data and how it performs against new data. In our case study, we applied posterior predictive checks on infants' speech discrimination data. Through this process, we were able to evaluate the validity of our model and improve it by incorporating a multilevel structure. As this tutorial comes to a close, we hope that the concepts, techniques, and code examples shared equip you to confidently apply predictive checking in your Bayesian analyses.
+
+
 
 
 ## Original Computing Environment

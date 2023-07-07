@@ -242,7 +242,7 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 - <a href="content/wednesday/prior_posterior_predictive_practical.html" target="_blank">Practical day 3</a>
 
-
+- [data file time_data](content/wednesday/time_data.csv)
 
 ## Column 2
 
