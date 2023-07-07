@@ -153,7 +153,7 @@ We have now applied a very influential shrinkage prior, resulting in a large amo
 #| eval: false
 mcmc_areas(fit_default,
            pars = c("b_Diameter", "b_Whole_weight", "b_Shell_weight"),
-           prob_outer = 1, prob = 0.95)
+           prob_outer = 1, prob = 0.95) + xlim(-50, 75)
 
 mcmc_areas(fit_ridge,
            pars = c("b_Diameter", "b_Whole_weight", "b_Shell_weight"),
