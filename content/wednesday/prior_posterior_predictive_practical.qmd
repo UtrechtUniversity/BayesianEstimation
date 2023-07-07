@@ -273,7 +273,7 @@ We can see that the data sets that are predicted by the model are very similar t
 pp_check(fit3, prefix = "ppc", type = "stat_2d")
 ```
 
-Our observed data also is similar to the predicted data if you look at the mean and sd of those generated datasets using the posterior draws. This is great, but it's compared to the data we also used to fit the model with. How would we perform against new data? How about we simulate a bit more new data and see. We use a different seed and sample 50 new cases. We use the same data generating mechanism of course. 
+Our observed data is also similar to the predicted data if you look at the mean and standard deviation of the generated data sets based on the posterior draws. This is great, but it's compared to the data we also used to fit the model with. How would we perform against new data? How about we simulate a bit more new data and see. We use a different seed and sample 50 new cases. We use the same data generating mechanism of course.^[In practice, unfortunately, it is not so easy to collect new data. A more realistic approach would therefore be to split our existing data in a training and test set and use the training set to fit the model and the test set to perform the posterior predictive checks on.] 
 
 
 ```{r sim-data2}
@@ -291,7 +291,7 @@ bike_thefts_new <- (intercept + slope * temperature_new + rnorm(n_new, sd = nois
 data_new <- tibble(temperature = temperature_new, bike_thefts = bike_thefts_new)
 ```
 
-We don't run the model again, we make use of the fit model we had. 
+We don't run the model again, we make use of the fited model we had. 
 
 ```{r}
 pp_check(fit3, type = "dens_overlay", prefix = "ppc", ndraws = 100,
