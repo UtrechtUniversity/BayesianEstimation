@@ -296,6 +296,10 @@ ggplot(draws_long, aes(value, colour=prior)) +
 # We see very similar results for the ridge and Student's t; these priors shrink coefficients heavily, with no escape for larger coefficients. The lasso and horseshoe also show similar results and less shrinkage for some parameters, as we would expect based on the prior plots.
 ```
 
+::: callout-note
+Note that we do get some warnings related to convergence. For the final results, it is important to assess convergence to ensure trustworthy results. In case of low effective sample sizes, you can rerun the analysis with more iterations. Note that the horseshoe prior can also result in divergent transitions, which are more difficult to resolve. When the horseshoe prior is one of the options in a prior sensitivity analysis, like here, this might not be as big an issue since we do not use these results for final interpretation but only for comparison.  
+:::
+
 ## Did we forget anything?
 So far, we have done a lot: we have investigated different shrinkage priors and compared their influence in predicting abalone age. We have seen that different types of shrinkage priors have different prior densities which result in different shrinkage behaviors and ultimately, different results. 
 However, as you considered the potential influence of the shrinkage priors you might already have wondered about the role that the scales of the variables play. This is actually a very important point in Bayesian analysis in general, and even more so in Bayesian regularization in particular. The scale of the variables will influence the plausible parameter space of the regression coefficients and this will influence the informativeness of the prior distribution. To illustrate this, consider one variable in our data set, the `Length` of the shells. In this data set, `Length` is measured in millimeter and if we use this variable in a simple linear regression to predict the abalone age, we get an estimated regression coefficient of 14.  
