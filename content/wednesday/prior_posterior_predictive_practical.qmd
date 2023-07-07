@@ -22,7 +22,7 @@ Through this tutorial, learners will gain a practical understanding of conductin
 **Learning Goals**
 
 1. Understand the concepts of prior and posterior predictive checking in Bayesian estimation.
-2. Learn how to do prior and posterior predictive checking, using the BRMS and Bayesplot packages.
+2. Learn how to do prior and posterior predictive checking, using the `brms` and `bayesplot` packages.
 
 ## A Beginner's Guide to Predictive Checking
 
@@ -55,7 +55,7 @@ If you are getting the error: *Error: .onLoad failed in loadNamespace() for 'dbp
 
 ## Prior Predictive Checking
 
-Let's imagine that the Dutch news reports an increase in bike thefts and we want to investigate the relation between bike thefts and the increase in temperature. Let's start by generating the simulated data. We simulate the number of bike thefts in a small village on a hundred random days. Please note, we are simplyfing the model, not taking any dependency between days into account and act as if seasonal changes in weather can happen overnight. 
+Let's imagine that the Dutch news reports an increase in bike thefts and we want to investigate the relation between bike thefts and the increase in temperature. Let's start by generating the simulated data. We simulate the number of bike thefts in a small village on a hundred random days. Please note, we are simplyfing the model, not taking any dependency between days into account and we act as if seasonal changes in weather can happen overnight. 
 
 ```{r sim-data1}
 #| echo: true
@@ -99,7 +99,7 @@ ggplot(data, aes(x = temperature, y = bike_thefts)) +
 
 <br>
 
-Now that we have our simulated data, let's define our model and priors in brms and fit the data. See if you can do if yourself before looking at the solutions. 
+Now that we have our simulated data, let's define our model and priors in `brms` and fit the data. Use a normal prior centered around 10 with a standard deviation of 5 for the intercept and a standard normal prior for the regression coefficients. See if you can do this yourself before looking at the solutions. 
 
 ::: 
 *Hint:* check out `?priors` and `?brm` to specify the priors and call the model. How do you get only samples from the prior? 
@@ -121,9 +121,9 @@ fit <- brm(bike_thefts ~ temperature, data = data,
            sample_prior = "only", seed = 555)
 ```
 
-Great, once we've fit our model, we can use the `pp_check` function in `brms` to look at the prior predictive checks. These are build upon work in the `bayesplot` package, you could use those functions directly, but it requires some more effort. 
+Great, once we've fit our model, we can use the `pp_check` function in `brms` to look at the prior predictive checks. These are build upon work in the `bayesplot` package, you could use those functions directly, but that requires more effort. 
 
-There are many types that can be utilized. In @tbl-ppcheckoptions you can find the type options. These call functions from the `bayesplot` package. You can look these up by using these in combination with two prefixes (also an argument in the `pp_check` function), `ppc` (posterior predictive check) or `ppd` (posterior predictive distribution), the latter being the same as the former except that the observed data is not shown. The use for instance `?bayesplot::ppc_bars` to get more information for the function from `bayesplot`.
+There are many types of checks that can be utilized. In @tbl-ppcheckoptions you can find all options. These call functions come from the `bayesplot` package. You can look these up by using these in combination with two prefixes (also an argument in the `pp_check` function), `ppc` (posterior predictive check) or `ppd` (posterior predictive distribution), the latter being the same as the former except that the observed data is not shown. For example, you can call `?bayesplot::ppc_bars` to get more information about this function from `bayesplot`.
 
 
 | **Types**                |                   |                   |                |
