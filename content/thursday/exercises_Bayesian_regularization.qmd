@@ -1,6 +1,6 @@
 ---
 title: "Exercises on Bayesian regularized regression"
-author: "Sara van Erp"
+author: "Sara van Erp & Duco Veen"
 format: html
 bibliography: references.bib 
 ---
