@@ -338,7 +338,7 @@ For both parameters we greatly reduced the uncertainty that we had. Awesome.
 
 ## Case Study: Applying Posterior Predictive Checks on infants' speech discrimination data {#sec-case-study}
 
-In this case study we will see how posterior predictive checks can help to decide if a model is useful. We will analyze part of a dataset that investigates infants' speech discrimination performance[^2]. In short, can infants make a distinction between sounds originating from the (parents') native language compared to sounds not from that language. For each infant there are 12 sequential trials for which the log of the fixation time is recorded. There are 2 different trial types (coded 0 for non-native and 1 for the native language contrast). We look at 12 infants. 
+In this case study we will see how posterior predictive checks can help to decide if a model is useful. We will analyze part of a data set that investigates infants' speech discrimination performance[^2]. In short, can infants make a distinction between sounds originating from the (parents') native language compared to sounds not from that language. For each infant there are 12 sequential trials for which the log of the fixation time is recorded. There are 2 different trial types (coded 0 for non-native and 1 for the native language contrast). We look at 12 infants. 
 
 [^2]: de Klerk, M., Veen, D., Wijnen, F., & de Bree, E. (2019). A step forward: Bayesian hierarchical modelling as a tool in assessment of individual discrimination performance. *Infant Behavior and Development*, 57, 101345.
 
@@ -441,7 +441,7 @@ ggplot(aes(x = trialtype, y = loglt, col = trialtype), data = data) +
     geom_violin() + facet_wrap(vars(id))
 ```
 
-Now we are going to rely on the default priors in brms and look how we can use posterior predictive checks to help us change our model. The first model we are going to try and explain the log looking time by using trial number (time) and trial type. We also include an autoregressive effect over time as infants might experience fatigue during the experiment and this might build up over time. 
+Now we are going to rely on the default priors in `brms` and look how we can use posterior predictive checks to help us change our model. In the first model we are going to try and explain the log looking time by using trial number (time) and trial type. We also include an autoregressive effect over time as infants might experience fatigue during the experiment and this might build up over time. 
 
 
 ```{r ar-model-case-study}
@@ -470,16 +470,16 @@ pp_check(fit_ar, ndraws = 100)
 pp_check(fit_ar, type = "stat_2d")
 ```
 
-If we look at the posterior predictive plots that we used before, all seems quite well. But, we are looking at a very aggregated level. Perhaps we should zoom in a little bit. We use the `intervals_grouped` type of plot so we can look for each individual on each timepoint how the predictions look. 
+If we look at the posterior predictive plots that we used before, all seems quite well. But, we are looking at a very aggregated level. Perhaps we should zoom in a little bit. We use the `intervals_grouped` type of plot so we can look for each individual on each time point how the predictions look. 
 
 ```{r}
 pp_check(fit_ar, prefix = "ppc", type = "intervals_grouped", group = "id",
          prob = 0.5, prob_outer = 0.95) + ylim(2.5, 5) 
 ```
 
-This is great, we see for each individual each time point the predictions. And what turns out? Our model is doing a terrible job. We are basically predicting the same thing for each timepoint of each individual with very very tiny shifts based on the trial type. We just predict with enough uncertainty and capture most measurements. Not a useful model at all actually. 
+This is great, we see the predictions for each individual at each time point. And what turns out? Our model is doing a terrible job! We are basically predicting the same thing for each time point of each individual with very very tiny shifts based on the trial type. We just predict with enough uncertainty and capture most measurements. Not a useful model at all actually. 
 
-So what can we change? We didn't include any multilevel structure, whilst the data follows a multilevel structure, namely trials within individuals. Let's try a different model. Let us make random effect for the intercept, the trial number and the trial type. This model is a bit different, we are for instance modelling the trial numbers as random effect but are not including an autoregressive effect. But, we are taking the hierarchical structure of the data more into account. Let's try. 
+So what can we change? We didn't include any multilevel structure, whilst the data follows a multilevel structure, namely trials within individuals. Let's try a different model. Let us include a random effect for the intercept, the trial number and the trial type. This model is a bit different, we are for instance modelling the trial numbers as random effect but are not including an autoregressive effect. But, we are taking the hierarchical structure of the data more into account. Let's try. 
 
 ```{r}
 #| echo: true
@@ -506,7 +506,7 @@ pp_check(fit_ml, type = "dens_overlay_grouped", ndraws = 100, group = "trialtype
 pp_check(fit_ml, type = "stat_2d")
 ```
 
-Okay, if we split out per trial type our model doesn't fully capture all bumps but it's not to bad. The general mean and sd are captured well. Now let's check out where we encountered problems last time. 
+Okay, if we split out per trial type our model doesn't fully capture all bumps but it's not to bad. The general mean and standard deviation are captured well. Now let's check where we encountered problems last time. 
 
 ```{r}
 pp_check(fit_ml, prefix = "ppc", type = "intervals_grouped", group = "id",
