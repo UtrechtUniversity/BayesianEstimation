@@ -48,7 +48,4 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 
-# Temporary ignore some content folders
-content/wednesday
 .DS_Store
-abalone.data

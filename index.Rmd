@@ -213,7 +213,7 @@ For the exercise, click <a href="content/tuesday/Piors_BRMS.html" target="_blank
 
 In this tutorial you will be following the steps of the WAMBS – checklist to analyze the cross level interaction model we did in the BRMS Tutorial. 
 
-For the exercise, click <a href="content/tuesday/Wambs_multilevel.html" target="_blank">here</a>.
+For the exercise, click <a href="content/tuesday/WAMBS_multilevel.html" target="_blank">here</a>.
 
 
 ## Column 2
@@ -242,7 +242,7 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 - <a href="content/wednesday/prior_posterior_predictive_practical.html" target="_blank">Practical day 3</a>
 
-
+- [data file time_data](content/wednesday/time_data.csv)
 
 ## Column 2
 
