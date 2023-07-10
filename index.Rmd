@@ -266,7 +266,7 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 - slides day 4
 
-- practical day 4
+- <a href="content/thursday/exercises_Bayesian_regularization.html" target="_blank">Practical day 4</a>
 
 ## Column 2
 

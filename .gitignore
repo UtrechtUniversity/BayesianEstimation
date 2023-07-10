@@ -47,4 +47,5 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
-content/wednesday/prior_posterior_predictive_practical.RData
+
+.DS_Store
