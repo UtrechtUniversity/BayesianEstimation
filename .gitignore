@@ -50,3 +50,5 @@ rsconnect/
 
 # Temporary ignore some content folders
 content/wednesday
+.DS_Store
+abalone.data
