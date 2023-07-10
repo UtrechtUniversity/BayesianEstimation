@@ -253,6 +253,8 @@ https://chi-feng.github.io/mcmc-demo/
 
 Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, Andrew Gelman, Visualization in Bayesian Workflow, Journal of the Royal Statistical Society Series A: Statistics in Society, Volume 182, Issue 2, February 2019, Pages 389–402, https://doi.org/10.1111/rssa.12378
 
+https://github.com/UtrechtUniversity/BayesianEstimation
+
 # Thursday
 
 ## Column 1
@@ -268,11 +270,15 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 - <a href="content/thursday/exercises_Bayesian_regularization.html" target="_blank">Practical day 4</a>
 
+- [abalone.data](content/thursday/abalone.data) This data is shared by Nash, Warwick, Sellers, Tracy, Talbot, Simon, Cawthorn, Andrew, and Ford, Wes. (1995). Abalone. UCI Machine Learning Repository. https://doi.org/10.24432/C55C7W. 
+
 ## Column 2
 
 ### Useful references
 
 van Erp, S. (2020). A tutorial on Bayesian penalized regression with shrinkage priors for small sample sizes. Small sample size solutions, 71-84. https://library.oapen.org/bitstream/handle/20.500.12657/22385/9780367221898_text%20(1).pdf?sequence=1#page=85
+
+https://github.com/UtrechtUniversity/BayesianEstimation
 
 # Friday
 
