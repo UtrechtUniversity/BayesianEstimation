@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.475">
+<meta name="generator" content="quarto-1.4.90">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -18,9 +18,10 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -47,48 +48,19 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+/* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
 }
-.hanging div.csl-entry {
+.hanging-indent div.csl-entry {
   margin-left:2em;
   text-indent:-2em;
 }
@@ -102,8 +74,7 @@ div.csl-right-inline {
 }
 div.csl-indent {
   margin-left: 2em;
-}
-</style>
+}</style>
 
 
 <script src="exercises_Bayesian_regularization_files/libs/clipboard/clipboard.min.js"></script>
@@ -117,6 +88,7 @@ div.csl-indent {
 <link href="exercises_Bayesian_regularization_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="exercises_Bayesian_regularization_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
@@ -157,13 +129,19 @@ div.csl-indent {
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(projpred)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">03072023</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'ggplot2' was built under R version 4.2.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(projpred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'projpred' was built under R version 4.2.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">03072023</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="data-abalone-shells" class="level2">
@@ -173,20 +151,20 @@ div.csl-indent {
 <p>The data <span class="citation" data-cites="abalone">(<a href="#ref-abalone" role="doc-biblioref">Nash and Ford 1995</a>)</span> can be downloaded <a href="https://archive.ics.uci.edu/dataset/1/abalone">here</a>. In addition to the number of rings, which we will try to predict, the data set includes one categorical variable (<em>Sex</em><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>) and seven continuous measurements. See the <a href="https://archive.ics.uci.edu/dataset/1/abalone">description</a> of the data set for more details on these variables.</p>
 <p>After you have downloaded the data and saved it in your working directory, load the data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"./abalone.data"</span>, <span class="at">sep =</span> <span class="st">","</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"./abalone.data"</span>, <span class="at">sep =</span> <span class="st">","</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 4177    9</code></pre>
 </div>
 </div>
 <p>As you can see, the data contains 4177 observations of nine variables. To keep the computation time feasible, we will work with a subset of 100 observations for our training data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>obs.train <span class="ot">&lt;-</span> <span class="fu">sample.int</span>(<span class="fu">nrow</span>(dat), <span class="at">size =</span> <span class="dv">100</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> dat[obs.train, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>obs.train <span class="ot">&lt;-</span> <span class="fu">sample.int</span>(<span class="fu">nrow</span>(dat), <span class="at">size =</span> <span class="dv">100</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> dat[obs.train, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Before doing any analyses, it is a good idea to get familiar with your data. Although there are many different aspects you can look at (and many different ways of doing so), some things to focus on are: missing data, potential errors in the data, outliers, scales of the variables, and distributions.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     V1    V2    V3    V4     V5     V6     V7     V8 V9
 411   M 0.590 0.500 0.165 1.1045 0.4565 0.2425 0.3400 15
@@ -196,7 +174,7 @@ div.csl-indent {
 1916  F 0.600 0.470 0.135 0.9700 0.4655 0.1955 0.2640 11
 2384  F 0.525 0.390 0.135 0.6005 0.2265 0.1310 0.2100 16</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      V1                  V2               V3               V4        
  Length:100         Min.   :0.1700   Min.   :0.1050   Min.   :0.0350  
@@ -223,25 +201,25 @@ div.csl-indent {
 </div>
 <p>Variable 1 is actually a factor, so let’s recode it and let’s change the variable names so that they are easier to interpret:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>V1 <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>V1)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(train) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sex"</span>, <span class="st">"Length"</span>, <span class="st">"Diameter"</span>, <span class="st">"Height"</span>,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Whole_weight"</span>, <span class="st">"Shucked_weight"</span>, <span class="st">"Viscera_weight"</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Shell_weight"</span>, <span class="st">"Rings"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>train<span class="sc">$</span>V1 <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(train<span class="sc">$</span>V1)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(train) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sex"</span>, <span class="st">"Length"</span>, <span class="st">"Diameter"</span>, <span class="st">"Height"</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Whole_weight"</span>, <span class="st">"Shucked_weight"</span>, <span class="st">"Viscera_weight"</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Shell_weight"</span>, <span class="st">"Rings"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now visualize the data in different ways. We can, for example, consider the marginal distributions of the variables:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(Sex)) <span class="sc">+</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(Sex)) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep</span>(is.numeric) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(value)) <span class="sc">+</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> key, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep</span>(is.numeric) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(value)) <span class="sc">+</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> key, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="672"></p>
 </div>
@@ -249,7 +227,7 @@ div.csl-indent {
 <p>We can also visualize the bivariate relationships between variables. The code below shows paired scatterplots on the lower diagonal, correlations on the upper diagonal and marginal distributions on the diagonal.</p>
 <p>Recreate this plot and try to separate the plots based on the categorical variable <em>Sex</em> (hint: you can add a colour variable via the <code>aes()</code> function as in a regular <code>ggplot</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -266,16 +244,16 @@ div.csl-indent {
 <div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-8_772c34f8f16cfa456f2ee2689c41a1bc">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fit_default <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fit_default <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We would like to select those variables that are most important in predicting abalone age. One way of doing this is by considering the 95% credible interval. This Bayesian equivalent of the classical confidence interval can be interpreted as being the interval in which the true value lies with 95% probability. If zero is included in this interval for a given predictor, we might therefore conclude that it is likely that the true effect is zero and exclude that predictor. Consider the 95% credible intervals: which predictors would you exclude and which predictors would be retained? Write this down for future reference.</p>
 <div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-9_142baf29483ae6346c759be123054ebd">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_default)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected predictors: SexM and Shell_weight</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_default)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected predictors: SexM and Shell_weight</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -283,103 +261,50 @@ div.csl-indent {
 <h2 class="anchored" data-anchor-id="predicting-the-age-of-abalone-with-regularization">Predicting the age of abalone with regularization</h2>
 <p>We will now run the analysis with regularization. We focus on the most simple shrinkage prior possible: a normal prior with a small variance<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
 <p>In <code>brms</code>, the normal prior is specified with a mean and standard deviation. So if we wish to specify a prior with a variance of <span class="math inline">\(\sigma^2 = 0.01\)</span>, we should take the square root of this value (<code>sqrt(0.01)</code>) to obtain the standard deviation <span class="math inline">\(\sigma\)</span>. We can add the prior by adding the argument <code>prior = prior(normal(0, 0.1)</code> to the <code>brm</code> call. Run the regularized analysis and use the 95% credible intervals to decide which variables are relevant in predicting the age of abalone. While you are waiting for the model to compile and sample, think about what results you would expect. Specifically, do you think we will select less or more variables compared to the previous, default analysis?</p>
-<div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-10_21e27375880db1623747fd8041447f2c">
+<div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-10_5016719f2c924385b90545bf1ab0a8b0">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fit_ridge <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.1</span>)),</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>fit_ridge <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.1</span>)),</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/Erp00018/Library/R/arm64/4.2/library/Rcpp/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/unsupported"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/BH/include" -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/src/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppParallel/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -DBOOST_NO_AUTO_PTR  -include '/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include   -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:88:
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:1: error: unknown type name 'namespace'
-namespace Eigen {
-^
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:16: error: expected ';' after top level declarator
-namespace Eigen {
-               ^
-               ;
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:96:10: fatal error: 'complex' file not found
-#include &lt;complex&gt;
-         ^~~~~~~~~
-3 errors generated.
-make: *** [foo.o] Error 1</code></pre>
 </div>
+<div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-11_5d419cebae8090242192637128e20fdf">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ridge)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code> Family: gaussian 
-  Links: mu = identity; sigma = identity 
-Formula: Rings ~ Sex + Length + Diameter + Height + Whole_weight + Shucked_weight + Viscera_weight + Shell_weight 
-   Data: train (Number of observations: 100) 
-  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
-         total post-warmup draws = 4000
-
-Population-Level Effects: 
-               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept         10.07      0.36     9.39    10.77 1.00     8320     2799
-SexI              -0.06      0.10    -0.25     0.13 1.00     7996     2956
-SexM               0.03      0.09    -0.15     0.22 1.00     7914     2862
-Length             0.02      0.10    -0.19     0.21 1.00     9955     2362
-Diameter           0.01      0.10    -0.17     0.21 1.00     9454     2722
-Height             0.01      0.10    -0.18     0.19 1.00     9042     3061
-Whole_weight       0.08      0.10    -0.12     0.27 1.00     8708     2864
-Shucked_weight     0.03      0.10    -0.17     0.23 1.00     8589     2573
-Viscera_weight     0.02      0.10    -0.18     0.22 1.00     8969     2595
-Shell_weight       0.03      0.10    -0.17     0.22 1.00    10019     3107
-
-Family Specific Parameters: 
-      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     3.35      0.24     2.92     3.88 1.00     8325     3028
-
-Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
-and Tail_ESS are effective sample size measures, and Rhat is the potential
-scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-</div>
-<details>
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># None of the variables are selected</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ridge)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># None of the variables are selected</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We have now applied a very influential shrinkage prior, resulting in a large amount of regularization. As a result, the posterior distributions are narrowly concentrated around zero. This can be seen in the summary, based on the small estimated regression coefficients and narrow credible intervals. However, an advantage of the Bayesian framework is that we can also plot the posterior distributions. With the code below we compare the posterior densities for three parameters with and without regularization. The <code>prob</code> argument is used to specify the shaded probability in the density. Do you see the influence of the normal shrinkage prior reflected in the plotted posterior densities?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_default,</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Diameter"</span>, <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shell_weight"</span>),</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge,</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Diameter"</span>, <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shell_weight"</span>),</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_default,</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Diameter"</span>, <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shell_weight"</span>),</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">75</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Diameter"</span>, <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shell_weight"</span>),</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">75</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Similar plots can be created for the other parameters in the model: regression coefficients can be named using <code>b_variable_name</code> and the residual error standard deviation is named <code>sigma</code>. Consider the posterior densities for <code>sigma</code> across both fitobjects; are they equal? Do you expect them to be equal based on the prior distributions?</p>
-<div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-12_4ec429eace5f25de5f940b9cff169c18">
+<div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-13_c50fdd78d43bb99edab03dc0c39c9724">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_default,</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"sigma"</span>),</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge,</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"sigma"</span>),</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>)</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default)</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co"># The posterior densities are not the same, but the priors are. </span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co"># The shrinkage prior influences the regression coefficients by </span></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="co"># pulling them to zero which in turn influences the residuals and </span></span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="co"># thus the residual standard deviation, which is larger for the </span></span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co"># shrinkage prior.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_default,</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"sigma"</span>),</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="dv">1</span>, <span class="fl">4.5</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"sigma"</span>),</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="dv">1</span>, <span class="fl">4.5</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co"># The posterior densities are not the same, but the priors are. </span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="co"># The shrinkage prior influences the regression coefficients by </span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="co"># pulling them to zero which in turn influences the residuals and </span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="co"># thus the residual standard deviation, which is larger for the </span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="co"># shrinkage prior.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -394,59 +319,18 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </ul>
 <p>Before using these priors, let’s visualize them to understand their behavior a bit better. First, we need draws from the prior distributions. To obtain these, we run <code>brms</code> using the argument <code>sample_prior = "only"</code>. This will result in a fitobject containing only draws from the prior distribution. Use the code below to sample from the three shrinkage priors.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>prior_t <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"student_t(3, 0, 0.1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>),</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/Erp00018/Library/R/arm64/4.2/library/Rcpp/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/unsupported"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/BH/include" -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/src/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppParallel/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -DBOOST_NO_AUTO_PTR  -include '/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include   -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:88:
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:1: error: unknown type name 'namespace'
-namespace Eigen {
-^
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:16: error: expected ';' after top level declarator
-namespace Eigen {
-               ^
-               ;
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:96:10: fatal error: 'complex' file not found
-#include &lt;complex&gt;
-         ^~~~~~~~~
-3 errors generated.
-make: *** [foo.o] Error 1</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>prior_lasso <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">lasso</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale =</span> <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/Erp00018/Library/R/arm64/4.2/library/Rcpp/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/unsupported"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/BH/include" -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/src/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppParallel/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -DBOOST_NO_AUTO_PTR  -include '/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include   -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:88:
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:1: error: unknown type name 'namespace'
-namespace Eigen {
-^
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:16: error: expected ';' after top level declarator
-namespace Eigen {
-               ^
-               ;
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:96:10: fatal error: 'complex' file not found
-#include &lt;complex&gt;
-         ^~~~~~~~~
-3 errors generated.
-make: *** [foo.o] Error 1</code></pre>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>prior_t <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"student_t(3, 0, 0.1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>) </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>prior_lasso <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">lasso</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale =</span> <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 388 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+https://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: There were 4 chains where the estimated Bayesian Fraction of Missing Information was low. See
@@ -456,7 +340,7 @@ https://mc-stan.org/misc/warnings.html#bfmi-low</code></pre>
 <pre><code>Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: The largest R-hat is 1.07, indicating chains have not mixed.
+<pre><code>Warning: The largest R-hat is 1.08, indicating chains have not mixed.
 Running the chains for more iterations may help. See
 https://mc-stan.org/misc/warnings.html#r-hat</code></pre>
 </div>
@@ -470,52 +354,29 @@ https://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
 Running the chains for more iterations may help. See
 https://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>prior_hs <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">horseshoe</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale_global =</span> <span class="dv">1</span>,</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_global =</span> <span class="dv">1</span>, <span class="at">scale_slab =</span> <span class="dv">2</span>,</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_slab =</span> <span class="dv">4</span>, <span class="at">par_ratio =</span> <span class="cn">NULL</span>,</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">autoscale =</span> <span class="cn">TRUE</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/Erp00018/Library/R/arm64/4.2/library/Rcpp/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/unsupported"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/BH/include" -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/src/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppParallel/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -DBOOST_NO_AUTO_PTR  -include '/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include   -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:88:
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:1: error: unknown type name 'namespace'
-namespace Eigen {
-^
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:16: error: expected ';' after top level declarator
-namespace Eigen {
-               ^
-               ;
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:96:10: fatal error: 'complex' file not found
-#include &lt;complex&gt;
-         ^~~~~~~~~
-3 errors generated.
-make: *** [foo.o] Error 1</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>prior_hs <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">horseshoe</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale_global =</span> <span class="dv">1</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_global =</span> <span class="dv">1</span>, <span class="at">scale_slab =</span> <span class="dv">2</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_slab =</span> <span class="dv">4</span>, <span class="at">par_ratio =</span> <span class="cn">NULL</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">autoscale =</span> <span class="cn">TRUE</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, you can use the <code>mcmc_areas</code> function to plot the prior distributions for specific parameters. However, it can be more insightful to plot the prior distributions together in one figure. To do this, we first need to combine the prior draws. Then, we can plot the prior for a specific regression coefficient, for example <code>b_Height</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>draws_t <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(prior_t)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>draws_t<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"t"</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>draws_lasso <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(prior_lasso)</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>draws_lasso<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"lasso"</span></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>draws_hs <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(prior_hs)</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>draws_hs<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"hs"</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>sel <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"b_SexI"</span>, <span class="st">"b_SexM"</span>, <span class="st">"b_Length"</span>, <span class="st">"b_Diameter"</span>, <span class="st">"b_Height"</span>, </span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shucked_weight"</span>, <span class="st">"b_Viscera_weight"</span>,</span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Shell_weight"</span>, <span class="st">"prior"</span>)</span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>draws <span class="ot">&lt;-</span> <span class="fu">rbind.data.frame</span>(draws_t[, sel], </span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>                          draws_lasso[, sel], </span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>                          draws_hs[, sel])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>draws_t <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(prior_t)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>draws_t<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"t"</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>draws_lasso <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(prior_lasso)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>draws_lasso<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"lasso"</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>draws_hs <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(prior_hs)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>draws_hs<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"hs"</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>sel <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"b_SexI"</span>, <span class="st">"b_SexM"</span>, <span class="st">"b_Length"</span>, <span class="st">"b_Diameter"</span>, <span class="st">"b_Height"</span>, </span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shucked_weight"</span>, <span class="st">"b_Viscera_weight"</span>,</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Shell_weight"</span>, <span class="st">"prior"</span>)</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>draws <span class="ot">&lt;-</span> <span class="fu">rbind.data.frame</span>(draws_t[, sel], </span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>                          draws_lasso[, sel], </span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>                          draws_hs[, sel])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Dropping 'draws_df' class as required metadata was removed.
 
@@ -523,10 +384,13 @@ Warning: Dropping 'draws_df' class as required metadata was removed.
 
 Warning: Dropping 'draws_df' class as required metadata was removed.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(draws, <span class="fu">aes</span>(b_Height, <span class="at">colour=</span>prior)) <span class="sc">+</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(draws, <span class="fu">aes</span>(b_Height, <span class="at">colour=</span>prior)) <span class="sc">+</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 273 rows containing non-finite values (`stat_density()`).</code></pre>
+</div>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>This way, we can compare different parametric forms and see, for example, that with these settings the lasso and horseshoe priors generally look quite similarly whereas Student’s t prior has much lighter tails.</p>
@@ -537,49 +401,62 @@ Warning: Dropping 'draws_df' class as required metadata was removed.</code></pre
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>fit_t <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"student_t(3, 0, 0.1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>))</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Indicates no relevant variables (like the ridge)</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>fit_lasso <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">lasso</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale =</span> <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>))</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Selects SexM, Shell_weight, and Shucked_weight</span></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>fit_hs <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">horseshoe</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale_global =</span> <span class="dv">1</span>,</span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_global =</span> <span class="dv">1</span>, <span class="at">scale_slab =</span> <span class="dv">2</span>,</span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_slab =</span> <span class="dv">4</span>, <span class="at">par_ratio =</span> <span class="cn">NULL</span>,</span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">autoscale =</span> <span class="cn">TRUE</span>), <span class="at">class =</span> <span class="st">"b"</span>))</span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Selects SexM and Shell_weight</span></span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize differences</span></span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>draws_ridge <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_ridge)</span>
-<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>draws_ridge<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"ridge"</span></span>
-<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>draws_t <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_t)</span>
-<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>draws_t<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"t"</span></span>
-<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>draws_lasso <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_lasso)</span>
-<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>draws_lasso<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"lasso"</span></span>
-<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>draws_hs <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_hs)</span>
-<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>draws_hs<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"hs"</span></span>
-<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>sel <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"b_SexI"</span>, <span class="st">"b_SexM"</span>, <span class="st">"b_Length"</span>, <span class="st">"b_Diameter"</span>, <span class="st">"b_Height"</span>, </span>
-<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shucked_weight"</span>, <span class="st">"b_Viscera_weight"</span>,</span>
-<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Shell_weight"</span>, <span class="st">"prior"</span>)</span>
-<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>draws <span class="ot">&lt;-</span> <span class="fu">rbind.data.frame</span>(draws_ridge[, sel],</span>
-<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>                          draws_t[, sel], </span>
-<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>                          draws_lasso[, sel], </span>
-<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>                          draws_hs[, sel])</span>
-<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>draws<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(draws)</span>
-<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>draws_long <span class="ot">&lt;-</span> <span class="fu">gather</span>(draws, </span>
-<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>                     <span class="at">key =</span> <span class="st">"parameter"</span>,</span>
-<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a>                     <span class="at">value =</span> <span class="st">"value"</span>,</span>
-<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>                     <span class="sc">-</span>prior)</span>
-<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(draws_long, <span class="fu">aes</span>(value, <span class="at">colour=</span>prior)) <span class="sc">+</span></span>
-<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
-<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> parameter, <span class="at">scales =</span> <span class="st">"free"</span>)</span>
-<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a><span class="co"># We see very similar results for the ridge and Student's t; these priors shrink coefficients heavily, with no escape for larger coefficients. The lasso and horseshoe also show similar results and less shrinkage for some parameters, as we would expect based on the prior plots.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>fit_t <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"student_t(3, 0, 0.1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>))</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Indicates no relevant variables (like the ridge)</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>fit_lasso <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">lasso</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale =</span> <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>))</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Selects SexM, Shell_weight, and Shucked_weight</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>fit_hs <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">horseshoe</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale_global =</span> <span class="dv">1</span>,</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_global =</span> <span class="dv">1</span>, <span class="at">scale_slab =</span> <span class="dv">2</span>,</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_slab =</span> <span class="dv">4</span>, <span class="at">par_ratio =</span> <span class="cn">NULL</span>,</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">autoscale =</span> <span class="cn">TRUE</span>), <span class="at">class =</span> <span class="st">"b"</span>))</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Selects SexM and Shell_weight</span></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize differences</span></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>draws_ridge <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_ridge)</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>draws_ridge<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"ridge"</span></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>draws_t <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_t)</span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>draws_t<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"t"</span></span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>draws_lasso <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_lasso)</span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>draws_lasso<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"lasso"</span></span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a>draws_hs <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_hs)</span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>draws_hs<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"hs"</span></span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a>sel <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"b_SexI"</span>, <span class="st">"b_SexM"</span>, <span class="st">"b_Length"</span>, <span class="st">"b_Diameter"</span>, <span class="st">"b_Height"</span>, </span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shucked_weight"</span>, <span class="st">"b_Viscera_weight"</span>,</span>
+<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Shell_weight"</span>, <span class="st">"prior"</span>)</span>
+<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>draws <span class="ot">&lt;-</span> <span class="fu">rbind.data.frame</span>(draws_ridge[, sel],</span>
+<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a>                          draws_t[, sel], </span>
+<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a>                          draws_lasso[, sel], </span>
+<span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a>                          draws_hs[, sel])</span>
+<span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a>draws<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(draws)</span>
+<span id="cb35-34"><a href="#cb35-34" aria-hidden="true" tabindex="-1"></a>draws_long <span class="ot">&lt;-</span> <span class="fu">gather</span>(draws, </span>
+<span id="cb35-35"><a href="#cb35-35" aria-hidden="true" tabindex="-1"></a>                     <span class="at">key =</span> <span class="st">"parameter"</span>,</span>
+<span id="cb35-36"><a href="#cb35-36" aria-hidden="true" tabindex="-1"></a>                     <span class="at">value =</span> <span class="st">"value"</span>,</span>
+<span id="cb35-37"><a href="#cb35-37" aria-hidden="true" tabindex="-1"></a>                     <span class="sc">-</span>prior)</span>
+<span id="cb35-38"><a href="#cb35-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-39"><a href="#cb35-39" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(draws_long, <span class="fu">aes</span>(value, <span class="at">colour=</span>prior)) <span class="sc">+</span></span>
+<span id="cb35-40"><a href="#cb35-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb35-41"><a href="#cb35-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> parameter, <span class="at">scales =</span> <span class="st">"free"</span>)</span>
+<span id="cb35-42"><a href="#cb35-42" aria-hidden="true" tabindex="-1"></a><span class="co"># We see very similar results for the ridge and Student's t; these priors shrink coefficients heavily, with no escape for larger coefficients. The lasso and horseshoe also show similar results and less shrinkage for some parameters, as we would expect based on the prior plots.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that we do get some warnings related to convergence. For the final results, it is important to assess convergence to ensure trustworthy results. In case of low effective sample sizes, you can rerun the analysis with more iterations. Note that the horseshoe prior can also result in divergent transitions, which are more difficult to resolve. When the horseshoe prior is one of the options in a prior sensitivity analysis, like here, this might not be as big an issue since we do not use these results for final interpretation but only for comparison.</p>
+</div>
 </div>
 </section>
 </section>
@@ -587,8 +464,8 @@ Warning: Dropping 'draws_df' class as required metadata was removed.</code></pre
 <h2 class="anchored" data-anchor-id="did-we-forget-anything">Did we forget anything?</h2>
 <p>So far, we have done a lot: we have investigated different shrinkage priors and compared their influence in predicting abalone age. We have seen that different types of shrinkage priors have different prior densities which result in different shrinkage behaviors and ultimately, different results. However, as you considered the potential influence of the shrinkage priors you might already have wondered about the role that the scales of the variables play. This is actually a very important point in Bayesian analysis in general, and even more so in Bayesian regularization in particular. The scale of the variables will influence the plausible parameter space of the regression coefficients and this will influence the informativeness of the prior distribution. To illustrate this, consider one variable in our data set, the <code>Length</code> of the shells. In this data set, <code>Length</code> is measured in millimeter and if we use this variable in a simple linear regression to predict the abalone age, we get an estimated regression coefficient of 14.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train)</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -614,43 +491,43 @@ F-statistic: 38.94 on 1 and 98 DF,  p-value: 1.117e-08</code></pre>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train)</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Now consider a normal shrinkage prior with a standard deviation of <span class="math inline">\(\sigma = 10\)</span>. This prior looks like this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="dv">100000</span>, <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">10</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="dv">100000</span>, <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">10</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>You can see that most of the prior mass lies between -20 and 20. How much influence do you think this prior will exert on the regression coefficient of <code>Length</code>, that is estimated to be around 14 when using flat priors? You can check your intuition by running the analysis.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train,</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"normal(0, 10)"</span>, <span class="at">class =</span> <span class="st">"b"</span>))</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># There is practically no influence of this prior; it is relatively uninformative given the scale of the variable.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train,</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"normal(0, 10)"</span>, <span class="at">class =</span> <span class="st">"b"</span>))</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co"># There is practically no influence of this prior; it is relatively uninformative given the scale of the variable.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Suppose that <code>Length</code> was measured in centimeters instead of millimeters. Let’s create a new variable, <code>Length_cm</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>train_new <span class="ot">&lt;-</span> train</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>train_new<span class="sc">$</span>Length_cm <span class="ot">&lt;-</span> train_new<span class="sc">$</span>Length<span class="sc">/</span><span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>train_new <span class="ot">&lt;-</span> train</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>train_new<span class="sc">$</span>Length_cm <span class="ot">&lt;-</span> train_new<span class="sc">$</span>Length<span class="sc">/</span><span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now, our normal(0, 10) prior is much more informative!</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Rings <span class="sc">~</span> Length_cm, <span class="at">data =</span> train_new)</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length_cm, <span class="at">data =</span> train_new,</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"normal(0, 10)"</span>, <span class="at">class =</span> <span class="st">"b"</span>))</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, the effect is shrunken heavily!</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Rings <span class="sc">~</span> Length_cm, <span class="at">data =</span> train_new)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length_cm, <span class="at">data =</span> train_new,</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"normal(0, 10)"</span>, <span class="at">class =</span> <span class="st">"b"</span>))</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, the effect is shrunken heavily!</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>You can imagine that if we have variables measured on different scales, say one variable in cm and another in mm, that specifying one common shrinkage prior (or even a prior in general) is not a good idea because the informativeness of the prior, and thus the amount of shrinkage, will depend on the scale of the variable. Therefore, it is highly recommended to always standardize your variables before applying regularization. This makes it easier to specify one general shrinkage prior for all coefficients.</p>
@@ -658,39 +535,13 @@ F-statistic: 38.94 on 1 and 98 DF,  p-value: 1.117e-08</code></pre>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>train_scaled <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">scale</span>(train[, <span class="sc">-</span><span class="dv">1</span>], <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>train_scaled<span class="sc">$</span>Sex <span class="ot">&lt;-</span> train<span class="sc">$</span>Sex</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>fit_ridge_scaled <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train_scaled,</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">lasso</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale =</span> <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/Erp00018/Library/R/arm64/4.2/library/Rcpp/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/unsupported"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/BH/include" -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/src/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppParallel/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -DBOOST_NO_AUTO_PTR  -include '/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include   -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:88:
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:1: error: unknown type name 'namespace'
-namespace Eigen {
-^
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:16: error: expected ';' after top level declarator
-namespace Eigen {
-               ^
-               ;
-In file included from &lt;built-in&gt;:1:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
-In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
-/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:96:10: fatal error: 'complex' file not found
-#include &lt;complex&gt;
-         ^~~~~~~~~
-3 errors generated.
-make: *** [foo.o] Error 1</code></pre>
-</div>
-<details>
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ridge_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>train_scaled <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">scale</span>(train[, <span class="sc">-</span><span class="dv">1</span>], <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>train_scaled<span class="sc">$</span>Sex <span class="ot">&lt;-</span> train<span class="sc">$</span>Sex</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>fit_ridge_scaled <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train_scaled,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">lasso</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale =</span> <span class="dv">1</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ridge_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
@@ -702,20 +553,20 @@ Formula: Rings ~ Length + Diameter + Height + Whole_weight + Shucked_weight + Vi
 
 Population-Level Effects: 
                Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept          0.08      0.12    -0.16     0.32 1.00     2668     2549
-Length             0.05      0.26    -0.47     0.56 1.00     2201     1998
-Diameter           0.16      0.28    -0.34     0.79 1.00     1914     1997
-Height             0.26      0.16    -0.03     0.58 1.00     2505     2528
-Whole_weight       0.50      0.47    -0.18     1.54 1.00     1446     1769
-Shucked_weight    -0.79      0.38    -1.54    -0.10 1.00     1483     2275
-Viscera_weight    -0.19      0.23    -0.71     0.19 1.00     2333     2350
-Shell_weight       0.53      0.22     0.11     0.96 1.00     2618     3068
-SexI              -0.25      0.20    -0.65     0.10 1.00     2814     2847
-SexM               0.01      0.15    -0.30     0.32 1.00     2872     2690
+Intercept          0.08      0.12    -0.15     0.33 1.00     2386     1733
+Length             0.06      0.24    -0.42     0.55 1.00     2129     1780
+Diameter           0.15      0.27    -0.33     0.75 1.00     2090     1585
+Height             0.26      0.16    -0.04     0.56 1.00     2908     2607
+Whole_weight       0.47      0.46    -0.21     1.52 1.00     1508     1835
+Shucked_weight    -0.76      0.37    -1.50    -0.10 1.00     1543     2368
+Viscera_weight    -0.18      0.23    -0.68     0.22 1.00     1875     1820
+Shell_weight       0.54      0.23     0.10     0.99 1.00     2332     2672
+SexI              -0.25      0.19    -0.64     0.09 1.00     2671     2327
+SexM               0.01      0.15    -0.30     0.31 1.00     2712     2363
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     0.74      0.06     0.63     0.85 1.00     2853     2699
+sigma     0.74      0.06     0.64     0.86 1.00     2352     2345
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -723,19 +574,19 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, we would select Shell_weight and Shucked_weight based on the 95% CI!</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Shell_weight"</span>, <span class="st">"b_Shucked_weight"</span>), <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">prob_outer =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, we would select Shell_weight and Shucked_weight based on the 95% CI!</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Shell_weight"</span>, <span class="st">"b_Shucked_weight"</span>), <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">prob_outer =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
 </div>
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge_scaled, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Shell_weight"</span>, <span class="st">"b_Shucked_weight"</span>), <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">prob_outer =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge_scaled, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Shell_weight"</span>, <span class="st">"b_Shucked_weight"</span>), <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">prob_outer =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid" width="672"></p>
+<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -746,7 +597,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>The projection predictive method is implemented in the <code>projpred</code> package. To perform the variable selection, two functions can be used: <code>varsel</code> and <code>cv_varsel</code>. The latter function performs cross-validation by first searching for the best submodel given a specific number of predictors on a training set and subsequently evaluating the predictive performance of the submodels on a test set. This cross-validation approach is recommended over <code>varsel</code> to avoid overfitting. However, <code>cv_varsel</code> is also much slower compared to <code>varsel</code>, so for the purpose of these exercises we will rely on the faster <code>varsel</code> function.</p>
 <p>First, we run the variable selection for the original model with the normal shrinkage prior. We then obtain the optimal model size and check which predictors should be included given this optimal model size.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>vs <span class="ot">&lt;-</span> <span class="fu">varsel</span>(fit_ridge_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>vs <span class="ot">&lt;-</span> <span class="fu">varsel</span>(fit_ridge_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>-----
 Running the search ...
@@ -755,8 +606,8 @@ Running the search ...
 For performance evaluation: Re-projecting onto the submodels along the solution path ...
 -----</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>nsel <span class="ot">&lt;-</span> <span class="fu">suggest_size</span>(vs)</span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ranking</span>(vs, <span class="at">nterms_max =</span> nsel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>nsel <span class="ot">&lt;-</span> <span class="fu">suggest_size</span>(vs)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ranking</span>(vs, <span class="at">nterms_max =</span> nsel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$fulldata
 [1] "Height"         "Shell_weight"   "Sex"            "Shucked_weight"
@@ -771,9 +622,9 @@ attr(,"class")
 </div>
 <p>Note that the <code>suggest_size</code> function is easy to use, but: it provides only a heuristic for determining optimal model size. A better approach is to plot a performance statistic, which can be easily done as follows:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(vs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(vs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>By default, <code>elpd</code>, the expected log predictive density is plotted. The important thing to consider is when this value levels off: that indicates that the performance does not change as we include more predictors. Thus, based on this plot we can conclude that we can obtain sufficient predictive performance with two predictors, the same number as suggested by the <code>suggest_size</code> function.</p>
@@ -786,17 +637,17 @@ attr(,"class")
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>ppc <span class="ot">&lt;-</span> <span class="fu">pp_check</span>(fit_ridge_scaled, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ppc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>ppc <span class="ot">&lt;-</span> <span class="fu">pp_check</span>(fit_ridge_scaled, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ppc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>You could also assess the final model, after variable selection. To do so, rerun the analysis using only the selected variables (based on the projection predictive method). Make sure you do not use shrinkage priors this time; we have already used the shrinkage to select the variables, now we simply want to estimate the effects of the selected variables without shrinkage. Perform a posterior predictive check. Do we still get sensible results?</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>fit_sel <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Whole_weight <span class="sc">+</span> Sex, <span class="at">data =</span> train_scaled)</span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>ppc_sel <span class="ot">&lt;-</span> <span class="fu">pp_check</span>(fit_sel, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ppc_sel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>fit_sel <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Whole_weight <span class="sc">+</span> Sex, <span class="at">data =</span> train_scaled)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>ppc_sel <span class="ot">&lt;-</span> <span class="fu">pp_check</span>(fit_sel, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ppc_sel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -811,182 +662,178 @@ attr(,"class")
 <section id="original-computing-environment" class="level2">
 <h2 class="anchored" data-anchor-id="original-computing-environment">Original computing environment</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>─ Session info ───────────────────────────────────────────────────────────────
  setting  value
- version  R version 4.2.2 (2022-10-31)
- os       macOS Ventura 13.0.1
- system   aarch64, darwin20
- ui       X11
+ version  R version 4.2.1 (2022-06-23 ucrt)
+ os       Windows 10 x64 (build 19045)
+ system   x86_64, mingw32
+ ui       RTerm
  language (EN)
- collate  en_US.UTF-8
- ctype    en_US.UTF-8
- tz       Europe/Amsterdam
- date     2023-07-06
- pandoc   2.19.2 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
+ collate  Dutch_Netherlands.utf8
+ ctype    Dutch_Netherlands.utf8
+ tz       Europe/Berlin
+ date     2023-07-07
+ pandoc   3.1.1 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────
- package        * version  date (UTC) lib source
- abind            1.4-5    2016-07-21 [1] CRAN (R 4.2.0)
- backports        1.4.1    2021-12-13 [1] CRAN (R 4.2.0)
- base64enc        0.1-3    2015-07-28 [1] CRAN (R 4.2.0)
- bayesplot      * 1.10.0   2022-11-16 [1] CRAN (R 4.2.0)
- boot             1.3-28   2021-05-03 [2] CRAN (R 4.2.2)
- bridgesampling   1.1-2    2021-04-16 [1] CRAN (R 4.2.0)
- brms           * 2.19.0   2023-03-14 [1] CRAN (R 4.2.0)
- Brobdingnag      1.2-9    2022-10-19 [1] CRAN (R 4.2.0)
- cachem           1.0.8    2023-05-01 [1] CRAN (R 4.2.0)
- callr            3.7.3    2022-11-02 [1] CRAN (R 4.2.0)
- checkmate        2.2.0    2023-04-27 [1] CRAN (R 4.2.0)
- cli              3.6.1    2023-03-23 [1] CRAN (R 4.2.0)
- coda             0.19-4   2020-09-30 [1] CRAN (R 4.2.0)
- codetools        0.2-18   2020-11-04 [2] CRAN (R 4.2.2)
- colorspace       2.1-0    2023-01-23 [1] CRAN (R 4.2.0)
- colourpicker     1.2.0    2022-10-28 [1] CRAN (R 4.2.0)
- crayon           1.5.2    2022-09-29 [1] CRAN (R 4.2.0)
- crosstalk        1.2.0    2021-11-04 [1] CRAN (R 4.2.0)
- curl             5.0.0    2023-01-12 [1] CRAN (R 4.2.0)
- devtools         2.4.5    2022-10-11 [1] CRAN (R 4.2.0)
- digest           0.6.31   2022-12-11 [1] CRAN (R 4.2.0)
- distributional   0.3.2    2023-03-22 [1] CRAN (R 4.2.0)
- dplyr            1.1.2    2023-04-20 [1] CRAN (R 4.2.0)
- DT               0.27     2023-01-17 [1] CRAN (R 4.2.0)
- dygraphs         1.1.1.6  2018-07-11 [1] CRAN (R 4.2.0)
- ellipsis         0.3.2    2021-04-29 [1] CRAN (R 4.2.0)
- emmeans          1.8.5    2023-03-08 [1] CRAN (R 4.2.0)
- estimability     1.4.1    2022-08-05 [1] CRAN (R 4.2.0)
- evaluate         0.21     2023-05-05 [1] CRAN (R 4.2.0)
- fansi            1.0.4    2023-01-22 [1] CRAN (R 4.2.0)
- farver           2.1.1    2022-07-06 [1] CRAN (R 4.2.0)
- fastmap          1.1.1    2023-02-24 [1] CRAN (R 4.2.0)
- fs               1.6.2    2023-04-25 [1] CRAN (R 4.2.0)
- gamm4            0.2-6    2020-04-03 [1] CRAN (R 4.2.0)
- generics         0.1.3    2022-07-05 [1] CRAN (R 4.2.0)
- GGally         * 2.1.2    2021-06-21 [1] CRAN (R 4.2.0)
- ggplot2        * 3.4.2    2023-04-03 [1] CRAN (R 4.2.0)
- ggridges         0.5.4    2022-09-26 [1] CRAN (R 4.2.0)
- glue             1.6.2    2022-02-24 [1] CRAN (R 4.2.0)
- gridExtra        2.3      2017-09-09 [1] CRAN (R 4.2.0)
- gtable           0.3.3    2023-03-21 [1] CRAN (R 4.2.0)
- gtools           3.9.4    2022-11-27 [1] CRAN (R 4.2.0)
- htmltools        0.5.5    2023-03-23 [1] CRAN (R 4.2.0)
- htmlwidgets      1.6.2    2023-03-17 [1] CRAN (R 4.2.0)
- httpuv           1.6.10   2023-05-08 [1] CRAN (R 4.2.2)
- igraph           1.4.2    2023-04-07 [1] CRAN (R 4.2.0)
- inline           0.3.19   2021-05-31 [1] CRAN (R 4.2.0)
- jsonlite         1.8.4    2022-12-06 [1] CRAN (R 4.2.0)
- knitr            1.42     2023-01-25 [1] CRAN (R 4.2.0)
- labeling         0.4.2    2020-10-20 [1] CRAN (R 4.2.0)
- later            1.3.1    2023-05-02 [1] CRAN (R 4.2.0)
- lattice          0.20-45  2021-09-22 [2] CRAN (R 4.2.2)
- lifecycle        1.0.3    2022-10-07 [1] CRAN (R 4.2.0)
- lme4             1.1-33   2023-04-25 [1] CRAN (R 4.2.0)
- loo              2.6.0    2023-03-31 [1] CRAN (R 4.2.0)
- magrittr         2.0.3    2022-03-30 [1] CRAN (R 4.2.0)
- markdown         1.6      2023-04-07 [1] CRAN (R 4.2.0)
- MASS             7.3-58.1 2022-08-03 [2] CRAN (R 4.2.2)
- Matrix           1.5-1    2022-09-13 [2] CRAN (R 4.2.2)
- matrixStats      0.63.0   2022-11-18 [1] CRAN (R 4.2.0)
- memoise          2.0.1    2021-11-26 [1] CRAN (R 4.2.0)
- mgcv             1.8-41   2022-10-21 [2] CRAN (R 4.2.2)
- mime             0.12     2021-09-28 [1] CRAN (R 4.2.0)
- miniUI           0.1.1.1  2018-05-18 [1] CRAN (R 4.2.0)
- minqa            1.2.5    2022-10-19 [1] CRAN (R 4.2.0)
- multcomp         1.4-23   2023-03-09 [1] CRAN (R 4.2.0)
- munsell          0.5.0    2018-06-12 [1] CRAN (R 4.2.0)
- mvtnorm          1.1-3    2021-10-08 [1] CRAN (R 4.2.0)
- nlme             3.1-160  2022-10-10 [2] CRAN (R 4.2.2)
- nloptr           2.0.3    2022-05-26 [1] CRAN (R 4.2.0)
- pillar           1.9.0    2023-03-22 [1] CRAN (R 4.2.0)
- pkgbuild         1.4.0    2022-11-27 [1] CRAN (R 4.2.0)
- pkgconfig        2.0.3    2019-09-22 [1] CRAN (R 4.2.0)
- pkgload          1.3.2    2022-11-16 [1] CRAN (R 4.2.0)
- plyr             1.8.8    2022-11-11 [1] CRAN (R 4.2.0)
- posterior        1.4.1    2023-03-14 [1] CRAN (R 4.2.0)
- prettyunits      1.1.1    2020-01-24 [1] CRAN (R 4.2.0)
- processx         3.8.1    2023-04-18 [1] CRAN (R 4.2.0)
- profvis          0.3.8    2023-05-02 [1] CRAN (R 4.2.0)
- projpred       * 2.6.0    2023-06-01 [1] CRAN (R 4.2.0)
- promises         1.2.0.1  2021-02-11 [1] CRAN (R 4.2.0)
- ps               1.7.5    2023-04-18 [1] CRAN (R 4.2.0)
- purrr          * 1.0.1    2023-01-10 [1] CRAN (R 4.2.0)
- R6               2.5.1    2021-08-19 [1] CRAN (R 4.2.0)
- RColorBrewer     1.1-3    2022-04-03 [1] CRAN (R 4.2.0)
- Rcpp           * 1.0.10   2023-01-22 [1] CRAN (R 4.2.0)
- RcppParallel     5.1.7    2023-02-27 [1] CRAN (R 4.2.0)
- remotes          2.4.2    2021-11-30 [1] CRAN (R 4.2.0)
- reshape          0.8.9    2022-04-12 [1] CRAN (R 4.2.0)
- reshape2         1.4.4    2020-04-09 [1] CRAN (R 4.2.0)
- rlang            1.1.1    2023-04-28 [1] CRAN (R 4.2.0)
- rmarkdown        2.21     2023-03-26 [1] CRAN (R 4.2.0)
- rstan            2.26.22  2023-04-10 [1] local
- rstantools       2.3.1    2023-03-30 [1] CRAN (R 4.2.0)
- rstudioapi       0.14     2022-08-22 [1] CRAN (R 4.2.0)
- sandwich         3.0-2    2022-06-15 [1] CRAN (R 4.2.0)
- scales           1.2.1    2022-08-20 [1] CRAN (R 4.2.0)
- sessioninfo      1.2.2    2021-12-06 [1] CRAN (R 4.2.0)
- shiny            1.7.4    2022-12-15 [1] CRAN (R 4.2.0)
- shinyjs          2.1.0    2021-12-23 [1] CRAN (R 4.2.0)
- shinystan        2.6.0    2022-03-03 [1] CRAN (R 4.2.0)
- shinythemes      1.2.0    2021-01-25 [1] CRAN (R 4.2.0)
- StanHeaders      2.26.27  2023-06-14 [1] CRAN (R 4.2.0)
- stringi          1.7.12   2023-01-11 [1] CRAN (R 4.2.0)
- stringr          1.5.0    2022-12-02 [1] CRAN (R 4.2.0)
- survival         3.4-0    2022-08-09 [2] CRAN (R 4.2.2)
- tensorA          0.36.2   2020-11-19 [1] CRAN (R 4.2.0)
- TH.data          1.1-2    2023-04-17 [1] CRAN (R 4.2.0)
- threejs          0.3.3    2020-01-21 [1] CRAN (R 4.2.0)
- tibble           3.2.1    2023-03-20 [1] CRAN (R 4.2.0)
- tidyr          * 1.3.0    2023-01-24 [1] CRAN (R 4.2.0)
- tidyselect       1.2.0    2022-10-10 [1] CRAN (R 4.2.0)
- urlchecker       1.0.1    2021-11-30 [1] CRAN (R 4.2.0)
- usethis          2.1.6    2022-05-25 [1] CRAN (R 4.2.0)
- utf8             1.2.3    2023-01-31 [1] CRAN (R 4.2.0)
- V8               4.3.0    2023-04-08 [1] CRAN (R 4.2.0)
- vctrs            0.6.2    2023-04-19 [1] CRAN (R 4.2.0)
- withr            2.5.0    2022-03-03 [1] CRAN (R 4.2.0)
- xfun             0.39     2023-04-20 [1] CRAN (R 4.2.0)
- xtable           1.8-4    2019-04-21 [1] CRAN (R 4.2.0)
- xts              0.13.1   2023-04-16 [1] CRAN (R 4.2.0)
- yaml             2.3.7    2023-01-23 [1] CRAN (R 4.2.0)
- zoo              1.8-12   2023-04-13 [1] CRAN (R 4.2.0)
+ ! package        * version date (UTC) lib source
+   abind            1.4-5   2016-07-21 [1] CRAN (R 4.2.0)
+   backports        1.4.1   2021-12-13 [1] CRAN (R 4.2.0)
+   base64enc        0.1-3   2015-07-28 [1] CRAN (R 4.2.0)
+   bayesplot      * 1.9.0   2022-03-10 [1] CRAN (R 4.2.1)
+   boot             1.3-28  2021-05-03 [1] CRAN (R 4.2.1)
+   bridgesampling   1.1-2   2021-04-16 [1] CRAN (R 4.2.1)
+   brms           * 2.17.0  2022-04-13 [1] CRAN (R 4.2.1)
+   Brobdingnag      1.2-7   2022-02-03 [1] CRAN (R 4.2.1)
+   cachem           1.0.6   2021-08-19 [1] CRAN (R 4.2.1)
+   callr            3.7.0   2021-04-20 [1] CRAN (R 4.2.1)
+   checkmate        2.1.0   2022-04-21 [1] CRAN (R 4.2.1)
+   cli              3.6.1   2023-03-23 [1] CRAN (R 4.2.3)
+   coda             0.19-4  2020-09-30 [1] CRAN (R 4.2.1)
+   codetools        0.2-18  2020-11-04 [2] CRAN (R 4.2.1)
+   colorspace       2.0-3   2022-02-21 [1] CRAN (R 4.2.1)
+   colourpicker     1.1.1   2021-10-04 [1] CRAN (R 4.2.1)
+   crayon           1.5.1   2022-03-26 [1] CRAN (R 4.2.1)
+   crosstalk        1.2.0   2021-11-04 [1] CRAN (R 4.2.1)
+   curl             4.3.2   2021-06-23 [1] CRAN (R 4.2.1)
+   devtools         2.4.5   2022-10-11 [1] CRAN (R 4.2.2)
+   digest           0.6.29  2021-12-01 [1] CRAN (R 4.2.1)
+   distributional   0.3.0   2022-01-05 [1] CRAN (R 4.2.1)
+   dplyr            1.1.1   2023-03-22 [1] CRAN (R 4.2.3)
+   DT               0.23    2022-05-10 [1] CRAN (R 4.2.1)
+   dygraphs         1.1.1.6 2018-07-11 [1] CRAN (R 4.2.1)
+   ellipsis         0.3.2   2021-04-29 [1] CRAN (R 4.2.1)
+   evaluate         0.15    2022-02-18 [1] CRAN (R 4.2.1)
+   fansi            1.0.3   2022-03-24 [1] CRAN (R 4.2.1)
+   farver           2.1.1   2022-07-06 [1] CRAN (R 4.2.1)
+   fastmap          1.1.0   2021-01-25 [1] CRAN (R 4.2.1)
+   fs               1.5.2   2021-12-08 [1] CRAN (R 4.2.1)
+   gamm4            0.2-6   2020-04-03 [1] CRAN (R 4.2.1)
+   generics         0.1.3   2022-07-05 [1] CRAN (R 4.2.1)
+   GGally         * 2.1.2   2021-06-21 [1] CRAN (R 4.2.1)
+   ggplot2        * 3.4.1   2023-02-10 [1] CRAN (R 4.2.3)
+   ggridges         0.5.3   2021-01-08 [1] CRAN (R 4.2.1)
+   glue             1.6.2   2022-02-24 [1] CRAN (R 4.2.1)
+   gridExtra        2.3     2017-09-09 [1] CRAN (R 4.2.1)
+   gtable           0.3.0   2019-03-25 [1] CRAN (R 4.2.1)
+   gtools           3.9.3   2022-07-11 [1] CRAN (R 4.2.1)
+   htmltools        0.5.5   2023-03-23 [1] CRAN (R 4.2.3)
+   htmlwidgets      1.5.4   2021-09-08 [1] CRAN (R 4.2.1)
+   httpuv           1.6.5   2022-01-05 [1] CRAN (R 4.2.1)
+   igraph           1.3.2   2022-06-13 [1] CRAN (R 4.2.1)
+   inline           0.3.19  2021-05-31 [1] CRAN (R 4.2.1)
+   jsonlite         1.8.4   2022-12-06 [1] CRAN (R 4.2.3)
+   knitr            1.39    2022-04-26 [1] CRAN (R 4.2.1)
+   labeling         0.4.2   2020-10-20 [1] CRAN (R 4.2.0)
+   later            1.3.0   2021-08-18 [1] CRAN (R 4.2.1)
+   lattice          0.20-45 2021-09-22 [2] CRAN (R 4.2.1)
+   lifecycle        1.0.3   2022-10-07 [1] CRAN (R 4.2.3)
+   lme4             1.1-32  2023-03-14 [1] CRAN (R 4.2.3)
+   loo              2.5.1   2022-03-24 [1] CRAN (R 4.2.1)
+   magrittr         2.0.3   2022-03-30 [1] CRAN (R 4.2.1)
+   markdown         1.5     2023-01-31 [1] CRAN (R 4.2.3)
+   MASS             7.3-57  2022-04-22 [1] CRAN (R 4.2.1)
+   Matrix           1.4-1   2022-03-23 [2] CRAN (R 4.2.1)
+   matrixStats      0.62.0  2022-04-19 [1] CRAN (R 4.2.1)
+   memoise          2.0.1   2021-11-26 [1] CRAN (R 4.2.1)
+   mgcv             1.8-40  2022-03-29 [2] CRAN (R 4.2.1)
+   mime             0.12    2021-09-28 [1] CRAN (R 4.2.0)
+   miniUI           0.1.1.1 2018-05-18 [1] CRAN (R 4.2.1)
+   minqa            1.2.4   2014-10-09 [1] CRAN (R 4.2.1)
+   munsell          0.5.0   2018-06-12 [1] CRAN (R 4.2.1)
+   mvtnorm          1.1-3   2021-10-08 [1] CRAN (R 4.2.0)
+   nlme             3.1-157 2022-03-25 [2] CRAN (R 4.2.1)
+   nloptr           2.0.3   2022-05-26 [1] CRAN (R 4.2.1)
+   pillar           1.9.0   2023-03-22 [1] CRAN (R 4.2.3)
+   pkgbuild         1.3.1   2021-12-20 [1] CRAN (R 4.2.1)
+   pkgconfig        2.0.3   2019-09-22 [1] CRAN (R 4.2.1)
+   pkgload          1.3.0   2022-06-27 [1] CRAN (R 4.2.1)
+   plyr             1.8.7   2022-03-24 [1] CRAN (R 4.2.1)
+   posterior        1.2.2   2022-06-09 [1] CRAN (R 4.2.1)
+   prettyunits      1.1.1   2020-01-24 [1] CRAN (R 4.2.1)
+   processx         3.7.0   2022-07-07 [1] CRAN (R 4.2.1)
+   profvis          0.3.7   2020-11-02 [1] CRAN (R 4.2.1)
+   projpred       * 2.6.0   2023-06-01 [1] CRAN (R 4.2.3)
+   promises         1.2.0.1 2021-02-11 [1] CRAN (R 4.2.1)
+   ps               1.7.1   2022-06-18 [1] CRAN (R 4.2.1)
+   purrr          * 0.3.4   2020-04-17 [1] CRAN (R 4.2.1)
+   R6               2.5.1   2021-08-19 [1] CRAN (R 4.2.1)
+   RColorBrewer     1.1-3   2022-04-03 [1] CRAN (R 4.2.0)
+   Rcpp           * 1.0.9   2022-07-08 [1] CRAN (R 4.2.1)
+ D RcppParallel     5.1.5   2022-01-05 [1] CRAN (R 4.2.1)
+   remotes          2.4.2   2021-11-30 [1] CRAN (R 4.2.1)
+   reshape          0.8.9   2022-04-12 [1] CRAN (R 4.2.1)
+   reshape2         1.4.4   2020-04-09 [1] CRAN (R 4.2.1)
+   rlang            1.1.0   2023-03-14 [1] CRAN (R 4.2.3)
+   rmarkdown        2.14    2022-04-25 [1] CRAN (R 4.2.1)
+   rstan            2.26.13 2022-06-25 [1] local
+   rstantools       2.2.0   2022-04-08 [1] CRAN (R 4.2.1)
+   rstudioapi       0.13    2020-11-12 [1] CRAN (R 4.2.1)
+   scales           1.2.0   2022-04-13 [1] CRAN (R 4.2.1)
+   sessioninfo      1.2.2   2021-12-06 [1] CRAN (R 4.2.1)
+   shiny            1.7.1   2021-10-02 [1] CRAN (R 4.2.1)
+   shinyjs          2.1.0   2021-12-23 [1] CRAN (R 4.2.1)
+   shinystan        3.0.0   2022-08-16 [1] local
+   shinythemes      1.2.0   2021-01-25 [1] CRAN (R 4.2.1)
+   StanHeaders      2.26.13 2022-06-25 [1] local
+   stringi          1.7.8   2022-07-11 [1] CRAN (R 4.2.1)
+   stringr          1.4.0   2019-02-10 [1] CRAN (R 4.2.1)
+   tensorA          0.36.2  2020-11-19 [1] CRAN (R 4.2.0)
+   threejs          0.3.3   2020-01-21 [1] CRAN (R 4.2.1)
+   tibble           3.2.1   2023-03-20 [1] CRAN (R 4.2.3)
+   tidyr          * 1.2.0   2022-02-01 [1] CRAN (R 4.2.1)
+   tidyselect       1.2.0   2022-10-10 [1] CRAN (R 4.2.3)
+   urlchecker       1.0.1   2021-11-30 [1] CRAN (R 4.2.2)
+   usethis          2.1.6   2022-05-25 [1] CRAN (R 4.2.1)
+   utf8             1.2.2   2021-07-24 [1] CRAN (R 4.2.1)
+   V8               4.2.0   2022-05-14 [1] CRAN (R 4.2.1)
+   vctrs            0.6.1   2023-03-22 [1] CRAN (R 4.2.3)
+   withr            2.5.0   2022-03-03 [1] CRAN (R 4.2.1)
+   xfun             0.38    2023-03-24 [1] CRAN (R 4.2.3)
+   xtable           1.8-4   2019-04-21 [1] CRAN (R 4.2.1)
+   xts              0.12.1  2020-09-09 [1] CRAN (R 4.2.1)
+   yaml             2.3.5   2022-02-21 [1] CRAN (R 4.2.0)
+   zoo              1.8-10  2022-04-15 [1] CRAN (R 4.2.1)
 
- [1] /Users/Erp00018/Library/R/arm64/4.2/library
- [2] /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library
+ [1] C:/Users/5507553/Documents/r_default/Rpackages
+ [2] C:/Program Files/R/R-4.2.1/library
+
+ D ── DLL MD5 mismatch, broken installation.
 
 ──────────────────────────────────────────────────────────────────────────────</code></pre>
 </div>
 </div>
 
 </section>
-
-
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
-<div id="ref-vanErpOberskiMulder2019" class="csl-entry" role="doc-biblioentry">
-Erp, Sara van, Daniel L. Oberski, and Joris Mulder. 2019. <span>“Shrinkage Priors for <span>B</span>ayesian Penalized Regression.”</span> <em>Journal of Mathematical Psychology</em> 89: 31–50. <a href="https://doi.org/10.1016/j.jmp.2018.12.004">https://doi.org/10.1016/j.jmp.2018.12.004</a>.
-</div>
-<div id="ref-HoerlKennard1970" class="csl-entry" role="doc-biblioentry">
-Hoerl, Arthur E, and Robert W Kennard. 1970. <span>“Ridge Regression: Biased Estimation for Nonorthogonal Problems.”</span> <em>Technometrics</em> 12 (1): 55–67. <a href="https://doi.org/10.1080/00401706.2000.10485983">https://doi.org/10.1080/00401706.2000.10485983</a>.
-</div>
-<div id="ref-McNeish2015" class="csl-entry" role="doc-biblioentry">
-McNeish, Daniel M. 2015. <span>“Using Lasso for Predictor Selection and to Assuage Overfitting: A Method Long Overlooked in Behavioral Sciences.”</span> <em>Multivariate Behavioral Research</em> 50 (5): 471–84. <a href="https://doi.org/10.1080/00273171.2015.1036965">https://doi.org/10.1080/00273171.2015.1036965</a>.
-</div>
-<div id="ref-abalone" class="csl-entry" role="doc-biblioentry">
-Nash, Sellers, Warwick, and Wes Ford. 1995. <span>“<span>Abalone</span>.”</span> UCI Machine Learning Repository.
-</div>
-<div id="ref-PiironenVehtari2017a" class="csl-entry" role="doc-biblioentry">
-Piironen, Juho, and Aki Vehtari. 2017. <span>“Comparison of <span>B</span>ayesian Predictive Methods for Model Selection.”</span> <em>Statistics and Computing</em> 27 (3): 711–35. <a href="https://doi.org/10.1007/s11222-016-9649-y">https://doi.org/10.1007/s11222-016-9649-y</a>.
-</div>
-</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
+<aside id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
 <ol>
 <li id="fn1"><p>Fun fact: to determine the sex of an abalone, it is held out of the water with the holes along the bottom. The abalone will usually get tired and fall to the side so that the reproductive organ becomes visible. Females have a green reproductive organ, while males have a beige reproductive organ.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>It has been shown that posterior mean estimates using the normal prior are equivalent to estimates using the traditional ridge penalty <span class="citation" data-cites="HoerlKennard1970">(<a href="#ref-HoerlKennard1970" role="doc-biblioref">Hoerl and Kennard 1970</a>)</span><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>The choice of the confidence level is related to the Type 1 error rate: we choose the 95% CI to obtain a Type 1 error rate of 5%. Yet in practice, this choice is almost never made explicitly. In addition, <span class="citation" data-cites="vanErpOberskiMulder2019">Erp, Oberski, and Mulder (<a href="#ref-vanErpOberskiMulder2019" role="doc-biblioref">2019</a>)</span> have shown that the level of the CI that provides the optimal selection accuracy differs across data generating conditions.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4"><p>See <span class="citation" data-cites="PiironenVehtari2017a">Piironen and Vehtari (<a href="#ref-PiironenVehtari2017a" role="doc-biblioref">2017</a>)</span> for a more detailed overview of different model selection methods.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
-</section></div></main>
+</aside>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-vanErpOberskiMulder2019" class="csl-entry" role="listitem">
+Erp, Sara van, Daniel L. Oberski, and Joris Mulder. 2019. <span>“Shrinkage Priors for <span>B</span>ayesian Penalized Regression.”</span> <em>Journal of Mathematical Psychology</em> 89: 31–50. <a href="https://doi.org/10.1016/j.jmp.2018.12.004">https://doi.org/10.1016/j.jmp.2018.12.004</a>.
+</div>
+<div id="ref-HoerlKennard1970" class="csl-entry" role="listitem">
+Hoerl, Arthur E, and Robert W Kennard. 1970. <span>“Ridge Regression: Biased Estimation for Nonorthogonal Problems.”</span> <em>Technometrics</em> 12 (1): 55–67. <a href="https://doi.org/10.1080/00401706.2000.10485983">https://doi.org/10.1080/00401706.2000.10485983</a>.
+</div>
+<div id="ref-McNeish2015" class="csl-entry" role="listitem">
+McNeish, Daniel M. 2015. <span>“Using Lasso for Predictor Selection and to Assuage Overfitting: A Method Long Overlooked in Behavioral Sciences.”</span> <em>Multivariate Behavioral Research</em> 50 (5): 471–84. <a href="https://doi.org/10.1080/00273171.2015.1036965">https://doi.org/10.1080/00273171.2015.1036965</a>.
+</div>
+<div id="ref-abalone" class="csl-entry" role="listitem">
+Nash, Sellers, Warwick, and Wes Ford. 1995. <span>“<span>Abalone</span>.”</span> UCI Machine Learning Repository.
+</div>
+<div id="ref-PiironenVehtari2017a" class="csl-entry" role="listitem">
+Piironen, Juho, and Aki Vehtari. 2017. <span>“Comparison of <span>B</span>ayesian Predictive Methods for Model Selection.”</span> <em>Statistics and Computing</em> 27 (3): 711–35. <a href="https://doi.org/10.1007/s11222-016-9649-y">https://doi.org/10.1007/s11222-016-9649-y</a>.
+</div>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
@@ -1015,9 +862,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -1053,10 +914,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1066,8 +926,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1082,6 +951,147 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    if (id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        return container.innerHTML
+      } else {
+        return note.innerHTML;
+      }
+    } else {
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      try { hash = new URL(url).hash; } catch {}
+      const id = hash.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note !== null) {
+        try {
+          const html = processXRef(id, note);
+          instance.setContent(html);
+        } finally {
+          instance.enable();
+          instance.show();
+        }
+      } else {
+        // See if we can fetch this
+        fetch(url.split('#')[0])
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.getElementById(id);
+          console.log(htmlDoc.body.innerHTML);
+          if (note !== null) {
+            const html = processXRef(id, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
