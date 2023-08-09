@@ -238,7 +238,7 @@ Day 3: we discuss estimation methods including alternatives that can be more eff
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
-- slides day 3
+- <a href="content/wednesday/slides_day3.pdf" target="_blank">Slides day 3</a> 
 
 - <a href="content/wednesday/convergence_checks.html" target="_blank">Additional Markdown file on convergence and checks</a>
 
