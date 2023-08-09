@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.475">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sara van Erp">
+
+<title>Convergence and Checks with Bayes</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="convergence_checks_files/libs/clipboard/clipboard.min.js"></script>
+<script src="convergence_checks_files/libs/quarto-html/quarto.js"></script>
+<script src="convergence_checks_files/libs/quarto-html/popper.min.js"></script>
+<script src="convergence_checks_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="convergence_checks_files/libs/quarto-html/anchor.min.js"></script>
+<link href="convergence_checks_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="convergence_checks_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="convergence_checks_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="convergence_checks_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="convergence_checks_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Convergence and Checks with Bayes</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sara van Erp </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>This document illustrates different convergence criteria and model checking possibilities in <code>Stan</code>, which is the program underlying various R-packages for Bayesian analysis, including <code>brms</code>.</p>
+<section id="preliminaries" class="level2">
+<h2 class="anchored" data-anchor-id="preliminaries">Preliminaries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">07082023</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="an-example-predicting-students-math-performance." class="level2">
+<h2 class="anchored" data-anchor-id="an-example-predicting-students-math-performance.">An example: Predicting students’ math performance.</h2>
+<p>To illustrate Bayesian convergence and checks, we will use a data set that is available from the <a href="https://archive.ics.uci.edu">UCI Machine Learning repository</a>. The data set we use can be downloaded <a href="https://archive.ics.uci.edu/dataset/320/student+performance">here</a> and contains two data sets and a merged file. We will use the “student-mat.csv” file.</p>
+<p>We will use linear regression analysis to predict the final math grade of Portugese students in secondary schools. First, we load in the data. Make sure the data is saved in your current working directory or change the path to the data in the code below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"student-mat.csv"</span>, <span class="at">sep=</span><span class="st">";"</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  school sex age address famsize Pstatus Medu Fedu     Mjob     Fjob     reason
+1     GP   F  18       U     GT3       A    4    4  at_home  teacher     course
+2     GP   F  17       U     GT3       T    1    1  at_home    other     course
+3     GP   F  15       U     LE3       T    1    1  at_home    other      other
+4     GP   F  15       U     GT3       T    4    2   health services       home
+5     GP   F  16       U     GT3       T    3    3    other    other       home
+6     GP   M  16       U     LE3       T    4    3 services    other reputation
+  guardian traveltime studytime failures schoolsup famsup paid activities
+1   mother          2         2        0       yes     no   no         no
+2   father          1         2        0        no    yes   no         no
+3   mother          1         2        3       yes     no  yes         no
+4   mother          1         3        0        no    yes  yes        yes
+5   father          1         2        0        no    yes  yes         no
+6   mother          1         2        0        no    yes  yes        yes
+  nursery higher internet romantic famrel freetime goout Dalc Walc health
+1     yes    yes       no       no      4        3     4    1    1      3
+2      no    yes      yes       no      5        3     3    1    1      3
+3     yes    yes      yes       no      4        3     2    2    3      3
+4     yes    yes      yes      yes      3        2     2    1    1      5
+5     yes    yes       no       no      4        3     2    1    2      5
+6     yes    yes      yes       no      5        4     2    1    2      5
+  absences G1 G2 G3
+1        6  5  6  6
+2        4  5  5  6
+3       10  7  8 10
+4        2 15 14 15
+5        4  6 10 10
+6       10 15 15 15</code></pre>
+</div>
+</div>
+<p>We will predict the math grade at the third period <em>G3</em> based on student’s sex (<em>sex</em>), the weekly time spent studying (<em>studytime</em>), whether the student has additional paid mathematics classes (<em>paid</em>), and whether the student wants to take higher education (<em>higher</em>).</p>
+<div class="cell" data-hash="convergence_checks_cache/html/unnamed-chunk-3_ff2cf5906e2b657a9155f556b932f13f">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> sex <span class="sc">+</span> studytime <span class="sc">+</span> paid <span class="sc">+</span> higher, <span class="at">data =</span> dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/Erp00018/Library/R/arm64/4.2/library/Rcpp/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/unsupported"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/BH/include" -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/src/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppParallel/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -DBOOST_NO_AUTO_PTR  -include '/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include   -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
+In file included from &lt;built-in&gt;:1:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:88:
+/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:1: error: unknown type name 'namespace'
+namespace Eigen {
+^
+/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:16: error: expected ';' after top level declarator
+namespace Eigen {
+               ^
+               ;
+In file included from &lt;built-in&gt;:1:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
+/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:96:10: fatal error: 'complex' file not found
+#include &lt;complex&gt;
+         ^~~~~~~~~
+3 errors generated.
+make: *** [foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 1.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.17 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.023 seconds (Warm-up)
+Chain 1:                0.016 seconds (Sampling)
+Chain 1:                0.039 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 2e-06 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.024 seconds (Warm-up)
+Chain 2:                0.016 seconds (Sampling)
+Chain 2:                0.04 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 2e-06 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.025 seconds (Warm-up)
+Chain 3:                0.016 seconds (Sampling)
+Chain 3:                0.041 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 1e-06 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.01 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.023 seconds (Warm-up)
+Chain 4:                0.016 seconds (Sampling)
+Chain 4:                0.039 seconds (Total)
+Chain 4: </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: G3 ~ sex + studytime + paid + higher 
+   Data: dat (Number of observations: 395) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Population-Level Effects: 
+          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept     4.68      1.18     2.44     7.02 1.00     5073     3244
+sexM          1.59      0.48     0.62     2.53 1.00     5291     2617
+studytime     0.59      0.29     0.03     1.14 1.00     4683     3005
+paidyes       0.68      0.48    -0.25     1.62 1.00     5215     2963
+higheryes     3.66      1.07     1.53     5.74 1.00     5133     2977
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     4.46      0.16     4.16     4.78 1.00     5316     3244
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>Note that here, we rely on the default prior distributions in <code>brms</code>. Based on the point estimates, we could conclude that whether the student wants to take higher education, their sex, and, to a lesser extent, time spent studying can predict the math grade at the third period. However, to fully trust these results, we want to make sure that the model has converged. Luckily, <code>brms</code> will provide warnings whenever the model does not seem to have converged based on numeric cutoffs. Fortunately, convergence seems fine here.</p>
+</section>
+<section id="convergence" class="level2">
+<h2 class="anchored" data-anchor-id="convergence">Convergence</h2>
+<p>Generally, for simple models you are not likely to run into convergence issues. However, as models become more complex, sampling from the posterior might prove to be more difficult and convergence issues can arise. If this is the case, there are multiple potential solutions:</p>
+<ol type="1">
+<li>Change sampler settings, e.g., run more iterations</li>
+<li>Change the priors</li>
+<li>Change the model</li>
+</ol>
+<p>Below, a short summary on checking convergence with <code>brms</code> is provided. Extensive information on convergence issues with <code>Stan</code> or <code>brms</code> can be found <a href="https://mc-stan.org/misc/warnings.html">here</a>, which is a highly recommended read.</p>
+<section id="visual-diagnostics" class="level3">
+<h3 class="anchored" data-anchor-id="visual-diagnostics">Visual diagnostics</h3>
+<p>First, we can look at traceplots for specific parameters (note that we add <code>b_</code> to the variable name):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(fit1, <span class="at">variable =</span> <span class="st">"b_Intercept"</span>, <span class="at">type =</span> <span class="st">"trace"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>No divergences to plot.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Or we can plot density and traceplots for all parameters simultaneously:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="numerical-diagnostics" class="level3">
+<h3 class="anchored" data-anchor-id="numerical-diagnostics">Numerical diagnostics</h3>
+<p>There are several numerical diagnostics to check. Some cutoffs for each diagnostic are presented below but remember that these are arbitrary cutoffs and in the end, all available information should be combined to guide assessment of convergence.</p>
+<ul>
+<li>Rhat: ratio of the variance between and within chains. Values of 1 indicate convergence, larger values indicate non-convergence. General cutoff: Rhat &lt; 1.01.</li>
+<li>Effective sample size: how many independent samples contain the same amount of information as the dependent samples obtained? Bulk-ESS estimates sampling efficiency for point summaries such as the posterior mean and should be about 100 times the number of chains. Tail-ESS estimates sampling efficiency for the posterior tails.</li>
+<li>Divergent transitions: indicate that our iteration steps too far and moves away from the actual posterior density. Even a small number can bias the results, but just a few divergences and good Rhat and ESS values can provide a sufficiently reliable posterior.</li>
+<li>Max. treedepth exceeded: a warning that your sampler is not as efficient. If this is your only warning and other diagnostics are good, you can ignore this warning.</li>
+<li>Low Bayesian Fraction of Missing Information (BFMI): indicates that the posterior distribution was not well explored.</li>
+</ul>
+</section>
+<section id="solving-problems" class="level3">
+<h3 class="anchored" data-anchor-id="solving-problems">Solving problems</h3>
+<p>By default, <code>brms</code> will run 4 chains of 2000 MCMC samples each in which the first 1000 draws are removed as burn-in. As a result, 4000 samples remain for inference.</p>
+<p>If Rhat is too high or ESS or BFMI too low, try to increase the number of iterations. This can be done via the <code>iter</code> argument. Note that by default, half of the number of iterations is removed as burn-in so to avoid removing too much samples as burn-in, you can additionally specify the <code>warmup</code> to remain at 1000 iterations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> sex <span class="sc">+</span> studytime <span class="sc">+</span> paid <span class="sc">+</span> higher, <span class="at">data =</span> dat,</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If increasing the number of iterations does not help, you should carefully revisit your model and respecify or introduce more information via stronger priors.</p>
+<p>Divergent transitions are more tricky since they indicate a problem or a difficulty with sampling from the posterior distribution which is rarely solved by increasing the number of iterations. Instead, you could try to increase the target average proposal acceptance probability via <code>adapt_delta</code>. The default is 0.80 which you can increase to, for example, 0.90 although this will slow down the sampling.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> sex <span class="sc">+</span> studytime <span class="sc">+</span> paid <span class="sc">+</span> higher, <span class="at">data =</span> dat,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.90</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="posterior-predictive-checks" class="level2">
+<h2 class="anchored" data-anchor-id="posterior-predictive-checks">Posterior predictive checks</h2>
+<p><code>brms</code> has several posterior predictive checks built in. For example, we can compare the sample means of replicated data sets to the observed data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit1, <span class="at">type =</span> <span class="st">"stat"</span>, <span class="at">stat =</span> <span class="st">"mean"</span>, <span class="at">prefix =</span> <span class="st">"ppc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using all posterior draws for ppc type 'stat' by default.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Or standard deviations:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit1, <span class="at">type =</span> <span class="st">"stat"</span>, <span class="at">stat =</span> <span class="st">"sd"</span>, <span class="at">prefix =</span> <span class="st">"ppc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using all posterior draws for ppc type 'stat' by default.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Or both combined:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit1, <span class="at">type =</span> <span class="st">"stat_2d"</span>, <span class="at">prefix =</span> <span class="st">"ppc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using all posterior draws for ppc type 'stat_2d' by default.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>These posterior predictive checks all show that generated data based on the model resembles the observed data quite well. However, suppose we are not just interested in accurately capturing the mean and standard deviation of the math grades but we also want to accurately capture the percentage of students who pass the course. We can check whether our model accurately represents this quantity by conducting a posterior predictive check using a custom test statistic.</p>
+<p>First, let’s compute the percentage of students who pass the course in the observed data. The math grade ranges from 0 to 20 and a grade equal to or higher than 10 means a pass:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>yobs <span class="ot">&lt;-</span> dat<span class="sc">$</span>G3</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>passObs <span class="ot">&lt;-</span> <span class="fu">sum</span>(yobs <span class="sc">&gt;=</span> <span class="dv">10</span>)<span class="sc">/</span><span class="fu">length</span>(yobs)<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>passObs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 67.08861</code></pre>
+</div>
+</div>
+<p>Now, let’s write a function that can compute the percentage of students who pass the course for data sets generated from the posterior predictive distribution. We use the <code>posterior_predict</code> function to generate 4000 data sets containing 395 y-values: one data set per posterior draw.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>passPerc <span class="ot">&lt;-</span> <span class="cf">function</span>(fit){</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  yrep <span class="ot">&lt;-</span> <span class="fu">posterior_predict</span>(fit) </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  pass <span class="ot">&lt;-</span> <span class="fu">apply</span>(yrep, <span class="dv">1</span>, <span class="cf">function</span>(x){</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sum</span>(x <span class="sc">&gt;=</span> <span class="dv">10</span>)<span class="sc">/</span><span class="fu">length</span>(x)<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(pass)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now plot the pass percentages for the generated data and compare them to the observed percentage:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">passPerc</span>(fit1), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">70</span>))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> passObs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We see that our model does not capture this percentage well. We can further quantify this by computing the posterior predictive p-value, which equals zero in this case because none of the generated data sets exceed the observed pass percentage.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">passPerc</span>(fit1) <span class="sc">&gt;=</span> passObs)<span class="sc">/</span><span class="fu">length</span>(<span class="fu">passPerc</span>(fit1))<span class="sc">*</span><span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>If we look at a simple graphical posterior predictive check, we can see what is going wrong:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit1, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Our data contains much more students who got a zero than our model predicts<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. The nice thing about this check is that this immediately shows how we might improve our model: we need to allow for more zeros. This can be done in <code>brms</code> using a hurdle model, such as the <a href="https://www.andrewheiss.com/blog/2022/05/09/hurdle-lognormal-gaussian-brms/#hurdle-lognormal-model">hurdle log-normal</a>:</p>
+<div class="cell" data-hash="convergence_checks_cache/html/unnamed-chunk-16_b89be4dad7ca9feb901e52ecf8a8bf4f">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>fit_huLN <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> sex <span class="sc">+</span> studytime <span class="sc">+</span> paid <span class="sc">+</span> higher, <span class="at">data =</span> dat,</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">family =</span> <span class="fu">hurdle_lognormal</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/Erp00018/Library/R/arm64/4.2/library/Rcpp/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/unsupported"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/BH/include" -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/src/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppParallel/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -DBOOST_NO_AUTO_PTR  -include '/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include   -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
+In file included from &lt;built-in&gt;:1:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:88:
+/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:1: error: unknown type name 'namespace'
+namespace Eigen {
+^
+/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:16: error: expected ';' after top level declarator
+namespace Eigen {
+               ^
+               ;
+In file included from &lt;built-in&gt;:1:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
+/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:96:10: fatal error: 'complex' file not found
+#include &lt;complex&gt;
+         ^~~~~~~~~
+3 errors generated.
+make: *** [foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.7 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.253 seconds (Warm-up)
+Chain 1:                0.244 seconds (Sampling)
+Chain 1:                0.497 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 4.6e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.46 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.28 seconds (Warm-up)
+Chain 2:                0.244 seconds (Sampling)
+Chain 2:                0.524 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 4.5e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.45 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.262 seconds (Warm-up)
+Chain 3:                0.258 seconds (Sampling)
+Chain 3:                0.52 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 3.7e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.37 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.263 seconds (Warm-up)
+Chain 4:                0.238 seconds (Sampling)
+Chain 4:                0.501 seconds (Total)
+Chain 4: </code></pre>
+</div>
+</div>
+<p>This model can better predict the number of zeros:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_huLN, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Let’s see if this solves our problem:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">passPerc</span>(fit_huLN), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">70</span>))</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> passObs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">passPerc</span>(fit_huLN) <span class="sc">&gt;=</span> passObs)<span class="sc">/</span><span class="fu">length</span>(<span class="fu">passPerc</span>(fit_huLN))<span class="sc">*</span><span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.05</code></pre>
+</div>
+</div>
+<p>Unfortunately, this model still does not do a very good job of accurately representing the number of students who passed the course.</p>
+<p>Let’s try a slightly different hurdle model, the hurdle Poisson:</p>
+<div class="cell" data-hash="convergence_checks_cache/html/unnamed-chunk-19_61bfd141218912affb0ff6c109f93b22">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fit_huP <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> sex <span class="sc">+</span> studytime <span class="sc">+</span> paid <span class="sc">+</span> higher, <span class="at">data =</span> dat,</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">family =</span> <span class="fu">hurdle_poisson</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/Erp00018/Library/R/arm64/4.2/library/Rcpp/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/unsupported"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/BH/include" -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/src/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/RcppParallel/include/"  -I"/Users/Erp00018/Library/R/arm64/4.2/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -DBOOST_NO_AUTO_PTR  -include '/Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include   -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
+In file included from &lt;built-in&gt;:1:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:88:
+/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:1: error: unknown type name 'namespace'
+namespace Eigen {
+^
+/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:628:16: error: expected ';' after top level declarator
+namespace Eigen {
+               ^
+               ;
+In file included from &lt;built-in&gt;:1:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+In file included from /Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Dense:1:
+/Users/Erp00018/Library/R/arm64/4.2/library/RcppEigen/include/Eigen/Core:96:10: fatal error: 'complex' file not found
+#include &lt;complex&gt;
+         ^~~~~~~~~
+3 errors generated.
+make: *** [foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 8.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.87 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 0.424 seconds (Warm-up)
+Chain 1:                0.415 seconds (Sampling)
+Chain 1:                0.839 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 6.3e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.63 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 0.438 seconds (Warm-up)
+Chain 2:                0.42 seconds (Sampling)
+Chain 2:                0.858 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 6e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.6 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 0.465 seconds (Warm-up)
+Chain 3:                0.425 seconds (Sampling)
+Chain 3:                0.89 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 6.3e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.63 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 0.438 seconds (Warm-up)
+Chain 4:                0.414 seconds (Sampling)
+Chain 4:                0.852 seconds (Total)
+Chain 4: </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">passPerc</span>(fit_huP), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">70</span>))</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> passObs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="convergence_checks_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">passPerc</span>(fit_huP) <span class="sc">&gt;=</span> passObs)<span class="sc">/</span><span class="fu">length</span>(<span class="fu">passPerc</span>(fit_huP))<span class="sc">*</span><span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12.825</code></pre>
+</div>
+</div>
+<p>It is still not perfect, but at least we are getting somewhere.</p>
+<p>The important point here is that you should define the test statistic(s) you care about and use those for posterior predictive checking. The goal is not to definitively accept your model but rather to poke and prod it in different ways to see where improvements might be made and knowledge might be gained.</p>
+</section>
+<section id="prior-predictive-checks" class="level2">
+<h2 class="anchored" data-anchor-id="prior-predictive-checks">Prior predictive checks</h2>
+<p>We can use the same intuition to generate data from the prior predictive distribution before we run the analysis. This can be done to assess whether our priors make sense.</p>
+<p>The code to do the predictive checks is the same, only now we need to use the <code>brms</code> fitobject that samples from the prior only:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>priorfit <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> sex <span class="sc">+</span> studytime <span class="sc">+</span> paid <span class="sc">+</span> higher, <span class="at">data =</span> dat,</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">sample_prior =</span> <span class="st">"only"</span>)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(priorfit, <span class="at">prefix =</span> <span class="st">"ppd"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="original-computing-environment" class="level2">
+<h2 class="anchored" data-anchor-id="original-computing-environment">Original computing environment</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.2.2 (2022-10-31)
+ os       macOS Ventura 13.5
+ system   aarch64, darwin20
+ ui       X11
+ language (EN)
+ collate  en_US.UTF-8
+ ctype    en_US.UTF-8
+ tz       Europe/Amsterdam
+ date     2023-08-09
+ pandoc   2.19.2 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ package        * version  date (UTC) lib source
+ abind            1.4-5    2016-07-21 [1] CRAN (R 4.2.0)
+ backports        1.4.1    2021-12-13 [1] CRAN (R 4.2.0)
+ base64enc        0.1-3    2015-07-28 [1] CRAN (R 4.2.0)
+ bayesplot        1.10.0   2022-11-16 [1] CRAN (R 4.2.0)
+ boot             1.3-28   2021-05-03 [2] CRAN (R 4.2.2)
+ bridgesampling   1.1-2    2021-04-16 [1] CRAN (R 4.2.0)
+ brms           * 2.19.0   2023-03-14 [1] CRAN (R 4.2.0)
+ Brobdingnag      1.2-9    2022-10-19 [1] CRAN (R 4.2.0)
+ cachem           1.0.8    2023-05-01 [1] CRAN (R 4.2.0)
+ callr            3.7.3    2022-11-02 [1] CRAN (R 4.2.0)
+ checkmate        2.2.0    2023-04-27 [1] CRAN (R 4.2.0)
+ cli              3.6.1    2023-03-23 [1] CRAN (R 4.2.0)
+ coda             0.19-4   2020-09-30 [1] CRAN (R 4.2.0)
+ codetools        0.2-18   2020-11-04 [2] CRAN (R 4.2.2)
+ colorspace       2.1-0    2023-01-23 [1] CRAN (R 4.2.0)
+ colourpicker     1.2.0    2022-10-28 [1] CRAN (R 4.2.0)
+ crayon           1.5.2    2022-09-29 [1] CRAN (R 4.2.0)
+ crosstalk        1.2.0    2021-11-04 [1] CRAN (R 4.2.0)
+ curl             5.0.0    2023-01-12 [1] CRAN (R 4.2.0)
+ devtools         2.4.5    2022-10-11 [1] CRAN (R 4.2.0)
+ digest           0.6.31   2022-12-11 [1] CRAN (R 4.2.0)
+ distributional   0.3.2    2023-03-22 [1] CRAN (R 4.2.0)
+ dplyr            1.1.2    2023-04-20 [1] CRAN (R 4.2.0)
+ DT               0.27     2023-01-17 [1] CRAN (R 4.2.0)
+ dygraphs         1.1.1.6  2018-07-11 [1] CRAN (R 4.2.0)
+ ellipsis         0.3.2    2021-04-29 [1] CRAN (R 4.2.0)
+ emmeans          1.8.5    2023-03-08 [1] CRAN (R 4.2.0)
+ estimability     1.4.1    2022-08-05 [1] CRAN (R 4.2.0)
+ evaluate         0.21     2023-05-05 [1] CRAN (R 4.2.0)
+ fansi            1.0.4    2023-01-22 [1] CRAN (R 4.2.0)
+ farver           2.1.1    2022-07-06 [1] CRAN (R 4.2.0)
+ fastmap          1.1.1    2023-02-24 [1] CRAN (R 4.2.0)
+ fs               1.6.2    2023-04-25 [1] CRAN (R 4.2.0)
+ gamm4            0.2-6    2020-04-03 [1] CRAN (R 4.2.0)
+ generics         0.1.3    2022-07-05 [1] CRAN (R 4.2.0)
+ ggplot2          3.4.2    2023-04-03 [1] CRAN (R 4.2.0)
+ glue             1.6.2    2022-02-24 [1] CRAN (R 4.2.0)
+ gridExtra        2.3      2017-09-09 [1] CRAN (R 4.2.0)
+ gtable           0.3.3    2023-03-21 [1] CRAN (R 4.2.0)
+ gtools           3.9.4    2022-11-27 [1] CRAN (R 4.2.0)
+ htmltools        0.5.5    2023-03-23 [1] CRAN (R 4.2.0)
+ htmlwidgets      1.6.2    2023-03-17 [1] CRAN (R 4.2.0)
+ httpuv           1.6.10   2023-05-08 [1] CRAN (R 4.2.2)
+ igraph           1.4.2    2023-04-07 [1] CRAN (R 4.2.0)
+ inline           0.3.19   2021-05-31 [1] CRAN (R 4.2.0)
+ jsonlite         1.8.4    2022-12-06 [1] CRAN (R 4.2.0)
+ knitr            1.42     2023-01-25 [1] CRAN (R 4.2.0)
+ labeling         0.4.2    2020-10-20 [1] CRAN (R 4.2.0)
+ later            1.3.1    2023-05-02 [1] CRAN (R 4.2.0)
+ lattice          0.20-45  2021-09-22 [2] CRAN (R 4.2.2)
+ lifecycle        1.0.3    2022-10-07 [1] CRAN (R 4.2.0)
+ lme4             1.1-33   2023-04-25 [1] CRAN (R 4.2.0)
+ loo              2.6.0    2023-03-31 [1] CRAN (R 4.2.0)
+ magrittr         2.0.3    2022-03-30 [1] CRAN (R 4.2.0)
+ markdown         1.6      2023-04-07 [1] CRAN (R 4.2.0)
+ MASS             7.3-58.1 2022-08-03 [2] CRAN (R 4.2.2)
+ Matrix           1.5-1    2022-09-13 [2] CRAN (R 4.2.2)
+ matrixStats      0.63.0   2022-11-18 [1] CRAN (R 4.2.0)
+ memoise          2.0.1    2021-11-26 [1] CRAN (R 4.2.0)
+ mgcv             1.8-41   2022-10-21 [2] CRAN (R 4.2.2)
+ mime             0.12     2021-09-28 [1] CRAN (R 4.2.0)
+ miniUI           0.1.1.1  2018-05-18 [1] CRAN (R 4.2.0)
+ minqa            1.2.5    2022-10-19 [1] CRAN (R 4.2.0)
+ multcomp         1.4-23   2023-03-09 [1] CRAN (R 4.2.0)
+ munsell          0.5.0    2018-06-12 [1] CRAN (R 4.2.0)
+ mvtnorm          1.1-3    2021-10-08 [1] CRAN (R 4.2.0)
+ nlme             3.1-160  2022-10-10 [2] CRAN (R 4.2.2)
+ nloptr           2.0.3    2022-05-26 [1] CRAN (R 4.2.0)
+ pillar           1.9.0    2023-03-22 [1] CRAN (R 4.2.0)
+ pkgbuild         1.4.0    2022-11-27 [1] CRAN (R 4.2.0)
+ pkgconfig        2.0.3    2019-09-22 [1] CRAN (R 4.2.0)
+ pkgload          1.3.2    2022-11-16 [1] CRAN (R 4.2.0)
+ plyr             1.8.8    2022-11-11 [1] CRAN (R 4.2.0)
+ posterior        1.4.1    2023-03-14 [1] CRAN (R 4.2.0)
+ prettyunits      1.1.1    2020-01-24 [1] CRAN (R 4.2.0)
+ processx         3.8.1    2023-04-18 [1] CRAN (R 4.2.0)
+ profvis          0.3.8    2023-05-02 [1] CRAN (R 4.2.0)
+ projpred         2.6.0    2023-06-01 [1] CRAN (R 4.2.0)
+ promises         1.2.0.1  2021-02-11 [1] CRAN (R 4.2.0)
+ ps               1.7.5    2023-04-18 [1] CRAN (R 4.2.0)
+ purrr            1.0.1    2023-01-10 [1] CRAN (R 4.2.0)
+ R6               2.5.1    2021-08-19 [1] CRAN (R 4.2.0)
+ Rcpp           * 1.0.10   2023-01-22 [1] CRAN (R 4.2.0)
+ RcppParallel     5.1.7    2023-02-27 [1] CRAN (R 4.2.0)
+ remotes          2.4.2    2021-11-30 [1] CRAN (R 4.2.0)
+ reshape2         1.4.4    2020-04-09 [1] CRAN (R 4.2.0)
+ rlang            1.1.1    2023-04-28 [1] CRAN (R 4.2.0)
+ rmarkdown        2.21     2023-03-26 [1] CRAN (R 4.2.0)
+ rstan            2.26.22  2023-04-10 [1] local
+ rstantools       2.3.1    2023-03-30 [1] CRAN (R 4.2.0)
+ rstudioapi       0.14     2022-08-22 [1] CRAN (R 4.2.0)
+ sandwich         3.0-2    2022-06-15 [1] CRAN (R 4.2.0)
+ scales           1.2.1    2022-08-20 [1] CRAN (R 4.2.0)
+ sessioninfo      1.2.2    2021-12-06 [1] CRAN (R 4.2.0)
+ shiny            1.7.4    2022-12-15 [1] CRAN (R 4.2.0)
+ shinyjs          2.1.0    2021-12-23 [1] CRAN (R 4.2.0)
+ shinystan        2.6.0    2022-03-03 [1] CRAN (R 4.2.0)
+ shinythemes      1.2.0    2021-01-25 [1] CRAN (R 4.2.0)
+ StanHeaders      2.26.27  2023-06-14 [1] CRAN (R 4.2.0)
+ stringi          1.7.12   2023-01-11 [1] CRAN (R 4.2.0)
+ stringr          1.5.0    2022-12-02 [1] CRAN (R 4.2.0)
+ survival         3.4-0    2022-08-09 [2] CRAN (R 4.2.2)
+ tensorA          0.36.2   2020-11-19 [1] CRAN (R 4.2.0)
+ TH.data          1.1-2    2023-04-17 [1] CRAN (R 4.2.0)
+ threejs          0.3.3    2020-01-21 [1] CRAN (R 4.2.0)
+ tibble           3.2.1    2023-03-20 [1] CRAN (R 4.2.0)
+ tidyselect       1.2.0    2022-10-10 [1] CRAN (R 4.2.0)
+ urlchecker       1.0.1    2021-11-30 [1] CRAN (R 4.2.0)
+ usethis          2.1.6    2022-05-25 [1] CRAN (R 4.2.0)
+ utf8             1.2.3    2023-01-31 [1] CRAN (R 4.2.0)
+ V8               4.3.0    2023-04-08 [1] CRAN (R 4.2.0)
+ vctrs            0.6.2    2023-04-19 [1] CRAN (R 4.2.0)
+ withr            2.5.0    2022-03-03 [1] CRAN (R 4.2.0)
+ xfun             0.39     2023-04-20 [1] CRAN (R 4.2.0)
+ xtable           1.8-4    2019-04-21 [1] CRAN (R 4.2.0)
+ xts              0.13.1   2023-04-16 [1] CRAN (R 4.2.0)
+ yaml             2.3.7    2023-01-23 [1] CRAN (R 4.2.0)
+ zoo              1.8-12   2023-04-13 [1] CRAN (R 4.2.0)
+
+ [1] /Users/Erp00018/Library/R/arm64/4.2/library
+ [2] /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
+</div>
+</div>
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-mathData" class="csl-entry" role="doc-biblioentry">
+Cortez, Paulo, and Alice Maria Gonçalves Silva. 2008. <span>“Using Data Mining to Predict Secondary School Student Performance.”</span> In <em><span class="nocase">In A. Brito and J. Teixeira Eds., Proceedings of the 5th FUture BUsiness TEChnology Conference</span></em>, 5–12.
+</div>
+<div id="ref-UCIdata" class="csl-entry" role="doc-biblioentry">
+Lichman, M. 2013. <span>“<span>UCI</span> Machine Learning Repository.”</span> University of California, Irvine, School of Information; Computer Sciences. <a href="http://archive.ics.uci.edu/ml">http://archive.ics.uci.edu/ml</a>.
+</div>
+<div id="ref-StanConv" class="csl-entry" role="doc-biblioentry">
+Stan Development Team. 2022. <span>“<span class="nocase">Runtime warnings and convergence problems</span>.”</span> <a href="https://mc-stan.org/misc/warnings.html#diagnosing-and-resolving-problems">https://mc-stan.org/misc/warnings.html#diagnosing-and-resolving-problems</a>.
+</div>
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Note that if we would have looked at our data before fitting the model as we should always do, we could have predicted that our normal model would not fit well.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

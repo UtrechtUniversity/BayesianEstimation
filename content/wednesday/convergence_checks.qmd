@@ -1,0 +1,214 @@
+---
+title: "Convergence and Checks with Bayes"
+author: "Sara van Erp"
+format: html
+nocite: |
+  @StanConv @mathData @UCIdata
+bibliography: references.bib 
+---
+
+This document illustrates different convergence criteria and model checking possibilities in `Stan`, which is the program underlying various R-packages for Bayesian analysis, including `brms`. 
+
+## Preliminaries
+```{r}
+#| echo: true
+#| message: false
+library(brms)
+
+set.seed(07082023)
+```
+
+## An example: Predicting students' math performance.
+
+To illustrate Bayesian convergence and checks, we will use a data set that is available from the [UCI Machine Learning repository](https://archive.ics.uci.edu). The data set we use can be downloaded [here](https://archive.ics.uci.edu/dataset/320/student+performance) and contains two data sets and a merged file. We will use the "student-mat.csv" file.
+
+We will use linear regression analysis to predict the final math grade of Portugese students in secondary schools. First, we load in the data. Make sure the data is saved in your current working directory or change the path to the data in the code below.
+
+```{r}
+dat <- read.table("student-mat.csv", sep=";", header=TRUE)
+head(dat)
+```
+
+We will predict the math grade at the third period *G3* based on student's sex (*sex*), the weekly time spent studying (*studytime*), whether the student has additional paid mathematics classes (*paid*), and whether the student wants to take higher education (*higher*).
+
+```{r}
+#| cache: true
+fit1 <- brm(G3 ~ sex + studytime + paid + higher, data = dat)
+summary(fit1)
+```
+
+Note that here, we rely on the default prior distributions in `brms`. Based on the point estimates, we could conclude that whether the student wants to take higher education, their sex, and, to a lesser extent, time spent studying can predict the math grade at the third period. However, to fully trust these results, we want to make sure that the model has converged. Luckily, `brms` will provide warnings whenever the model does not seem to have converged based on numeric cutoffs. Fortunately, convergence seems fine here. 
+
+## Convergence
+
+Generally, for simple models you are not likely to run into convergence issues. However, as models become more complex, sampling from the posterior might prove to be more difficult and convergence issues can arise. If this is the case, there are multiple potential solutions:
+
+1. Change sampler settings, e.g., run more iterations 
+2. Change the priors
+3. Change the model
+
+Below, a short summary on checking convergence with `brms` is provided. Extensive information on convergence issues with `Stan` or `brms` can be found [here](https://mc-stan.org/misc/warnings.html), which is a highly recommended read.
+
+### Visual diagnostics
+
+First, we can look at traceplots for specific parameters (note that we add `b_` to the variable name):
+
+```{r}
+mcmc_plot(fit1, variable = "b_Intercept", type = "trace")
+```
+
+Or we can plot density and traceplots for all parameters simultaneously:
+
+```{r}
+plot(fit1)
+```
+
+### Numerical diagnostics
+
+There are several numerical diagnostics to check. Some cutoffs for each diagnostic are presented below but remember that these are arbitrary cutoffs and in the end, all available information should be combined to guide assessment of convergence. 
+
+- Rhat: ratio of the variance between and within chains. Values of 1 indicate convergence, larger values indicate non-convergence. General cutoff: Rhat < 1.01.
+- Effective sample size: how many independent samples contain the same amount of information as the dependent samples obtained? Bulk-ESS estimates sampling efficiency for point summaries such as the posterior mean and should be about 100 times the number of chains. Tail-ESS estimates sampling efficiency for the posterior tails.
+- Divergent transitions: indicate that our iteration steps too far and moves away from the actual posterior density. Even a small number can bias the results, but just a few divergences and good Rhat and ESS values can provide a sufficiently reliable posterior.
+- Max. treedepth exceeded: a warning that your sampler is not as efficient. If this is your only warning and other diagnostics are good, you can ignore this warning. 
+- Low Bayesian Fraction of Missing Information (BFMI): indicates that the posterior distribution was not well explored. 
+
+### Solving problems
+
+By default, `brms` will run 4 chains of 2000 MCMC samples each in which the first 1000 draws are removed as burn-in. As a result, 4000 samples remain for inference. 
+
+If Rhat is too high or ESS or BFMI too low, try to increase the number of iterations. This can be done via the `iter` argument. Note that by default, half of the number of iterations is removed as burn-in so to avoid removing too much samples as burn-in, you can additionally specify the `warmup` to remain at 1000 iterations.
+
+```{r}
+#| eval: false
+fit2 <- brm(G3 ~ sex + studytime + paid + higher, data = dat,
+            iter = 4000, warmup = 1000)
+```
+
+If increasing the number of iterations does not help, you should carefully revisit your model and respecify or introduce more information via stronger priors.
+
+Divergent transitions are more tricky since they indicate a problem or a difficulty with sampling from the posterior distribution which is rarely solved by increasing the number of iterations. Instead, you could try to increase the target average proposal acceptance probability via `adapt_delta`. The default is 0.80 which you can increase to, for example, 0.90 although this will slow down the sampling.
+
+```{r}
+#| eval: false
+fit2 <- brm(G3 ~ sex + studytime + paid + higher, data = dat,
+            control = list(adapt_delta = 0.90))
+```
+
+## Posterior predictive checks
+
+`brms` has several posterior predictive checks built in. For example, we can compare the sample means of replicated data sets to the observed data:
+
+```{r}
+pp_check(fit1, type = "stat", stat = "mean", prefix = "ppc")
+```
+
+Or standard deviations:
+
+```{r}
+pp_check(fit1, type = "stat", stat = "sd", prefix = "ppc")
+```
+
+Or both combined:
+```{r}
+pp_check(fit1, type = "stat_2d", prefix = "ppc")
+```
+
+These posterior predictive checks all show that generated data based on the model resembles the observed data quite well. 
+However, suppose we are not just interested in accurately capturing the mean and standard deviation of the math grades but we also want to accurately capture the percentage of students who pass the course. We can check whether our model accurately represents this quantity by conducting a posterior predictive check using a custom test statistic.
+
+First, let's compute the percentage of students who pass the course in the observed data. The math grade ranges from 0 to 20 and a grade equal to or higher than 10 means a pass:
+
+```{r}
+yobs <- dat$G3
+passObs <- sum(yobs >= 10)/length(yobs)*100
+passObs
+```
+
+Now, let's write a function that can compute the percentage of students who pass the course for data sets generated from the posterior predictive distribution. We use the `posterior_predict` function to generate 4000 data sets containing 395 y-values: one data set per posterior draw.
+
+```{r}
+passPerc <- function(fit){
+  yrep <- posterior_predict(fit) 
+  pass <- apply(yrep, 1, function(x){
+    sum(x >= 10)/length(x)*100
+  })
+  return(pass)
+}
+```
+
+We can now plot the pass percentages for the generated data and compare them to the observed percentage:
+
+```{r}
+hist(passPerc(fit1), xlim = c(40, 70))
+abline(v = passObs)
+```
+
+We see that our model does not capture this percentage well. We can further quantify this by computing the posterior predictive p-value, which equals zero in this case because none of the generated data sets exceed the observed pass percentage.
+
+```{r}
+sum(passPerc(fit1) >= passObs)/length(passPerc(fit1))*100
+```
+
+If we look at a simple graphical posterior predictive check, we can see what is going wrong:
+
+```{r}
+pp_check(fit1, type = "dens_overlay", prefix = "ppc", ndraws = 100)
+```
+Our data contains much more students who got a zero than our model predicts^[Note that if we would have looked at our data before fitting the model as we should always do, we could have predicted that our normal model would not fit well.]. The nice thing about this check is that this immediately shows how we might improve our model: we need to allow for more zeros. This can be done in `brms` using a hurdle model, such as the [hurdle log-normal](https://www.andrewheiss.com/blog/2022/05/09/hurdle-lognormal-gaussian-brms/#hurdle-lognormal-model):
+
+```{r}
+#| cache: true
+fit_huLN <- brm(G3 ~ sex + studytime + paid + higher, data = dat,
+                family = hurdle_lognormal())
+```
+
+This model can better predict the number of zeros:
+
+```{r}
+pp_check(fit_huLN, type = "dens_overlay", prefix = "ppc", ndraws = 100)
+```
+
+Let's see if this solves our problem:
+
+```{r}
+hist(passPerc(fit_huLN), xlim = c(40, 70))
+abline(v = passObs)
+sum(passPerc(fit_huLN) >= passObs)/length(passPerc(fit_huLN))*100
+```
+Unfortunately, this model still does not do a very good job of accurately representing the number of students who passed the course.
+
+Let's try a slightly different hurdle model, the hurdle Poisson:
+
+```{r}
+#| cache: true
+fit_huP <- brm(G3 ~ sex + studytime + paid + higher, data = dat,
+                family = hurdle_poisson())
+hist(passPerc(fit_huP), xlim = c(40, 70))
+abline(v = passObs)
+sum(passPerc(fit_huP) >= passObs)/length(passPerc(fit_huP))*100
+```
+
+It is still not perfect, but at least we are getting somewhere.
+
+The important point here is that you should define the test statistic(s) you care about and use those for posterior predictive checking. The goal is not to definitively accept your model but rather to poke and prod it in different ways to see where improvements might be made and knowledge might be gained.
+
+## Prior predictive checks
+
+We can use the same intuition to generate data from the prior predictive distribution before we run the analysis. This can be done to assess whether our priors make sense. 
+
+The code to do the predictive checks is the same, only now we need to use the `brms` fitobject that samples from the prior only:
+
+```{r}
+#| eval: false
+priorfit <- brm(G3 ~ sex + studytime + paid + higher, data = dat,
+                sample_prior = "only")
+pp_check(priorfit, prefix = "ppd", ndraws = 100)
+```
+
+## Original computing environment
+
+```{r}
+devtools::session_info()
+```
+
