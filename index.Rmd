@@ -268,7 +268,7 @@ Day 4: although the prior distribution can offer many advantages, the prior can 
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
-- slides day 4
+- <a href="content/thursday/slides_day4.pdf" target="_blank">Slides day 4</a> 
 
 - <a href="content/thursday/exercises_Bayesian_regularization.html" target="_blank">Practical day 4</a>
 
