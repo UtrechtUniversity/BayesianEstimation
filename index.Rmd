@@ -184,7 +184,7 @@ Note that the exercise requires a working version of the BRMS packages. See the 
 
 - <a href="content/tuesday/Day_2_small_samples.pdf" target="_blank">Slides day 2, part 1</a>
 - <a href="content/tuesday/Day_2_example_LGMM_PTSD.pdf" target="_blank">Slides day 2, part 2</a>
-- <a href="content/tuesday/Day2_WAMBS_version_Summerschool_2023.pdf" target="_blank">Slides day 3, part 1</a>
+- <a href="content/tuesday/Day2_WAMBS_version_Summerschool_2023.pdf" target="_blank">Slides day 2, part 3</a>
 - <a href="content/tuesday/Day2_brms_example.pdf" target="_blank">Slides day 2, part 4</a>
 
 
