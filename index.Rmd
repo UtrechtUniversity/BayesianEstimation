@@ -296,7 +296,7 @@ Day 5: today we elaborate on ways in which informative priors can be specified. 
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
-- slides day 5
+- <a href="content/friday/Day_5_expert_elicitation.pdf" target="_blank">Slides day 5</a>
 
 **Exercise ‘Expert Elicitation'**
 
