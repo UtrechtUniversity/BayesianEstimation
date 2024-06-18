@@ -1,5 +1,5 @@
 ---
-title: "A gentle introduction to Bayesian Estimation 2023"
+title: "A gentle introduction to Bayesian Estimation 2024"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -30,10 +30,9 @@ We suggest to access the materials online when we consider them. The materials c
 
 Instructors: 
 
- - <a href="https://www.rensvandeschoot.com/" target="_blank">Rens van de Schoot</a>
  - <a href="https://www.saravanerp.com/" target="_blank">Sara van Erp</a>
  - <a href="https://www.ducoveen.com/" target="_blank">Duco Veen</a>
- - <a href="https://www.uu.nl/staff/EMGrandfield" target="_blank">Beth Grandfield</a>
+ - Florian Metwaly
  
 
 ---
@@ -57,7 +56,7 @@ The instructors will clarify the differences between the philosophies and interp
 | When?  |      | What?      |
 |:--------|:-------|:-------------|
 | 09.00 | 12.00  | Lecture |
-|       | <a href="https://www.uu.nl/en/educatorium" target="_blank">Lunch</a> |            
+|       | <a href="https://www.uu.nl/en/vening-meineszgebouw-a" target="_blank">Lunch</a> |            
 | 13:30 | 16.00  | Computer lab |
 
 
@@ -291,7 +290,7 @@ https://github.com/UtrechtUniversity/BayesianEstimation
 ## Column 1
 
 ### Outline
-Day 5: today we elaborate on ways in which informative priors can be specified. We discuss how we can use expert knowledge and previous studies to inform these decisions. We also provide case studies and end with general reflections.
+Day 5: today we elaborate on ways in which informative priors can be specified. We discuss how we can use expert knowledge and previous studies to inform these decisions. We also provide case studies and end with general reflections. In the afternoon, there will be opportunity to analyse your own data using the techniques learned during the week. 
 
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
@@ -303,6 +302,12 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 This exercise, using the Five-Step Method Shinyapp, introduces the concept of specifying prior distributions based on eliciting expert knowledge. The participants will be guided through a comprehensive five-step method, enabling experts from diverse fields, such as academia, business, and society, to formulate their beliefs and predictions in the form of a probability distribution.
 
 To start with the exercise, click <a href="https://www.rensvandeschoot.com/tutorials/expert-judgement/" target="_blank">here</a>. The underlying code for the exercise is readily available on <a href="https://github.com/VeenDuco/Five-Step-Method-Shinyapp" target="_blank">GitHub</a>.
+
+**Exercise ‘Skills showcase'**
+
+In this exercise, you will analyse your own data to showcase the skills you have learned during the week. You can find the exercise - <a href="content/friday/skills_showcase.html" target="_blank">here</a>.
+
+Please note: if you are participating in this course via IOPS, please email your Markdown document before September 1st, 2024 to obtain your credits.
 
 ## Column 2
 
