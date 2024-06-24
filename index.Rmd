@@ -148,7 +148,7 @@ The underlying code is available on <a href="https://github.com/Rensvandeschoot/
 
 The Plausible Parameter Space (PPS) Shiny App is designed to help users define their priors in a linear regression with two regression coefficients. Users are asked to specify their plausible parameter space and their expected prior means and uncertainty around these means. The PhD-delay data is used as an easy-to-go introduction 
 
-For the exercise click <a href="https://www.rensvandeschoot.com/pps" target="_blank">here</a>. 
+For the exercise click <a href="https://utrecht-university.shinyapps.io/priors_phd/" target="_blank">here</a>. 
 
 The underlying code is available on <a href="https://github.com/Rensvandeschoot/Plausible-Parameter-Space" target="_blank">GitHub</a>. If you like the App, leave a star. Feedback (via an issue or PR) to the code or the exercise is very much appreciated!
 
