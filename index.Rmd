@@ -140,7 +140,8 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 The first exercise makes use of a Shiny App that is designed to ease its users’ first contact with Bayesian statistical inference. By "pointing and clicking", the user can analyze the IQ example as has been used in the easy-to-go introduction to Bayesian inference of van de Schoot et al. (2014).
 
-For the exercise click <a href="https://www.rensvandeschoot.com/tutorials/fbi/" target="_blank">here</a>.
+For the exercise click <a href="content/monday/First-Bayesian-Inference-Exercise.html" target="_blank">here</a>.
+To get to the Shiny App click <a href="https://utrecht-university.shinyapps.io/bayesian_estimation/" target="_blank">here</a>.
 
 The underlying code is available on <a href="https://github.com/Rensvandeschoot/First-Bayesian-Inference" target="_blank">GitHub</a>. If you like the App, leave a star. Feedback (via an issue or PR) to the code or the exercise is very much appreciated!
 
