@@ -92,7 +92,7 @@ ggplot(data  = popular2data,
   geom_smooth(method = lm,
               se     = FALSE, 
               col    = "black",
-              linewidth   = .5, 
+              size   = .5, 
               alpha  = .8)+ # to add regression line
   theme_minimal()+
   labs(title    = "Popularity vs. Extraversion",
@@ -144,7 +144,7 @@ We clearly see that the relationship between extraversion and popularity is not 
 We can also colour code the most extreme regression lines.
 
 ```{r, message=FALSE, warning=FALSE}
-# To colour code the extremes, we need to write a small function that calculates the regression lines and adds a column indicating which clusters have the most extreme.
+# To colour code the extremes, we need to write a small function that calculates the regression lines and adds a collumn indicating which clusters have the most extreme.
 f1 <- function(data, x, y, grouping, n.highest = 3, n.lowest = 3){
   groupinglevel <- data[,grouping]
   res           <- data.frame(coef = rep(NA, length(unique(groupinglevel))), group = unique(groupinglevel))
@@ -238,7 +238,7 @@ interceptonlymodeltest <- brm(popular ~ 1 + (1 | class),
                               warmup = 100, 
                               iter   = 200, 
                               chains = 2, 
-                              init  = "random",
+                              inits  = "random",
                               cores  = 2)  #the cores function tells STAN to make use of 2 CPU cores simultaneously instead of just 1.
 summary(interceptonlymodeltest)
 ```
@@ -304,7 +304,7 @@ ggplot(filter(model1tranformed, Parameter %in% c("b_Intercept", "b_extrav", "b_s
        col   = "Chains")
 ```
 
-The intercept is now 2.14 (which represent the mean of the posterior distribution), the mean of the posterior for the regression coefficient for sex is 1.25, and the regression coefficient for extraversion 0.44. In a Bayesian analysis we do not have p-values as we do have in a frequentist analysis and corresponding hypothesis tests. To test whether all regression coefficients are different from zero, we can look at the Credible Intervals that are listed in the summary output or we can visually represent them in density plots. If we do so, we clearly see that zero is not included in any of the density plots, meaning that we can be reasonably certain the regression coefficients are different from zero.
+The intercept is now 2.14 (which represent the mean of the posterior distribution), the mean of the posterior for the regression coefficient for sex is 1.25, and the regression coefficient for extraversion 0.44. In a Bayesian analysis we do not have p-values as we do have a frequentist analysis and corresponding hypothesis tests. To test whether all regression coefficients are different from zero, we can look at the Credible Intervals that are listed in the summary output or we can visually represent them in density plots. If we do so, we clearly see that zero is not included in any of the density plots, meaning that we can be reasonably certain the regression coefficients are different from zero.
 
 
 ```{r}
@@ -369,7 +369,7 @@ model2 <- brm(popular ~ 1 + sex + extrav + texp + (1|class),
 summary(model2)
 ```
 
-We can see that both the level 1 and level 2 variables are different from zero (0 is not included in any of the CCIs). However, we have not added random slopes yet for any variables (as is done in table 2.1 in the book).
+We can see that both the level 1 and level 2 variables are different from zero (0 is not included in any of the CCIs) However, we have not added random slopes yet for any variables (as is done in table 2.1 in the book).
 
 We can now also calculate the explained variance at level 1 and at level 2.
 
@@ -397,7 +397,7 @@ summary(model3)
 mod <- summary(model3)$random$class
 ```
 
-We can see that all the fixed regression slopes are still different from 0. However, no significance test for the Random Effects are given, but we do see that the error term (Variance) for the slope of the variable sex is estimated to be very small $`r round(mod["sd(sex)",1],2)`^2 = `r round(mod["sd(sex)",1],2)^2`$. This probably means that there is no slope variation of the sex variable between classes and therefore the random slope estimation can be dropped from the next analyses. Since a negative variance is not possible the posterior distribution of the random term is truncated at 0, in the summary output we do see though that 0 falls in the 95% CCI, and therefore we have no strong evidence it is different than 0.
+We can see that all the fixed regression slopes are still different from 0. However, no significance test for the Random Effects are given, but we do see that the error term (Variance) for the slope of the variable sex is estimated to be very small $`r round(mod["sd(sex)",1],2)`^2 = r round(mod["sd(sex)",1],2)^2`$. This probably means that there is no slope variation of the sex variable between classes and therefore the random slope estimation can be dropped from the next analyses. Since a negative variance is not possible the posterior distribution of the random term is truncated at 0, in the summary output we do see though that 0 falls in the 95% CCI, and therefore we have no strong evidence it is different than 0.
 
 
 
@@ -510,10 +510,10 @@ simplemodel1 <- brm(popular ~ 1 + extrav + (1 + extrav | class),
                   data = popular2data,
                   warmup = 1000, iter = 5000, chains = 2,  
                   seed = 123, control = list(adapt_delta = 0.96), 
-                  save_pars = save_pars(all = TRUE), cores= 2)
+                  save_all_pars = TRUE, cores= 2)
 
 
-posteriorsimpelmodel1 <- as_tibble(t(as_draws_df(simplemodel1, variable = "r_class")[,c(101:200)]))
+posteriorsimpelmodel1 <- as_tibble(t(posterior_samples(simplemodel1, pars = "extrav")[,-c(1:3)]))
 
 teacherexperience <- popular2data %>%
   group_by(class) %>%
@@ -532,7 +532,7 @@ ggplot()+
   ggridges::geom_density_ridges(data  = posteriorsimpelmodellong, 
                                 aes(x      = value,
                                     y      = reorder(as.factor(class), meanperclass),
-                                    height = after_stat(density), 
+                                    height = ..density.., 
                                     fill   = as.factor(teacherexperience)),
                                 scale = 3, 
                                 alpha = .6) +
