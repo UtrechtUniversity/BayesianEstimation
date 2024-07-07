@@ -25,7 +25,7 @@ This tutorial expects:
 - Basic knowledge of [Bayesian](https://www.rensvandeschoot.com/a-gentle-introduction-to-bayesian-analysis-applications-to-developmental-research/) inference
 
 
-## priors
+## Priors
 As stated in the BRMS manual: *"Prior specifications are flexible and explicitly encourage users to apply prior distributions that actually reflect their beliefs."* 
 
 We will set 4 types of extra priors here (in addition to the uninformative prior we have used thus far)
@@ -78,21 +78,21 @@ head(popular2data) # we have a look at the first 6 observations
 With the `get_prior()` command we can see which priors we can specify for this model. 
 
 ```{r}
-get_prior(popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav | class), data = popular2data)
+get_prior(popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extrav | class), data = popular2data)
 ```
 
-For the first model with priors we just set normal priors for all regression coefficients, in reality many, many more prior distributions are possible, see the [BRMS manual](https://cran.r-project.org/web/packages/brms/brms.pdf) for an overview.  To place a prior on the fixed intercept, one needs to include `0 + intercept`. See [here](https://rdrr.io/cran/brms/man/prior_samples.html) for an explanation.
+For the first model with priors we just set normal priors for all regression coefficients, in reality many, many more prior distributions are possible, see the [BRMS manual](https://cran.r-project.org/web/packages/brms/brms.pdf) for an overview.  To place a prior on the fixed intercept, one needs to include `0 + Intercept`. See [here](https://rdrr.io/cran/brms/man/set_prior.html) for an explanation.
 ```{r}
 prior1 <- c(set_prior("normal(-10,100)", class = "b", coef = "extrav"),
             set_prior("normal(10,100)", class = "b", coef = "extrav:texp"),
             set_prior("normal(-5,100)", class = "b", coef = "sex"),
             set_prior("normal(-5,100)", class = "b", coef = "texp"),
-            set_prior("normal(10,100)", class = "b", coef = "intercept" ))
+            set_prior("normal(10,100)", class = "b", coef = "Intercept" ))
 ```
 
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
-model6 <- brm(popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
+model6 <- brm(popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
               data  = popular2data, warmup = 1000,
               iter  = 3000, chains = 2, 
               prior = prior1,
@@ -119,9 +119,9 @@ prior2 <- c(set_prior("normal(.8,.1)", class = "b", coef = "extrav"),
             set_prior("normal(-.025,.1)", class = "b", coef = "extrav:texp"),
             set_prior("normal(1.25,.1)", class = "b", coef = "sex"),
             set_prior("normal(.23,.1)", class = "b", coef = "texp"),
-            set_prior("normal(-1.21,.1)", class = "b", coef = "intercept" ))
+            set_prior("normal(-1.21,.1)", class = "b", coef = "Intercept" ))
 
-model7 <- brm(popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
+model7 <- brm(popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
               data  = popular2data, warmup = 1000,
               iter  = 3000, chains = 2, 
               prior = prior2,
@@ -140,9 +140,9 @@ prior3 <- c(set_prior("normal(-1,.1)", class = "b", coef = "extrav"),
             set_prior("normal(3, 1)", class = "b", coef = "extrav:texp"),
             set_prior("normal(-3,1)", class = "b", coef = "sex"),
             set_prior("normal(-3,1)", class = "b", coef = "texp"),
-            set_prior("normal(0,5)", class = "b", coef = "intercept" ))
+            set_prior("normal(0,5)", class = "b", coef = "Intercept" ))
 
-model8 <- brm(popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
+model8 <- brm(popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
               data  = popular2data, warmup = 1000,
               iter  = 3000, chains = 2, 
               prior = prior3,
@@ -161,10 +161,10 @@ prior4 <- c(set_prior("normal(3,.1)", class = "b", coef = "extrav"),
             set_prior("normal(-3,1)", class = "b", coef = "extrav:texp"),
             set_prior("normal(3,1)", class = "b", coef = "sex"),
             set_prior("normal(3,1)", class = "b", coef = "texp"),
-            set_prior("normal(0,5)", class = "b", coef = "intercept" ))
+            set_prior("normal(0,5)", class = "b", coef = "Intercept" ))
 
 
-model9 <- brm(popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
+model9 <- brm(popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
               data  = popular2data, warmup = 1000,
               iter  = 3000, chains = 2, 
               prior = prior4,
@@ -187,7 +187,7 @@ plot(hypothesis(model8, "texp > 0")) # if you would just run this command withou
 plot(hypothesis(model8, "sex = 0"))
 plot(hypothesis(model8, "extrav > 0"))
 plot(hypothesis(model8, "extrav:texp > 0"))
-plot(hypothesis(model8, "intercept > 0"))
+plot(hypothesis(model8, "Intercept > 0"))
 ```
 
 
