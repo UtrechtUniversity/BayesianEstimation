@@ -9,7 +9,7 @@ format:
 
 This Shiny App is designed to ease its users first contact with Bayesian statistical inference. By "pointing and clicking", the user can analyze the IQ-example as has been used in the easy-to-go introduction to Bayesian inference of [van de Schoot et al. (2013)](http://onlinelibrary.wiley.com/doi/10.1111/cdev.12169/abstract).
 
-They are continuously improving the tutorials so let them know if you discover mistakes, or if you have additional resources they can refer to. The source code is available via [Github](https://github.com/Rensvandeschoot/Tutorials). If you want to be the first to be informed about updates, follow Rens on [Twitter](https://twitter.com/RensvdSchoot).
+They are continuously improving the tutorials so let them know if you discover mistakes, or if you have additional resources they can refer to. The source code is available via [Github](https://github.com/Rensvandeschoot/Tutorials). If you want to be the first to be informed about updates, follow Rens on [X](https://x.com/RensvdSchoot).
 
 # Exercises
 
