@@ -95,7 +95,7 @@ $$Popularity_{ij}= \gamma_{00}+\gamma_{10}*sex_{ij}+\gamma_{20}*extraversion_{ij
 With the get_prior() command we can see which priors we can specify for this model. 
 
 ```{r}
-get_prior(popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), data = popular2data)
+get_prior(popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), data = popular2data)
 ```
 
 In this tutorial we will only specify priors for:
@@ -114,16 +114,16 @@ PRIORS <- c(set_prior("normal(0,5)",   class = "b", coef= "extrav"),
             set_prior("normal(-1,.3)", class = "b", coef= "extrav:texp"),
             set_prior("normal(2,.2)",  class = "b", coef= "sex"),
             set_prior("normal(0,5)",   class = "b", coef= "texp"),
-            set_prior("cauchy(0,10)",  class = "b", coef = "intercept" ))
+            set_prior("cauchy(0,10)",  class = "b", coef = "Intercept" ))
 
-model <- brm(popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
+model <- brm(popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
             data          = popular2data,
             warmup        = 1000, 
             iter          = 3000,
             chains        = 3, 
             control       = list(adapt_delta = 0.96), 
             prior         = PRIORS,
-            save_all_pars = TRUE,
+            save_pars = save_pars(all = TRUE),
             sample_prior  = TRUE,
             cores         = 3, # the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.
             seed          = 123) 
@@ -140,7 +140,7 @@ Before interpreting results, one should inspect the convergence of the chains th
 
 ```{r}
 modeltranformed <- ggs(model) # the ggs function transforms the BRMS output into a longformat tibble, that we can use to make different types of plots.
-ggplot(filter(modeltranformed, Parameter %in% c("b_intercept", "b_extrav", "b_sex", "b_extrav:texp", "b_texp", "sigma"),
+ggplot(filter(modeltranformed, Parameter %in% c("b_Intercept", "b_extrav", "b_sex", "b_extrav:texp", "b_texp", "sigma"),
               Iteration > 1000),
        aes(x   = Iteration,
            y   = value, 
@@ -190,14 +190,14 @@ Now we see that the Gelman and Rubin diagnostic (PRSF) is close to 1 for all par
 As is recommended in the WAMBS checklist, we double the amount of iterations to check for local convergence.
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
-modeldoubleniter <- brm(popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
+modeldoubleniter <- brm(popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
             data          = popular2data,
             warmup        = 2000, 
             iter          = 6000,
             chains        = 3, 
             control       = list(adapt_delta = 0.96), 
             prior         = PRIORS,
-            save_all_pars = TRUE,
+            save_pars = save_pars(all = TRUE),
             sample_prior  = TRUE,
             cores         = 3, # the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.
             seed          = 123) 
@@ -257,14 +257,14 @@ Looking at the posterior distributions we do not see any abnormalities. All post
 
 ```{r, warning= F}
 
-ggplot(filter(modeltranformed, Parameter %in% c("b_intercept", "b_extrav","b_sex"), 
+ggplot(filter(modeltranformed, Parameter %in% c("b_Intercept", "b_extrav","b_sex"), 
               Iteration > 1000),
        aes(x    = value,
            fill = Parameter))+
   geom_density(alpha = .5)+
   geom_vline(xintercept = 0,
              col        = "red",
-             size       = 1)+
+             linewidth       = 1)+
   scale_x_continuous(name   = "Value",
                      limits = c(-2.2, 1.5))+ 
     geom_vline(xintercept = summary(model)$fixed[1,3], col = "darkgreen", linetype = 2)+
@@ -289,7 +289,7 @@ ggplot(filter(modeltranformed,
   geom_density(alpha = .5)+
   geom_vline(xintercept = 0, 
              col        = "red", 
-             size       = 1)+
+             linewidth       = 1)+
   coord_cartesian(ylim = c(0, 25))+
     geom_vline(xintercept = summary(model)$fixed[4,3], col = "purple", linetype = 2)+
   geom_vline(xintercept = summary(model)$fixed[4,4], col = "purple", linetype = 2)+
@@ -330,20 +330,20 @@ PRIORS2 <- c(set_prior("normal(0,5)", class = "b", coef= "extrav"),
             set_prior("normal(-1,.3)", class = "b", coef= "extrav:texp"),
             set_prior("normal(2,.2)", class = "b", coef= "sex"),
             set_prior("normal(0,5)", class = "b", coef= "texp"),
-            set_prior("cauchy(0,10)",  class = "b", coef = "intercept" ),
+            set_prior("cauchy(0,10)",  class = "b", coef = "Intercept" ),
             set_prior("cauchy(0,2)", class = "sd"),          # a half cauchy distribution (truncuated at 0) for the sd
             set_prior("lkj(2)", class = "cor"),              # a Cholesky of 2 for the correlation  
             set_prior("inv_gamma(.5,.5)", class = "sigma")) # an uniformative inverse gamma for the sigma. 
 
 
-modeldifferentMVpriors <- brm(popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
+modeldifferentMVpriors <- brm(popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
             data          = popular2data,
             warmup        = 1000, 
             iter          = 3000,
             chains        = 3, 
             control       = list(adapt_delta = 0.96), 
             prior         = PRIORS2,
-            save_all_pars = TRUE,
+           save_pars = save_pars(all = TRUE),
             sample_prior  = TRUE,
             cores         = 3, # the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.
             seed          = 123) 
@@ -372,16 +372,16 @@ PRIORSUNIFORMATIVE <- c(set_prior("normal(0,100)", class = "b", coef= "extrav"),
             set_prior("normal(0,100)", class = "b", coef= "extrav:texp"),
             set_prior("normal(0,100)", class = "b", coef= "sex"),
             set_prior("normal(0,100)", class = "b", coef= "texp"),
-            set_prior("cauchy(0,10)",  class = "b", coef = "intercept"))
+            set_prior("cauchy(0,10)",  class = "b", coef = "Intercept"))
 
-modeluninformativepriors<- brm(popular ~ 0 + intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
+modeluninformativepriors<- brm(popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extrav|class), 
             data          = popular2data,
             warmup        = 1000, 
             iter          = 3000,
             chains        = 3, 
             control       = list(adapt_delta = 0.96), 
             prior         = PRIORSUNIFORMATIVE,
-            save_all_pars = TRUE,
+            save_pars = save_pars(all = TRUE),
             sample_prior  = TRUE,
             cores         = 3, # the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.
             seed          = 123) 
