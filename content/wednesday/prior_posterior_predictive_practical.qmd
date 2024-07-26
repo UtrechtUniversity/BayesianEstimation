@@ -42,6 +42,7 @@ These checks are like superpowers. They enable us to understand our model better
 First things first. We need some packages. 
 
 ```{r}
+#| output: false
 # Load required packages
 library(tidyverse)
 library(brms)
@@ -320,13 +321,13 @@ We could also express this in terms of posterior shrinkage[^1] using
 $$
 s = 1 - \frac{\sigma^2_\text{posterior}}{\sigma^2_\text{prior}}.
 $$
-To calculate this we can use the following code.
+To calculate this we can use the following code^[In the output you can notice that next to the _b_Intercept_, there also is a _Intercept_ parameter. This is due to the fact that `brms` mean-centeres the predictors prior to the analysis. The _Intercept_ parameter is the mean-centered parameter, the _b_Intercept_ parameter is the parameter transformed back to its original scale. For more information see also [this](https://discourse.mc-stan.org/t/what-is-the-difference-between-intercept-and-b-intercept/20423/7) post.].
 
 ```{r}
 # to get the parameter estimates. Note that Est.Error is sd not variance. 
 posterior_summary(fit3)
 # intercept shrinkage:
-1 - ((posterior_summary(fit3)[1, 2]^2) / (posterior_summary(fit3)[4, 2]^2) )
+1 - ((posterior_summary(fit3)[1, 2]^2) / (posterior_summary(fit3)[5, 2]^2) )
 # regression coefficient temperature shrinkage: 
 1 - ((posterior_summary(fit3)[2, 2]^2) / (posterior_summary(fit3)[5, 2]^2) )
 ```

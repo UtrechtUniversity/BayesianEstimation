@@ -94,9 +94,9 @@ We will use several packages, but mostly `brms`. As explained <a href="https://c
 
 If you're not familiar with R, you might want to work on these two exercises first before continuing:
 
-The first is a basic intro to R. By following the steps outlined in this tutorial, you will establish a fundamental understanding of R. For this exercise click <a href="https://www.rensvandeschoot.com/tutorials/r-for-beginners/" target="_blank">here</a>.
+The first is a basic intro to R. By following the steps outlined in this tutorial, you will establish a fundamental understanding of R. For this exercise click <a href="content/how to prepare/R_for_beginners_version1.html" target="_blank">here</a>.
 
-The second exercise guides you through frequentist regression analysis in R, building upon your foundational knowledge. For this exercise, click <a href="https://www.rensvandeschoot.com/tutorials/linear-regression-in-r-frequentist/" target="_blank">here</a>.
+The second exercise guides you through frequentist regression analysis in R, building upon your foundational knowledge. For this exercise, click <a href="content/how to prepare/R_regression_frequentist.html" target="_blank">here</a>.
 
 The underlying code is available on <a href="https://github.com/Rensvandeschoot/Tutorials" target="_blank">GitHub</a>. Your feedback (via an issue or PR) to the code or the exercises is very much appreciated!
 
@@ -297,9 +297,10 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 **Exercise ‘Expert Elicitation'**
 
-This exercise, using the Five-Step Method Shinyapp, introduces the concept of specifying prior distributions based on eliciting expert knowledge. The participants will be guided through a comprehensive five-step method, enabling experts from diverse fields, such as academia, business, and society, to formulate their beliefs and predictions in the form of a probability distribution.
+This exercise, using the Five-Step Method Shiny App, introduces the concept of specifying prior distributions based on eliciting expert knowledge. The participants will be guided through a comprehensive five-step method, enabling experts from diverse fields, such as academia, business, and society, to formulate their beliefs and predictions in the form of a probability distribution.
 
-To start with the exercise, click <a href="https://www.rensvandeschoot.com/tutorials/expert-judgement/" target="_blank">here</a>. The underlying code for the exercise is readily available on <a href="https://github.com/VeenDuco/Five-Step-Method-Shinyapp" target="_blank">GitHub</a>.
+To start with the exercise, click <a href="content/friday/exercise_elicit_expert_judgement.html" target="_blank">here</a>. To get to the Shiny App, click <a href="https://utrecht-university.shinyapps.io/elicitation/" target="_blank">here</a>. 
+The underlying code for the exercise is readily available on <a href="https://github.com/VeenDuco/Five-Step-Method-Shinyapp" target="_blank">GitHub</a>.
 
 **Exercise ‘Skills showcase'**
 
