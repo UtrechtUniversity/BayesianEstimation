@@ -188,13 +188,12 @@ prior_summary(fit_default)
 ## Prior sensitivity analysis: Considering various shrinkage priors
 So far we have only considered a normal shrinkage prior with a small variance. This prior exerted a lot of influence on the results, pulling all regression coefficients to zero. We will now investigate a few other shrinkage priors to get a feeling of their shrinkage behaviors. 
 
-`brms` offers a lot of flexibility in terms of prior distributions: you can define any distribution that is available in `Stan` as a prior. `?set_prior` offers detailed documentation and various examples. Here, we will consider three options that, in addition to the normal prior used previously, offer a variety of shrinkage behaviors:
+`brms` offers a lot of flexibility in terms of prior distributions: you can define any distribution that is available in `Stan` as a prior. `?set_prior` offers detailed documentation and various examples. Here, we will consider two options that, in addition to the normal prior used previously, offer a variety of shrinkage behaviors:
 
 * *Student-t prior*: compared to the normal prior, this prior has heavier tails and thus allows substantial coefficients to escape the shrinkage more. The heaviness of the tails is directly related to the degrees of freedom parameter `nu`, with smaller degrees of freedom leading to heavier tails.
-* *Laplace prior*: whereas the normal prior is the Bayesian equivalent of the traditional ridge penalty, the Laplace prior is the equivalent of the traditional lasso penalty. `brms` even has a specific function to set up this prior, which is used below.
 * *Regularized horseshoe prior*: this prior can be seen as most advanced. It is very peaked at zero, but also has very heavy tails. This makes this prior especially suitable to shrink the small, irrelevant effects to zero while keeping the substantial, relevant effects large. 
 
-Before using these priors, let's visualize them to understand their behavior a bit better. First, we need draws from the prior distributions. To obtain these, we run `brms` using the argument `sample_prior = "only"`. This will result in a fitobject containing only draws from the prior distribution. Use the code below to sample from the three shrinkage priors. 
+Before using these priors, let's visualize them to understand their behavior a bit better. First, we need draws from the prior distributions. To obtain these, we run `brms` using the argument `sample_prior = "only"`. This will result in a fit object containing only draws from the prior distribution. Use the code below to sample from the three shrinkage priors. 
 
 ```{r}
 #| message: false
@@ -202,11 +201,6 @@ prior_t <- brm(Rings ~ ., data = train,
              prior = set_prior("student_t(3, 0, 0.1)", class = "b"),
              sample_prior = "only",
              refresh = 0, silent = 2) 
-
-prior_lasso <- brm(Rings ~ ., data = train,
-             prior = set_prior(lasso(df = 1, scale = 1), class = "b"),
-             sample_prior = "only",
-             refresh = 0, silent = 2)
 
 prior_hs <- brm(Rings ~ ., data = train,
              prior = set_prior(horseshoe(df = 1, scale_global = 1,
@@ -223,8 +217,6 @@ Next, you can use the `mcmc_areas` function to plot the prior distributions for 
 #| message: false
 draws_t <- as_draws_df(prior_t)
 draws_t$prior <- "t"
-draws_lasso <- as_draws_df(prior_lasso)
-draws_lasso$prior <- "lasso"
 draws_hs <- as_draws_df(prior_hs)
 draws_hs$prior <- "hs"
 
@@ -232,19 +224,20 @@ sel <- c("b_SexI", "b_SexM", "b_Length", "b_Diameter", "b_Height",
           "b_Whole_weight", "b_Shucked_weight", "b_Viscera_weight",
           "b_Shell_weight", "prior")
 draws <- rbind.data.frame(draws_t[, sel], 
-                          draws_lasso[, sel], 
                           draws_hs[, sel])
 
 ggplot(draws, aes(b_Height, colour=prior)) +
-  geom_density() + xlim(-5, 5)
+  geom_density() + 
+  xlim(-5, 5) + 
+  theme_minimal()
 ```
 
-This way, we can compare different parametric forms and see, for example, that with these settings the lasso and horseshoe priors generally look quite similarly whereas Student's t prior has much lighter tails. 
+This way, we can compare different parametric forms and see, for example, that with these settings Student's t prior has much lighter tails than the horeseshoe prior. 
 
-We can also adapt the hyperparameters of each prior. For the next exercise, pick one of the shrinkage priors (ridge, Student's t, lasso, or horseshoe) and adapt the hyperparameters. Consider three or four different settings. For the lasso and horseshoe you can review the documentation for an interpretation of the hyperparameters via `?lasso` or `?horseshoe`. Note that the location of each prior should remain at zero to ensure shrinkage towards zero. Visualize the prior for different hyperparameter settings and try to reason whether you would expect different results in terms of shrinkage towards zero and, ultimately, variable selection. In addition to visualizing the prior distribution itself, you can also perform prior predictive checks and visualize possible distributions of data generated for a specific data set (see day 3).
+We can also adapt the hyperparameters of each prior. For the next exercise, pick one of the shrinkage priors (ridge, Student's t, or horseshoe) and adapt the hyperparameters. Consider three or four different settings. For the horseshoe you can review the documentation for an interpretation of the hyperparameters via `?horseshoe`. Note that the location of each prior should remain at zero to ensure shrinkage towards zero. Visualize the prior for different hyperparameter settings and try to reason whether you would expect different results in terms of shrinkage towards zero and, ultimately, variable selection. In addition to visualizing the prior distribution itself, you can also perform prior predictive checks and visualize possible distributions of data generated for a specific data set (see day 3).
 
 ### Comparing results across different priors
-Now that we have a good idea of the different shrinkage prior distributions, we can run the analysis for different prior specifications and compare the outcome of interest, in our case: the selection of variables to predict abalone age. Run the analysis with Student's t, the lasso, and horseshoe priors specified above. You can also add one or more of the priors you investigated yourself. Compare the amount of shrinkage, for example by looking at the estimated regression coefficients or the full posteriors, as well as the number of selected variables based on the 95% credible intervals. Do the results differ across different shrinkage priors and are the differences in line with your intuition regarding the shrinkage behaviors of the priors?
+Now that we have a good idea of the different shrinkage prior distributions, we can run the analysis for different prior specifications and compare the outcome of interest, in our case: the selection of variables to predict abalone age. Run the analysis with Student's t and horseshoe priors specified above. You can also add one or more of the priors you investigated yourself. Compare the amount of shrinkage, for example by looking at the estimated regression coefficients or the full posteriors, as well as the number of selected variables based on the 95% credible intervals. Do the results differ across different shrinkage priors and are the differences in line with your intuition regarding the shrinkage behaviors of the priors?
 
 
 ```{r}
@@ -255,10 +248,6 @@ Now that we have a good idea of the different shrinkage prior distributions, we 
 fit_t <- brm(Rings ~ ., data = train,
              prior = set_prior("student_t(3, 0, 0.1)", class = "b"))
 # Indicates no relevant variables (like the ridge)
-
-fit_lasso <- brm(Rings ~ ., data = train,
-             prior = set_prior(lasso(df = 1, scale = 1), class = "b"))
-# Selects SexM, Shell_weight, and Shucked_weight
 
 fit_hs <- brm(Rings ~ ., data = train,
              prior = set_prior(horseshoe(df = 1, scale_global = 1,
@@ -272,8 +261,6 @@ draws_ridge <- as_draws_df(fit_ridge)
 draws_ridge$prior <- "ridge"
 draws_t <- as_draws_df(fit_t)
 draws_t$prior <- "t"
-draws_lasso <- as_draws_df(fit_lasso)
-draws_lasso$prior <- "lasso"
 draws_hs <- as_draws_df(fit_hs)
 draws_hs$prior <- "hs"
 
@@ -281,8 +268,7 @@ sel <- c("b_SexI", "b_SexM", "b_Length", "b_Diameter", "b_Height",
           "b_Whole_weight", "b_Shucked_weight", "b_Viscera_weight",
           "b_Shell_weight", "prior")
 draws <- rbind.data.frame(draws_ridge[, sel],
-                          draws_t[, sel], 
-                          draws_lasso[, sel], 
+                          draws_t[, sel],
                           draws_hs[, sel])
 draws$id <- 1:nrow(draws)
 draws_long <- gather(draws, 
@@ -292,8 +278,9 @@ draws_long <- gather(draws,
 
 ggplot(draws_long, aes(value, colour=prior)) +
   geom_density() +
-  facet_wrap(~ parameter, scales = "free")
-# We see very similar results for the ridge and Student's t; these priors shrink coefficients heavily, with no escape for larger coefficients. The lasso and horseshoe also show similar results and less shrinkage for some parameters, as we would expect based on the prior plots.
+  facet_wrap(~ parameter, scales = "free") +
+  theme_minimal()
+# We see very similar results for the ridge and Student's t; these priors shrink coefficients heavily, with no escape for larger coefficients. The horseshoe also shows similar results and less shrinkage for some parameters, as we would expect based on the prior plots.
 ```
 
 ::: callout-note
@@ -302,7 +289,7 @@ Note that we do get some warnings related to convergence. For the final results,
 
 ## Did we forget anything?
 So far, we have done a lot: we have investigated different shrinkage priors and compared their influence in predicting abalone age. We have seen that different types of shrinkage priors have different prior densities which result in different shrinkage behaviors and ultimately, different results. 
-However, as you considered the potential influence of the shrinkage priors you might already have wondered about the role that the scales of the variables play. This is actually a very important point in Bayesian analysis in general, and even more so in Bayesian regularization in particular. The scale of the variables will influence the plausible parameter space of the regression coefficients and this will influence the informativeness of the prior distribution. To illustrate this, consider one variable in our data set, the `Length` of the shells. In this data set, `Length` is measured in millimeter and if we use this variable in a simple linear regression to predict the abalone age, we get an estimated regression coefficient of 14.  
+However, as you considered the potential influence of the shrinkage priors you might already have wondered about the role that the scales of the variables play. This is actually a very important point in Bayesian analysis in general, and even more so in Bayesian regularization in particular. The scale of the variables will influence the plausible parameter space of the regression coefficients and this will influence the informativeness of the prior distribution. To illustrate this, consider one variable in our data set, the `Length` of the shells. In this data set, `Length` is measured in millimeter and if we use this variable in a simple linear regression to predict the abalone age, we get an estimated regression coefficient of 15.6.  
 
 ```{r}
 fit <- lm(Rings ~ Length, data = train)
@@ -375,7 +362,7 @@ train_scaled <- data.frame(scale(train[, -1], center = TRUE, scale = TRUE))
 train_scaled$Sex <- train$Sex
 
 fit_ridge_scaled <- brm(Rings ~ ., data = train_scaled,
-             prior = set_prior(lasso(df = 1, scale = 1), class = "b"),
+             prior = prior(normal(0, 0.1)),
              refresh = 0, silent = 2)
 summary(fit_ridge_scaled)
 # Now, we would select Shell_weight and Shucked_weight based on the 95% CI!
@@ -407,7 +394,7 @@ Note that the `suggest_size` function is easy to use, but: it provides only a he
 plot(vs)
 ```
 
-By default, `elpd`, the expected log predictive density is plotted. The important thing to consider is when this value levels off: that indicates that the performance does not change as we include more predictors. Thus, based on this plot we can conclude that we can obtain sufficient predictive performance with two predictors, the same number as suggested by the `suggest_size` function.
+By default, `elpd`, the expected log predictive density is plotted. The important thing to consider is when this value levels off: that indicates that the performance does not change as we include more predictors. Thus, based on this plot we can conclude that we can obtain sufficient predictive performance with four predictors, the same number as suggested by the `suggest_size` function.
 
 Now, compare the selected variables to those selected using the other shrinkage priors we considered in the sensitivity analysis. Are there big differences? Do the selected variables differ greatly from those selected based on the 95% credible intervals?
 
@@ -433,7 +420,7 @@ You could also assess the final model, after variable selection. To do so, rerun
 #| eval: false
 #| code-fold: true
 #| code-summary: "Show the code"
-fit_sel <- brm(Rings ~ Whole_weight + Sex, data = train_scaled)
+fit_sel <- brm(Rings ~ Diameter + Shell_weight + Height + Sex, data = train_scaled)
 ppc_sel <- pp_check(fit_sel, ndraws = 100)
 plot(ppc_sel)
 ```

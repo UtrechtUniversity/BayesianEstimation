@@ -199,10 +199,15 @@ window.Quarto = {
 <p>So, in our model the gap (<em>B3_difference_extra</em>) is the dependent variable and age (<em>E22_Age</em>) and age<span class="math inline">\(^2\)</span>(<em>E22_Age_Squared </em>) are the predictors. The data can be found in the file <span style="color:red"> <code>phd-delays.csv</code> </span>.</p>
 <section id="question-write-down-the-null-and-alternative-hypotheses-that-represent-this-question.-which-hypothesis-do-you-deem-more-likely" class="level5">
 <h5 class="anchored" data-anchor-id="question-write-down-the-null-and-alternative-hypotheses-that-represent-this-question.-which-hypothesis-do-you-deem-more-likely"><em><strong>Question:</strong> Write down the null and alternative hypotheses that represent this question. Which hypothesis do you deem more likely?</em></h5>
+<details>
+<summary>
+Click to show result
+</summary>
 <p><span class="math inline">\(H_0:\)</span> <em><span class="math inline">\(age\)</span> is not related to a delay in the PhD projects.</em></p>
 <p><span class="math inline">\(H_1:\)</span> <em><span class="math inline">\(age\)</span> is related to a delay in the PhD projects.</em></p>
 <p><span class="math inline">\(H_0:\)</span> <em><span class="math inline">\(age^2\)</span> is not related to a delay in the PhD projects.</em></p>
 <p><span class="math inline">\(H_1:\)</span> <em><span class="math inline">\(age^2\)</span> is related to a delay in the PhD projects.</em></p>
+</details>
 </section>
 </section>
 <section id="preparation---importing-and-exploring-data" class="level2">
@@ -295,10 +300,13 @@ age2     42.21 35.97</code></pre>
 Click to show result
 </summary>
 <div class="cell">
+<details class="code-fold">
+<summary>Click to show result</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">100000</span>, <span class="at">mean =</span> <span class="sc">-</span><span class="dv">35</span>, <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="dv">20</span>))), <span class="at">main =</span> <span class="st">"prior intercept"</span>) <span class="co"># the rnorm function uses the standard devation instead of variance, that is why we use the sqrt</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">100000</span>, <span class="at">mean =</span> .<span class="dv">8</span>,  <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="dv">5</span>))),   <span class="at">main =</span> <span class="st">"effect Age"</span>)</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">100000</span>, <span class="at">mean =</span> <span class="dv">0</span>,   <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="dv">10</span>))),  <span class="at">main =</span> <span class="st">"effect Age^2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -314,14 +322,13 @@ Click to show result
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>delay <span class="ot">&lt;-</span> XX <span class="sc">+</span> XX<span class="sc">*</span>years <span class="sc">+</span> XX<span class="sc">*</span>years<span class="sc">^</span><span class="dv">2</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(years, delay, <span class="at">type =</span> <span class="st">"l"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<details>
-<summary>
-Click to show result
-</summary>
 <div class="cell">
+<details class="code-fold">
+<summary>Click to show result</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="dv">20</span><span class="sc">:</span><span class="dv">80</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>delay <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">35</span> <span class="sc">+</span> .<span class="dv">8</span><span class="sc">*</span>years <span class="sc">+</span> <span class="dv">0</span><span class="sc">*</span>years<span class="sc">^</span><span class="dv">2</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(years, delay, <span class="at">type=</span> <span class="st">"l"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -330,7 +337,6 @@ Click to show result
 </div>
 </div>
 </div>
-</details>
 </section>
 </section>
 <section id="step-2-run-the-model-and-check-for-convergence" class="level2">
@@ -613,7 +619,10 @@ Multivariate psrf
 <p><em><strong>Question:</strong> calculate the relative bias. Are you satisfied with number of iterations, or do you want to re-run the model with even more iterations?</em></p>
 <p>To get the relative bias simply save the means of the regression coefficients and other parameters (ignore <code>lp__</code> for now) for the two different analyses and compute the bias.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Click to show result</summary>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">posterior_summary</span>(model_doubleiter)[,<span class="st">"Estimate"</span>] <span class="sc">-</span> <span class="fu">posterior_summary</span>(model)[,<span class="st">"Estimate"</span>]) <span class="sc">/</span> <span class="fu">posterior_summary</span>(model)[,<span class="st">"Estimate"</span>]), <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>b_Intercept       b_age      b_age2       sigma      lprior        lp__ 
     -0.5170     -0.4129     -0.4755      0.0021     -0.0463      0.0021 </code></pre>
@@ -638,7 +647,12 @@ Multivariate psrf
 </div>
 </div>
 </div>
-<p><em>The histograms look smooth and have no gaps or other abnormalities. Based on this, adding more iterations is not necessary. However, if you arenot satisfied, you can improve the number of iterations again. Posterior distributions do not have to be symmetrical, but in this example they seem to be.</em></p>
+<details>
+<summary>
+Click to show interpretation
+</summary>
+<em>The histograms look smooth and have no gaps or other abnormalities. Based on this, adding more iterations is not necessary. However, if you are not satisfied, you can improve the number of iterations again. Posterior distributions do not have to be symmetrical, but in this example they seem to be.</em>
+</details>
 <p>If we compare this with histograms based on the first analysis (with very few iterations), this difference becomes clear:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model_few_samples, <span class="at">type =</span> <span class="st">"hist"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -668,7 +682,12 @@ Multivariate psrf
 </div>
 </div>
 <p><em><strong>Question:</strong> What can you conclude about these autocorrelation plots?</em></p>
-<p><em>These results show that autocorrelation is quite stong after a few lags. This means it is important to make sure we ran the analysis with a lot of samples, because with a high autocorrelation it will take longer until the whole parameter space has been identified. For more informtation on autocorrelation check this <a href="https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210X.2011.00131.x">paper</a>.</em></p>
+<details>
+<summary>
+Click to show interpretation
+</summary>
+<em>These results show that autocorrelation is quite stong after a few lags. This means it is important to make sure we ran the analysis with a lot of samples, because with a high autocorrelation it will take longer until the whole parameter space has been identified. For more informtation on autocorrelation check this <a href="https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210X.2011.00131.x">paper</a>.</em>
+</details>
 </section>
 <section id="do-the-posterior-distributions-make-substantive-sense" class="level3">
 <h3 class="anchored" data-anchor-id="do-the-posterior-distributions-make-substantive-sense">6. Do the posterior distributions make substantive sense?</h3>
@@ -684,7 +703,12 @@ Multivariate psrf
 </div>
 </div>
 <p><em><strong>Question:</strong> What is your conclusion; do the posterior distributions make sense?</em></p>
-<p><em>Yes, we see a clear negative intercept, which makes sense since a value of age = 0 for Ph.D is impossible. We also have have plausible ranges of values for the regression coefficients and a positive variance.</em></p>
+<details>
+<summary>
+Click to show interpretation
+</summary>
+<em>Yes, we see a clear negative intercept, which makes sense since a value of age = 0 for Ph.D is impossible. We also have have plausible ranges of values for the regression coefficients and a positive variance.</em>
+</details>
 </section>
 </section>
 <section id="step-3-understanding-the-exact-influence-of-the-priors" class="level2">
@@ -788,6 +812,10 @@ lprior      -1.418107e+01 0.70171005 -1.616086e+01 -1.364877e+01
 lp__        -1.363662e+03 1.42879371 -1.367270e+03 -1.361902e+03</code></pre>
 </div>
 </div>
+<details>
+<summary>
+Click to show interpretation
+</summary>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 25%">
@@ -830,7 +858,8 @@ lp__        -1.363662e+03 1.42879371 -1.367270e+03 -1.361902e+03</code></pre>
 </tr>
 </tbody>
 </table>
-<p><em>Yes, the results are robust, because there is only a really small amount of relative bias for the residual variance.</em></p>
+<em>Yes, the results are robust, because there is only a really small amount of relative bias for the residual variance.</em>
+</details>
 </section>
 <section id="is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors" class="level3">
 <h3 class="anchored" data-anchor-id="is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors">8. Is there a notable effect of the prior when compared with non-informative priors?</h3>
@@ -893,6 +922,10 @@ lp__        -1.363662e+03 1.42879371 -1.367270e+03 -1.361902e+03</code></pre>
 <span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_summary</span>(model.default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<details>
+<summary>
+Click to show interpretation
+</summary>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 25%">
@@ -935,9 +968,15 @@ lp__        -1.363662e+03 1.42879371 -1.367270e+03 -1.361902e+03</code></pre>
 </tr>
 </tbody>
 </table>
-<p><em>The informative priors have quite some influence (up to 25%) on the posterior results of the regression coefficients. This is not a bad thing, just important to keep in mind.</em></p>
+<em>The informative priors have quite some influence (up to 25%) on the posterior results of the regression coefficients. This is not a bad thing, just important to keep in mind.</em>
+</details>
 <p><em><strong>Question</strong>: Which results do you use to draw conclusion on?</em></p>
-<p><em>This really depends on where the priors come from. If for example your informative priors come from a reliable source, you should use them. The most important thing is that you choose your priors accurately, and have good arguments to use them. If not, you shouldn't use really informative priors and use the results based on the non-informative priors.</em></p>
+<details>
+<summary>
+Click to show interpretation
+</summary>
+<em>This really depends on where the priors come from. If for example your informative priors come from a reliable source, you should use them. The most important thing is that you choose your priors accurately, and have good arguments to use them. If not, you shouldn't use really informative priors and use the results based on the non-informative priors.</em>
+</details>
 </section>
 <section id="are-the-results-stable-from-a-sensitivity-analysis" class="level3">
 <h3 class="anchored" data-anchor-id="are-the-results-stable-from-a-sensitivity-analysis">9. Are the results stable from a sensitivity analysis?</h3>
