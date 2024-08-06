@@ -5,8 +5,7 @@ author:
     - Department of Methodology and Statistics, Utrecht University
 date: 'Last modified: `r Sys.setlocale("LC_TIME", "English"); format(Sys.time(), "%d %B %Y")`'
 output:
-  html_document:
-    keep_md: true
+  html_document
 ---
 
 Welcome to the world of R!
@@ -39,7 +38,7 @@ This (slightly) modified version can be found on the [Github repository for the 
 
 ## Popularity Dataset
 
-We will use a [popularity (``popular_regr_1``) dataset](https://doi.org/10.5281/zenodo.3962123) (Van de Schoot, 2020) from [Van de Schoot, Van der Velden, Boom, and Brugman (2010)](https://github.com/Rensvandeschoot/Tutorials/raw/master/R%20for%20beginners/Can%20at-risk%20young%20adolescents%20be%20popular%20and%20anti-social.pdf). To download the dataset, click [here](XXXX).
+We will use a [popularity (``popular_regr_1``) dataset](https://doi.org/10.5281/zenodo.3962123) (Van de Schoot, 2020) from [Van de Schoot, Van der Velden, Boom, and Brugman (2010)](https://github.com/Rensvandeschoot/Tutorials/raw/master/R%20for%20beginners/Can%20at-risk%20young%20adolescents%20be%20popular%20and%20anti-social.pdf). To download the dataset, click [here](https://github.com/UtrechtUniversity/BayesianEstimation/raw/main/content/how%20to%20prepare/popular_regr_1.sav).
 
 The dataset is based on a study that investigates an association between popularity status and antisocial behavior from at-risk adolescents (n = 1491), where gender and ethnic background are moderators under the association. The study distinguished subgroups within the popular status group in terms of overt and covert antisocial behavior.
 
@@ -170,7 +169,7 @@ Van de Schoot, R. (2020). Popularity Dataset for Online Stats Training [Data set
 ### 1. Take out your ‘main material’: Loading data
 
 -	Statistical analysis cannot happen without the data. In R, you can load the data in various ways. Let’s see the easiest way.
-- If you did not download the dataset (``popular_regr_1``) yet, click [here](XXXX).
+- If you did not download the dataset (``popular_regr_1``) yet, click [here](https://github.com/UtrechtUniversity/BayesianEstimation/raw/main/content/how%20to%20prepare/popular_regr_1.sav).
 
 <br>
 
