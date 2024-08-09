@@ -134,7 +134,7 @@ Day 1: we discuss the stages involved in Bayesian analysis: obtaining background
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
-- Slides day 1 (to be uploaded)
+- <a href="content/monday/slides_day1.pdf" target="_blank">Slides day 1</a>
 
 **Exercise ‘First Bayesian Inference'**
 
