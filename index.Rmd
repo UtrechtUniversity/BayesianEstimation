@@ -182,7 +182,7 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 Note that the exercise requires a working version of the BRMS packages. See the `How to prepare` page if you do not have this yet. 
 
-- Slides day 2 (to be uploaded)
+- [Slides day 2](content/tuesday/Day2_WAMBS_Summerschool_2024.pdf)
 
 
 
