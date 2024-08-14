@@ -329,7 +329,7 @@ posterior_summary(fit3)
 # intercept shrinkage:
 1 - ((posterior_summary(fit3)[1, 2]^2) / (posterior_summary(fit3)[5, 2]^2) )
 # regression coefficient temperature shrinkage: 
-1 - ((posterior_summary(fit3)[2, 2]^2) / (posterior_summary(fit3)[5, 2]^2) )
+1 - ((posterior_summary(fit3)[2, 2]^2) / (posterior_summary(fit3)[6, 2]^2) )
 ```
 
 For both parameters we greatly reduced the uncertainty that we had. Awesome. 

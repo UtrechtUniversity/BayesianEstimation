@@ -1083,9 +1083,9 @@ lp__            -257.3330909  1.24893008 -260.5429172 -255.915319</code></pre>
 <pre><code>[1] 0.9915309</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># regression coefficient temperature shrinkage: </span></span>
-<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> ((<span class="fu">posterior_summary</span>(fit3)[<span class="dv">2</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (<span class="fu">posterior_summary</span>(fit3)[<span class="dv">5</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> ((<span class="fu">posterior_summary</span>(fit3)[<span class="dv">2</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (<span class="fu">posterior_summary</span>(fit3)[<span class="dv">6</span>, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.9999759</code></pre>
+<pre><code>[1] 0.9997117</code></pre>
 </div>
 </div>
 <p>For both parameters we greatly reduced the uncertainty that we had. Awesome.</p>
