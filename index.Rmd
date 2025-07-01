@@ -245,6 +245,8 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 - <a href="content/wednesday/slides_day3.pdf" target="_blank">Slides day 3</a>
 
+- <a href="content/wednesday/Non-MCMC_methods" target="_blank">Markdown file on using non-MCMC methods</a>
+
 - <a href="content/wednesday/convergence_checks.html" target="_blank">Additional Markdown file on convergence and checks</a>
 
 - <a href="content/wednesday/prior_posterior_predictive_practical.html" target="_blank">Practical day 3</a>
@@ -258,7 +260,11 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 https://chi-feng.github.io/mcmc-demo/
 
+Blei, D. M., Kucukelbir, A., & McAuliffe, J. D. (2017). Variational inference: A review for statisticians. Journal of the American statistical Association, 112(518), 859-877.
+
 Jonah Gabry, Daniel Simpson, Aki Vehtari, Michael Betancourt, Andrew Gelman, Visualization in Bayesian Workflow, Journal of the Royal Statistical Society Series A: Statistics in Society, Volume 182, Issue 2, February 2019, Pages 389–402, https://doi.org/10.1111/rssa.12378
+
+Monnahan, C. C., Thorson, J. T., & Branch, T. A. (2017). Faster estimation of Bayesian models in ecology using Hamiltonian Monte Carlo. Methods in Ecology and Evolution, 8(3), 339-348.
 
 https://github.com/UtrechtUniversity/BayesianEstimation
 

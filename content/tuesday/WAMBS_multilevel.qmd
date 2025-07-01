@@ -65,7 +65,7 @@ To download the popularity data go to https://multilevel-analysis.sites.uu.nl/da
 
 Alternatively, you can directly download them from GitHub into your R work space using the following command:
 ```{r}
-popular2data <- read_sav(file  = "https://github.com/MultiLevelAnalysis/Datasets-third-edition-Multilevel-book/blob/master/chapter%202/popularity/SPSS/popular2.sav?raw=true")
+popular2data <- read_sav(file  = "https://github.com/MirjamMoerbeek/Data_Sets_ML_book/raw/main/popular2.sav")
 ```
 
 There are some variables in the dataset that we do not use, so we can select the variables we will use and have a look at the first few observations.
