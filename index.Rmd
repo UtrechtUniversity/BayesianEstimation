@@ -138,11 +138,11 @@ Day 1: we discuss the stages involved in Bayesian analysis: obtaining background
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
-- <a href="content/monday/slides_day1.pdf" target="_blank">Slides day 1</a>
+- Slides day 1
 
 **Exercise ‘First Bayesian Inference'**
 
-The first exercise makes use of a Shiny App that is designed to ease its users’ first contact with Bayesian statistical inference. By "pointing and clicking", the user can analyze the IQ example as has been used in the easy-to-go introduction to Bayesian inference of van de Schoot et al. (2014).
+The first exercise makes use of a Shiny App that is designed to ease its users’ first contact with Bayesian statistical inference. By "pointing and clicking", the user can analyze the IQ example which has been used in the gentle introduction to Bayesian inference in van de Schoot et al. (2014).
 
 For the exercise click <a href="content/monday/First-Bayesian-Inference-Exercise.html" target="_blank">here</a>.
 To get to the Shiny App click <a href="https://utrecht-university.shinyapps.io/bayesian_estimation/" target="_blank">here</a>.
@@ -164,7 +164,7 @@ The underlying code is available on <a href="https://github.com/Rensvandeschoot/
 
 van de Schoot, R., Depaoli, S., King, R. et al. Bayesian statistics and modelling. Nature Review Methods Primers 1, 1 (2021). https://doi.org/10.1038/s43586-020-00001-2 
 
-van de Schoot, R., Kaplan, D., Denissen, J., Asendorpf, J. B., Neyer, F. J. and van Aken, M. A.G. (2014), A Gentle Introduction to Bayesian Analysis: Applications to Developmental Research. Child Dev, 85: 842–860. doi:10.1111/cdev.12169
+van de Schoot, R., Kaplan, D., Denissen, J., Asendorpf, J. B., Neyer, F. J. and van Aken, M. A.G. (2014), A Gentle Introduction to Bayesian Analysis: Applications to Developmental Research. Child Dev, 85: 842–860. https://doi.org/10.1111/cdev.12169
 
 https://www.rensvandeschoot.com/tutorials/fbi/
 
