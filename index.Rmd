@@ -75,7 +75,7 @@ The instructors will clarify the differences between the philosophies and interp
 
 ### Preparing for the course
 
-We have prepared many exercises in `R`. If you are not familiar with R, we recommend following the installation instructions and working through the exercises below before the start of the course. 
+We have prepared many exercises in `R` and `Python`. If you are not familiar with either `R` or `Python`, we recommend you work with the `R` materials. To get started with `R`, please follow the installation instructions below and work through the exercises before the start of the course. If you are not able to install `R`, you have the possibility to work with the `Python` materials instead via Google Colab. However, not all methods we work with are available in `Python` (yet).  
 
 **1. Install the latest version of `R`**
 `R` can be obtained <a href="https://cran.r-project.org" target="_blank">here</a>. We won't use `R` directly in the course, but rather call `R` through `RStudio`. Therefore it needs to be installed. 
@@ -86,15 +86,15 @@ Rstudio is an Integrated Development Environment (IDE). It can be obtained as st
 
 **3. Make sure you have a C++ compiler**
 
-We will use several packages, but mostly `brms`. As explained <a href="https://cran.r-project.org/web/packages/brms/readme/README.html" target="_blank">here</a>: *Because brms is based on Stan, a C++ compiler is required. The program* `Rtools` *(available* <a href="https://cran.r-project.org/bin/windows/Rtools/" target="_blank">here</a> *comes with a C++ compiler for Windows. On Mac, you should install* `Xcode`. *For further instructions on how to get the compilers running, see the prerequisites section * <a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started" target="_blank">here</a>. 
+We will use several packages, but mostly `brms` in `R`. As explained <a href="https://cran.r-project.org/web/packages/brms/readme/README.html" target="_blank">here</a>: *Because brms is based on Stan, a C++ compiler is required. The program* `Rtools` *(available* <a href="https://cran.r-project.org/bin/windows/Rtools/" target="_blank">here</a> *comes with a C++ compiler for Windows. On Mac, you should install* `Xcode`. *For further instructions on how to get the compilers running, see the prerequisites section * <a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started" target="_blank">here</a>. 
 
 ### Materials
 
 **Exercise ‘Intro R’**
 
-If you're not familiar with R, you might want to work on these two exercises first before continuing:
+If you're not familiar with `R`, you might want to work on these two exercises first before continuing:
 
-The first is a basic intro to R. By following the steps outlined in this tutorial, you will establish a fundamental understanding of R. For this exercise click <a href="content/how to prepare/R_for_beginners_version1.html" target="_blank">here</a>.
+The first is a basic intro to `R`. By following the steps outlined in this tutorial, you will establish a fundamental understanding of `R`. For this exercise click <a href="content/how to prepare/R_for_beginners_version1.html" target="_blank">here</a>.
 
 The second exercise guides you through frequentist regression analysis in R, building upon your foundational knowledge. For this exercise, click <a href="content/how to prepare/R_regression_frequentist.html" target="_blank">here</a>.
 
@@ -119,6 +119,10 @@ https://www.rensvandeschoot.com/tutorials/r-for-beginners/
 https://www.rensvandeschoot.com/tutorials/linear-regression-in-r-frequentist/ 
 
 https://github.com/Rensvandeschoot/Tutorials
+
+https://www.python.org
+
+https://colab.google
 
 
 
