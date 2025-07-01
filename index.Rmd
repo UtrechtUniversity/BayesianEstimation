@@ -1,5 +1,5 @@
 ---
-title: "A gentle introduction to Bayesian Estimation 2024"
+title: "A gentle introduction to Bayesian Estimation 2025"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -21,7 +21,7 @@ color:black!important;
 
 # Intro {.sidebar}
 
-This dashboard covers the course materials for the course <a href="https://utrechtsummerschool.nl/courses/social-sciences/a-gentle-introduction-to-bayesian-estimation" target="_blank">A Gentle Introduction to Bayesian Estimation</a>. 
+This dashboard covers the course materials for the course <a href="https://utrechtsummerschool.nl/courses/data-science/a-gentle-introduction-to-bayesian-estimation" target="_blank">A Gentle Introduction to Bayesian Estimation</a>. 
 <br> <br>
 We suggest to access the materials online when we consider them. The materials can be downloaded via <a href="https://github.com/UtrechtUniversity/BayesianEstimation" target="_blank">The github page for this course</a>. 
 
@@ -31,8 +31,8 @@ We suggest to access the materials online when we consider them. The materials c
 Instructors: 
 
  - <a href="https://www.saravanerp.com/" target="_blank">Sara van Erp</a>
- - <a href="https://www.ducoveen.com/" target="_blank">Duco Veen</a>
- - <a href="https://www.linkedin.com/in/florian-metwaly-9a74b9289/" target="_blank">Florian Metwaly</a>
+ - <a href="https://suzannehoogeveen.netlify.app" target="_blank">Suzanne Hoogeveen</a>
+ - <a href="https://www.uu.nl/staff/FDvanLeeuwen" target="_blank">Florian van Leeuwen</a>
  
 
 ---
@@ -45,7 +45,7 @@ This course introduces all the essential ingredients needed to start Bayesian es
 
 The popularity of Bayesian statistics has increased over the years; however, Bayesian methods are not a part of the statistics curricula in most graduate programs internationally. The Bayesian framework can handle some commonly encountered problems in classical statistics, such as the lack of power in small sample research and convergence issues in complex models. Furthermore, some researchers prefer the Bayesian framework because it sequentially updates knowledge with new data instead of requiring that each new study tests the null hypothesis that there is no effect in the population. The main focus of the course is on conceptually understanding Bayesian inference and applying Bayesian methods.
 
-The instructors will clarify the differences between the philosophies and interpretations in classical and Bayesian frameworks. They illustrate how types of research questions can be answered using Bayesian methods. This course will also give students experience running Bayesian analyses and interpreting results and instruct participants on the prevailing “best practices” for writing a scientific article based on Bayesian statistics. Participants will emerge from the course with knowledge about how to apply Bayesian methods to answer their research questions and with the ability to understand articles that examine and use Bayesian methods.
+The instructors will clarify the differences between the philosophies and interpretations in classical and Bayesian frameworks. They will illustrate how different types of research questions can be answered using Bayesian methods. This course will also give students experience running Bayesian analyses and interpreting results and instruct participants on the prevailing “best practices” for writing a scientific article based on Bayesian statistics. Participants will emerge from the course with knowledge about how to apply Bayesian methods to answer their research questions and with the ability to understand articles that examine and use Bayesian methods.
 
 
 
@@ -56,18 +56,18 @@ The instructors will clarify the differences between the philosophies and interp
 | When?  |      | What?      |
 |:--------|:-------|:-------------|
 | 09.00 | 12.00  | Lecture |
-|       | <a href="https://www.uu.nl/en/vening-meineszgebouw-a" target="_blank">Lunch</a> |            
+|       | <a href="https://www.uu.nl/educatorium" target="_blank">Lunch</a> |            
 | 13:30 | 16.00  | Computer lab |
 
 
 ### Lecture Hall locations
 | When?  | Where    |
 |:--------|:-------|
-| Monday | <a href="https://goo.gl/maps/ufn6aXVL9K48Gn7S6" target="_blank">Koningsberger 224</a> |
-| Tuesday | <a href="https://goo.gl/maps/ufn6aXVL9K48Gn7S6" target="_blank">Koningsberger 224</a> |
-| Wednesday | <a href="https://goo.gl/maps/ufn6aXVL9K48Gn7S6" target="_blank">Koningsberger 224</a> |
-| Thursday | <a href="https://goo.gl/maps/ufn6aXVL9K48Gn7S6" target="_blank">Koningsberger 224</a> |
-| Friday | <a href="https://goo.gl/maps/ufn6aXVL9K48Gn7S6" target="_blank">Koningsberger 224</a> |
+| Monday | <a href="https://www.uu.nl/en/victor-j-koningsberger-building" target="_blank">Koningsberger - Cosmos</a> |
+| Tuesday | <a href="https://www.uu.nl/en/victor-j-koningsberger-building" target="_blank">Koningsberger - Cosmos</a> |
+| Wednesday | <a href="https://www.uu.nl/en/victor-j-koningsberger-building" target="_blank">Koningsberger - Cosmos</a> |
+| Thursday | <a href="https://www.uu.nl/en/victor-j-koningsberger-building" target="_blank">Koningsberger - Cosmos</a> |
+| Friday | <a href="https://www.uu.nl/en/victor-j-koningsberger-building" target="_blank">Koningsberger - Cosmos</a> |
 
 # How to prepare
 
