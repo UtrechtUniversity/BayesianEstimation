@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.43">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Florian van Leeuwen">
+
+<title>Non-MCMC methods</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Non-MCMC_methods_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Non-MCMC_methods_files/libs/quarto-html/quarto.js"></script>
+<script src="Non-MCMC_methods_files/libs/quarto-html/popper.min.js"></script>
+<script src="Non-MCMC_methods_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Non-MCMC_methods_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Non-MCMC_methods_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Non-MCMC_methods_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Non-MCMC_methods_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Non-MCMC_methods_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Non-MCMC_methods_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#preliminaries" id="toc-preliminaries" class="nav-link active" data-scroll-target="#preliminaries">Preliminaries</a></li>
+  <li><a href="#an-example-predicting-students-math-performance." id="toc-an-example-predicting-students-math-performance." class="nav-link" data-scroll-target="#an-example-predicting-students-math-performance.">An example: Predicting students’ math performance.</a></li>
+  <li><a href="#non-mcmc-methods" id="toc-non-mcmc-methods" class="nav-link" data-scroll-target="#non-mcmc-methods">Non-MCMC methods</a>
+  <ul class="collapse">
+  <li><a href="#running-models-direclty-in-cmdstanr" id="toc-running-models-direclty-in-cmdstanr" class="nav-link" data-scroll-target="#running-models-direclty-in-cmdstanr">Running models direclty in CMDSTANR</a></li>
+  </ul></li>
+  <li><a href="#original-computing-environment" id="toc-original-computing-environment" class="nav-link" data-scroll-target="#original-computing-environment">Original Computing Environment</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Non-MCMC methods</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Florian van Leeuwen </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This document illustrates using different approximators in <code>Stan</code>, which is the program underlying various R-packages for Bayesian analysis, including <code>brms</code>.</p>
+<section id="preliminaries" class="level2">
+<h2 class="anchored" data-anchor-id="preliminaries">Preliminaries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">07082023</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="an-example-predicting-students-math-performance." class="level2">
+<h2 class="anchored" data-anchor-id="an-example-predicting-students-math-performance.">An example: Predicting students’ math performance.</h2>
+<p>To illustrate Bayesian convergence and checks, we will use a data set that is available from the <a href="https://archive.ics.uci.edu">UCI Machine Learning repository</a>. The data set we use can be downloaded <a href="https://archive.ics.uci.edu/dataset/320/student+performance">here</a> and contains two data sets and a merged file. We will use the “student-mat.csv” file.</p>
+<p>We will use linear regression analysis to predict the final math grade of Portugese students in secondary schools. First, we load in the data. Make sure the data is saved in your current working directory or change the path to the data in the code below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"student-mat.csv"</span>, <span class="at">sep =</span> <span class="st">";"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  school sex age address famsize Pstatus Medu Fedu     Mjob     Fjob     reason
+1     GP   F  18       U     GT3       A    4    4  at_home  teacher     course
+2     GP   F  17       U     GT3       T    1    1  at_home    other     course
+3     GP   F  15       U     LE3       T    1    1  at_home    other      other
+4     GP   F  15       U     GT3       T    4    2   health services       home
+5     GP   F  16       U     GT3       T    3    3    other    other       home
+6     GP   M  16       U     LE3       T    4    3 services    other reputation
+  guardian traveltime studytime failures schoolsup famsup paid activities
+1   mother          2         2        0       yes     no   no         no
+2   father          1         2        0        no    yes   no         no
+3   mother          1         2        3       yes     no  yes         no
+4   mother          1         3        0        no    yes  yes        yes
+5   father          1         2        0        no    yes  yes         no
+6   mother          1         2        0        no    yes  yes        yes
+  nursery higher internet romantic famrel freetime goout Dalc Walc health
+1     yes    yes       no       no      4        3     4    1    1      3
+2      no    yes      yes       no      5        3     3    1    1      3
+3     yes    yes      yes       no      4        3     2    2    3      3
+4     yes    yes      yes      yes      3        2     2    1    1      5
+5     yes    yes       no       no      4        3     2    1    2      5
+6     yes    yes      yes       no      5        4     2    1    2      5
+  absences G1 G2 G3
+1        6  5  6  6
+2        4  5  5  6
+3       10  7  8 10
+4        2 15 14 15
+5        4  6 10 10
+6       10 15 15 15</code></pre>
+</div>
+</div>
+<p>We will predict the math grade at the third period <em>G3</em> based on all other available data and we will use a horseshoe prior to help induce some sparsity. This is a shrinkage priors that attamps to (mainly) shrink non-important predictors, for more information on the prior see <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>start_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>hs_prior <span class="ot">&lt;-</span> <span class="fu">set_prior</span>(<span class="fu">horseshoe</span>(<span class="at">df =</span> <span class="dv">3</span>)) <span class="co"># select prior</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> ., <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"sampling"</span>, <span class="at">prior =</span> hs_prior, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+using C compiler: ‘Apple clang version 16.0.0 (clang-1600.0.26.6)’
+using SDK: ‘MacOSX15.2.sdk’
+clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/4243579/Library/R/arm64/4.4/library/Rcpp/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/unsupported"  -I"/Users/4243579/Library/R/arm64/4.4/library/BH/include" -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/src/"  -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/RcppParallel/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1  -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
+In file included from &lt;built-in&gt;:1:
+/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:3:10: fatal error: 'stdexcept' file not found
+    3 | #include &lt;stdexcept&gt;
+      |          ^~~~~~~~~~~
+1 error generated.
+make: *** [foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+Chain 1: 
+Chain 1: Gradient evaluation took 4.8e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.48 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 1: 
+Chain 1:  Elapsed Time: 1.418 seconds (Warm-up)
+Chain 1:                1.276 seconds (Sampling)
+Chain 1:                2.694 seconds (Total)
+Chain 1: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+Chain 2: 
+Chain 2: Gradient evaluation took 1.2e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+Chain 2: Adjust your expectations accordingly!
+Chain 2: 
+Chain 2: 
+Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 2: 
+Chain 2:  Elapsed Time: 1.322 seconds (Warm-up)
+Chain 2:                1.26 seconds (Sampling)
+Chain 2:                2.582 seconds (Total)
+Chain 2: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+Chain 3: 
+Chain 3: Gradient evaluation took 1.4e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
+Chain 3: Adjust your expectations accordingly!
+Chain 3: 
+Chain 3: 
+Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 3: 
+Chain 3:  Elapsed Time: 1.381 seconds (Warm-up)
+Chain 3:                1.243 seconds (Sampling)
+Chain 3:                2.624 seconds (Total)
+Chain 3: 
+
+SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
+Chain 4: 
+Chain 4: Gradient evaluation took 1.1e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+Chain 4: Adjust your expectations accordingly!
+Chain 4: 
+Chain 4: 
+Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+Chain 4: 
+Chain 4:  Elapsed Time: 1.258 seconds (Warm-up)
+Chain 4:                1.244 seconds (Sampling)
+Chain 4:                2.502 seconds (Total)
+Chain 4: </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 1 divergent transitions after warmup. See
+https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+to find out why this is a problem and how to eliminate them.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 1 divergent transitions after warmup. Increasing
+adapt_delta above 0.8 may help. See
+http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: G3 ~ school + sex + age + address + famsize + Pstatus + Medu + Fedu + Mjob + Fjob + reason + guardian + traveltime + studytime + failures + schoolsup + famsup + paid + activities + nursery + higher + internet + romantic + famrel + freetime + goout + Dalc + Walc + health + absences + G1 + G2 
+   Data: dat (Number of observations: 395) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Regression Coefficients:
+                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept           -1.32      1.58    -4.16     1.81 1.00     2795     3093
+schoolMS             0.05      0.15    -0.17     0.47 1.00     4372     3685
+sexM                 0.03      0.10    -0.15     0.29 1.00     5456     3820
+age                 -0.11      0.08    -0.29     0.02 1.00     2318     2499
+addressU            -0.00      0.10    -0.24     0.22 1.00     6269     2893
+famsizeLE3           0.01      0.10    -0.19     0.24 1.00     6386     3695
+PstatusT            -0.03      0.12    -0.32     0.21 1.00     5362     3372
+Medu                 0.02      0.07    -0.10     0.18 1.00     4354     3859
+Fedu                -0.02      0.07    -0.18     0.10 1.00     4633     3801
+Mjobhealth          -0.00      0.12    -0.27     0.26 1.00     5320     3420
+Mjobother            0.01      0.10    -0.20     0.23 1.00     5611     3483
+Mjobservices         0.01      0.10    -0.21     0.24 1.00     6025     3917
+Mjobteacher          0.00      0.11    -0.25     0.26 1.00     6136     3788
+Fjobhealth           0.05      0.16    -0.20     0.49 1.00     4676     2977
+Fjobother            0.05      0.11    -0.14     0.34 1.00     4847     3504
+Fjobservices        -0.10      0.16    -0.50     0.12 1.00     3328     3289
+Fjobteacher          0.01      0.13    -0.26     0.30 1.00     5565     3587
+reasonhome          -0.07      0.13    -0.40     0.11 1.00     4583     3732
+reasonother          0.04      0.14    -0.19     0.42 1.00     4763     3637
+reasonreputation     0.03      0.11    -0.17     0.30 1.00     5625     3587
+guardianmother       0.06      0.12    -0.12     0.39 1.00     4559     3527
+guardianother       -0.03      0.14    -0.38     0.23 1.00     6006     3310
+traveltime           0.04      0.09    -0.11     0.25 1.00     5423     3522
+studytime           -0.05      0.08    -0.24     0.08 1.00     5047     3481
+failures            -0.08      0.11    -0.35     0.08 1.00     3850     3304
+schoolsupyes         0.08      0.16    -0.14     0.51 1.00     4214     3264
+famsupyes            0.03      0.10    -0.16     0.27 1.00     5394     3489
+paidyes              0.02      0.09    -0.16     0.26 1.00     5641     3506
+activitiesyes       -0.11      0.14    -0.46     0.08 1.00     3347     3267
+nurseryyes          -0.04      0.11    -0.33     0.15 1.00     5166     3694
+higheryes            0.03      0.15    -0.25     0.43 1.00     4959     3579
+internetyes         -0.03      0.12    -0.33     0.18 1.00     5300     3386
+romanticyes         -0.09      0.14    -0.45     0.09 1.00     4108     4041
+famrel               0.25      0.12     0.01     0.49 1.00     2079     1164
+freetime             0.03      0.06    -0.09     0.17 1.00     4949     3516
+goout                0.01      0.06    -0.10     0.14 1.00     5946     3553
+Dalc                -0.01      0.07    -0.18     0.13 1.00     5134     3623
+Walc                 0.05      0.07    -0.06     0.22 1.00     3225     3419
+health               0.03      0.05    -0.06     0.15 1.00     4368     3824
+absences             0.04      0.01     0.01     0.06 1.00     3262     2040
+G1                   0.13      0.06     0.01     0.25 1.00     2354     1397
+G2                   1.00      0.05     0.90     1.10 1.00     2490     2278
+
+Further Distributional Parameters:
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     1.88      0.07     1.75     2.02 1.00     5567     2832
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>end_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>runtime1 <span class="ot">&lt;-</span> end_time <span class="sc">-</span> start_time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that here, we rely on the default prior distributions in <code>brms</code>.</p>
+</section>
+<section id="non-mcmc-methods" class="level2">
+<h2 class="anchored" data-anchor-id="non-mcmc-methods">Non-MCMC methods</h2>
+<p>By default brm using HMC, where the NUTS algorithms <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> is used to help with the sampling. In this case sampling is quite quick, but let’s say we are really busy and we want the model estimates even quicker.</p>
+<p>In the mean field method in STAN independent Gaussian are assumed as the distributions for our latent variables in the unconstrained space. The last part might be a bit confusing, but imagine estimating a variance term with a Gaussian. We would run into the problem that there would be some density below zero, and this is impossible for a variance term. So, we could first transform the variable to become unconstrained (e.g., take the log) then estimate the Gaussian in the this unconstrained space and thus back-transform the parameter to the original space. See footnote <a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> for more information.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>start_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> ., <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"meanfield"</span>, <span class="at">prior =</span> hs_prior, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+using C compiler: ‘Apple clang version 16.0.0 (clang-1600.0.26.6)’
+using SDK: ‘MacOSX15.2.sdk’
+clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/4243579/Library/R/arm64/4.4/library/Rcpp/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/unsupported"  -I"/Users/4243579/Library/R/arm64/4.4/library/BH/include" -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/src/"  -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/RcppParallel/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1  -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
+In file included from &lt;built-in&gt;:1:
+/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:3:10: fatal error: 'stdexcept' file not found
+    3 | #include &lt;stdexcept&gt;
+      |          ^~~~~~~~~~~
+1 error generated.
+make: *** [foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chain 1: ------------------------------------------------------------
+Chain 1: EXPERIMENTAL ALGORITHM:
+Chain 1:   This procedure has not been thoroughly tested and may be unstable
+Chain 1:   or buggy. The interface is subject to change.
+Chain 1: ------------------------------------------------------------
+Chain 1: 
+Chain 1: 
+Chain 1: 
+Chain 1: Gradient evaluation took 4.9e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.49 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Begin eta adaptation.
+Chain 1: Iteration:   1 / 250 [  0%]  (Adaptation)
+Chain 1: Iteration:  50 / 250 [ 20%]  (Adaptation)
+Chain 1: Iteration: 100 / 250 [ 40%]  (Adaptation)
+Chain 1: Iteration: 150 / 250 [ 60%]  (Adaptation)
+Chain 1: Iteration: 200 / 250 [ 80%]  (Adaptation)
+Chain 1: Success! Found best value [eta = 1] earlier than expected.
+Chain 1: 
+Chain 1: Begin stochastic gradient ascent.
+Chain 1:   iter             ELBO   delta_ELBO_mean   delta_ELBO_med   notes 
+Chain 1:    100        -1465.769             1.000            1.000
+Chain 1:    200         -954.727             0.768            1.000
+Chain 1:    300         -877.914             0.311            0.535
+Chain 1:    400         -902.521             0.057            0.087
+Chain 1:    500         -864.152             0.036            0.044
+Chain 1:    600         -890.797             0.037            0.044
+Chain 1:    700         -859.211             0.033            0.037
+Chain 1:    800         -857.468             0.019            0.037
+Chain 1:    900         -857.828             0.001            0.002   MEAN ELBO CONVERGED   MEDIAN ELBO CONVERGED
+Chain 1: 
+Chain 1: Drawing a sample of size 1000 from the approximate posterior... 
+Chain 1: COMPLETED.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Pareto k diagnostic value is 1.82. Resampling is disabled. Decreasing
+tol_rel_obj may help if variational algorithm has terminated prematurely.
+Otherwise consider using sampling instead.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: G3 ~ school + sex + age + address + famsize + Pstatus + Medu + Fedu + Mjob + Fjob + reason + guardian + traveltime + studytime + failures + schoolsup + famsup + paid + activities + nursery + higher + internet + romantic + famrel + freetime + goout + Dalc + Walc + health + absences + G1 + G2 
+   Data: dat (Number of observations: 395) 
+  Draws: 1 chains, each with iter = 1000; warmup = 0; thin = 1;
+         total post-warmup draws = 1000
+
+Regression Coefficients:
+                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept           -1.37      2.60    -4.95     3.37 1.00      931      783
+schoolMS             0.02      0.13    -0.13     0.20 1.00      970     1016
+sexM                 0.01      0.06    -0.10     0.13 1.00      909      846
+age                 -0.06      0.14    -0.36     0.07 1.00      926      871
+addressU            -0.01      0.11    -0.17     0.13 1.00     1084      732
+famsizeLE3           0.00      0.08    -0.12     0.16 1.00      909      734
+PstatusT             0.01      0.09    -0.17     0.20 1.00     1008     1025
+Medu                 0.01      0.06    -0.09     0.13 1.00      842      942
+Fedu                 0.00      0.05    -0.11     0.11 1.00      771      975
+Mjobhealth           0.00      0.06    -0.10     0.13 1.00      882      904
+Mjobother            0.00      0.10    -0.15     0.17 1.00     1007     1026
+Mjobservices         0.01      0.08    -0.13     0.17 1.00      991      983
+Mjobteacher          0.00      0.07    -0.14     0.17 1.00      847      925
+Fjobhealth           0.00      0.16    -0.27     0.25 1.00     1086      905
+Fjobother            0.02      0.09    -0.12     0.21 1.00      936      944
+Fjobservices        -0.02      0.06    -0.17     0.07 1.00      989      935
+Fjobteacher          0.01      0.09    -0.18     0.23 1.00      929      944
+reasonhome          -0.01      0.07    -0.17     0.10 1.00     1092     1017
+reasonother          0.01      0.08    -0.14     0.18 1.00      879      834
+reasonreputation     0.01      0.07    -0.12     0.18 1.00     1025      948
+guardianmother       0.02      0.08    -0.10     0.21 1.00      831      832
+guardianother       -0.01      0.09    -0.23     0.15 1.00      899      902
+traveltime           0.01      0.05    -0.06     0.12 1.00     1057      937
+studytime           -0.01      0.06    -0.14     0.08 1.00      965      937
+failures            -0.05      0.14    -0.37     0.08 1.00      928      903
+schoolsupyes         0.01      0.08    -0.12     0.19 1.00     1196      983
+famsupyes            0.00      0.07    -0.14     0.12 1.00     1000     1067
+paidyes              0.01      0.06    -0.10     0.17 1.01      791      854
+activitiesyes       -0.01      0.05    -0.15     0.07 1.00      990      882
+nurseryyes          -0.01      0.06    -0.15     0.09 1.00      890     1023
+higheryes            0.01      0.13    -0.20     0.24 1.00     1028      979
+internetyes         -0.01      0.08    -0.18     0.14 1.00      837      767
+romanticyes         -0.03      0.11    -0.28     0.12 1.00      954      990
+famrel               0.17      0.16     0.00     0.63 1.00      615      902
+freetime             0.01      0.06    -0.11     0.15 1.00     1088      941
+goout                0.02      0.06    -0.07     0.16 1.00     1117      941
+Dalc                -0.00      0.06    -0.12     0.11 1.00      993      616
+Walc                 0.01      0.05    -0.06     0.11 1.00     1038     1035
+health               0.01      0.05    -0.08     0.13 1.00      877      837
+absences             0.04      0.02     0.01     0.08 1.00      750      849
+G1                   0.08      0.05     0.02     0.20 1.00     1077     1021
+G2                   1.00      0.05     0.89     1.11 1.00     1030      705
+
+Further Distributional Parameters:
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     1.94      0.07     1.80     2.09 1.00      945      979
+
+Draws were sampled using variational(meanfield). </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>end_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>runtime2 <span class="ot">&lt;-</span> end_time <span class="sc">-</span> start_time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Alternatively, we can use the full-rank method that assumes a joint Gaussian for the latent variables. This might sound like an advantage, but note that this method models a covariance matrix with p * p elements, whereas meanfield only models the diagonal so p * 1. We will thus run into scaling problems when p (the number of latent variables) is large. The method is not very stable, try changing the seed to see what happens.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>start_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>fit3 <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> ., <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"fullrank"</span>, <span class="at">prior =</span> hs_prior, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling Stan program...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Trying to compile a simple C file</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+using C compiler: ‘Apple clang version 16.0.0 (clang-1600.0.26.6)’
+using SDK: ‘MacOSX15.2.sdk’
+clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/4243579/Library/R/arm64/4.4/library/Rcpp/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/unsupported"  -I"/Users/4243579/Library/R/arm64/4.4/library/BH/include" -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/src/"  -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/RcppParallel/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1  -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
+In file included from &lt;built-in&gt;:1:
+/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:3:10: fatal error: 'stdexcept' file not found
+    3 | #include &lt;stdexcept&gt;
+      |          ^~~~~~~~~~~
+1 error generated.
+make: *** [foo.o] Error 1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Start sampling</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chain 1: ------------------------------------------------------------
+Chain 1: EXPERIMENTAL ALGORITHM:
+Chain 1:   This procedure has not been thoroughly tested and may be unstable
+Chain 1:   or buggy. The interface is subject to change.
+Chain 1: ------------------------------------------------------------
+Chain 1: 
+Chain 1: 
+Chain 1: 
+Chain 1: Gradient evaluation took 4.6e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.46 seconds.
+Chain 1: Adjust your expectations accordingly!
+Chain 1: 
+Chain 1: 
+Chain 1: Begin eta adaptation.
+Chain 1: Iteration:   1 / 250 [  0%]  (Adaptation)
+Chain 1: Iteration:  50 / 250 [ 20%]  (Adaptation)
+Chain 1: Iteration: 100 / 250 [ 40%]  (Adaptation)
+Chain 1: Iteration: 150 / 250 [ 60%]  (Adaptation)
+Chain 1: Iteration: 200 / 250 [ 80%]  (Adaptation)
+Chain 1: Iteration: 250 / 250 [100%]  (Adaptation)
+Chain 1: Success! Found best value [eta = 0.1].
+Chain 1: 
+Chain 1: Begin stochastic gradient ascent.
+Chain 1:   iter             ELBO   delta_ELBO_mean   delta_ELBO_med   notes 
+Chain 1:    100     -9698200.101             1.000            1.000
+Chain 1:    200     -5128251.044             0.946            1.000
+Chain 1:    300     -6650854.476             0.560            0.891
+Chain 1:    400     -5143251.315             0.261            0.293
+Chain 1:    500     -4204996.753             0.258            0.293
+Chain 1:    600     -3019285.499             0.308            0.393
+Chain 1:    700     -6304929.364             0.457            0.521
+Chain 1:    800     -4550711.654             0.453            0.521
+Chain 1:    900     -4952024.088             0.233            0.385
+Chain 1:   1000     -4712437.049             0.066            0.081
+Chain 1:   1100     -5285984.949             0.080            0.109
+Chain 1:   1200     -4517100.585             0.139            0.170
+Chain 1:   1300     -2310156.660             0.563            0.955   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1400     -1189211.407             0.949            0.955   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1500     -3079943.893             0.778            0.943   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1600     -1650931.340             0.740            0.866   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1700     -1554952.660             0.464            0.866   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1800      -999820.190             0.308            0.555   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1900     -1609221.673             0.467            0.555   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   2000     -1898863.020             0.266            0.379
+Chain 1: Informational Message: The maximum number of iterations is reached! The algorithm may not have converged.
+Chain 1: This variational approximation is not guaranteed to be meaningful.
+Chain 1: 
+Chain 1: Drawing a sample of size 1000 from the approximate posterior... 
+Chain 1: COMPLETED.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Pareto k diagnostic value is Inf. Resampling is disabled. Decreasing
+tol_rel_obj may help if variational algorithm has terminated prematurely.
+Otherwise consider using sampling instead.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: G3 ~ school + sex + age + address + famsize + Pstatus + Medu + Fedu + Mjob + Fjob + reason + guardian + traveltime + studytime + failures + schoolsup + famsup + paid + activities + nursery + higher + internet + romantic + famrel + freetime + goout + Dalc + Walc + health + absences + G1 + G2 
+   Data: dat (Number of observations: 395) 
+  Draws: 1 chains, each with iter = 1000; warmup = 0; thin = 1;
+         total post-warmup draws = 1000
+
+Regression Coefficients:
+                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept            5.49     16.56   -25.71    40.34 1.00     1030      907
+schoolMS             0.27      0.50    -0.02     1.55 1.01      842      956
+sexM                 0.80      1.13    -0.00     3.88 1.00      795      878
+age                  0.20      0.43    -0.07     1.39 1.00      995      849
+addressU            -0.05      0.62    -1.37     1.14 1.00      859      888
+famsizeLE3          -0.04      1.11    -2.29     2.30 1.00      904      841
+PstatusT            -0.92      1.34    -4.23     0.84 1.00     1074      956
+Medu                -0.75      1.09    -3.41     0.88 1.00     1060      923
+Fedu                -0.70      0.99    -3.29     0.20 1.00      863      975
+Mjobhealth           0.75      1.18    -0.62     4.03 1.00     1005      983
+Mjobother           -0.25      0.54    -1.91     0.01 1.00      956     1022
+Mjobservices         0.34      0.62    -0.09     1.92 1.00     1041      902
+Mjobteacher          0.51      1.14    -1.21     3.17 1.00      815      944
+Fjobhealth           1.16      1.33     0.01     4.76 1.00     1024      980
+Fjobother           -0.03      0.75    -1.93     1.43 1.00     1025     1024
+Fjobservices        -0.12      0.26    -0.73     0.04 1.00      980     1072
+Fjobteacher         -0.05      0.17    -0.45     0.14 1.00     1025      884
+reasonhome          -0.01      0.24    -0.54     0.42 1.00      960      844
+reasonother          0.18      0.46    -0.09     1.20 1.00     1129     1014
+reasonreputation    -0.07      0.76    -1.75     1.39 1.00     1011      880
+guardianmother       0.03      0.29    -0.46     0.52 1.00      913      773
+guardianother        0.18      0.46    -0.35     1.42 1.00      952      799
+traveltime           0.07      0.22    -0.13     0.75 1.00      933      983
+studytime            0.56      0.78    -0.12     2.59 1.00     1017      949
+failures            -1.24      1.36    -5.00    -0.00 1.00      724      769
+schoolsupyes        -0.13      0.54    -1.49     0.70 1.00      918      941
+famsupyes            0.65      1.12    -0.62     3.67 1.00     1033      877
+paidyes             -0.10      0.47    -1.16     0.72 1.00      957      875
+activitiesyes       -0.09      0.27    -0.67     0.14 1.00      980      802
+nurseryyes           0.70      1.02     0.01     3.57 1.00      920      970
+higheryes            0.01      0.34    -0.61     0.72 1.00     1093      881
+internetyes         -0.60      0.82    -2.86     0.10 1.00      950      815
+romanticyes         -0.99      1.32    -4.24     0.30 1.00     1032      973
+famrel               0.15      0.26    -0.01     0.92 1.00      924      888
+freetime             0.06      0.22    -0.14     0.54 1.00     1006      854
+goout               -0.17      0.75    -1.85     1.12 1.00      986      820
+Dalc                 1.14      1.31    -0.39     4.58 1.00     1042     1045
+Walc                -1.49      1.63    -5.36     0.05 1.00      943      767
+health               0.18      0.42    -0.30     1.08 1.00      925      971
+absences            -0.08      0.81    -2.01     1.60 1.00      939      812
+G1                   0.19      0.59    -0.48     1.56 1.00     1026      982
+G2                  -0.53      1.07    -3.19     1.19 1.00      789      983
+
+Further Distributional Parameters:
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     0.38      0.35     0.06     1.41 1.00      973      872
+
+Draws were sampled using variational(fullrank). </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>end_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>runtime3 <span class="ot">&lt;-</span> end_time <span class="sc">-</span> start_time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Lastly, we can use the Laplace method (for some reason not supported in brm now).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># start_time &lt;- Sys.time()</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co"># fit4 &lt;- brm(G3 ~ sex + studytime + paid + higher, data = dat, algorithm = "laplace")</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># summary(fit4)</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># end_time &lt;- Sys.time()</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co"># runtime4 &lt;- end_time - start_time</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The running time for the different models is:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  method    run_time     
+  &lt;chr&gt;     &lt;drtn&gt;       
+1 HMC       34.83166 secs
+2 Meanfield 23.22624 secs
+3 Fullrank  22.51083 secs</code></pre>
+</div>
+</div>
+<p>The Non-MCMC methods are a bit quicker. Note that a very large part of this is due to the compilation of the model and not the estimation itself.</p>
+<p>Let’s compare the coefficients for the previous test scores in period 1 <em>G1</em> and period 2 <em>G2</em>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>df_plot <span class="ot">=</span> <span class="fu">tibble</span>(</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Method =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"HMC"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Meanfield"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Fullrank"</span>, <span class="dv">2</span>)),</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Coef =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"G1"</span>, <span class="st">"G2"</span>), <span class="dv">3</span>),</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimate =</span> <span class="fu">c</span>(</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(fit1)<span class="sc">$</span>fixed[<span class="dv">41</span><span class="sc">:</span><span class="dv">42</span>, ]<span class="sc">$</span>Estimate,</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(fit2)<span class="sc">$</span>fixed[<span class="dv">41</span><span class="sc">:</span><span class="dv">42</span>, ]<span class="sc">$</span>Estimate,</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(fit3)<span class="sc">$</span>fixed[<span class="dv">41</span><span class="sc">:</span><span class="dv">42</span>, ]<span class="sc">$</span>Estimate</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 1 divergent transitions after warmup. Increasing
+adapt_delta above 0.8 may help. See
+http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>df_plot <span class="sc">%&gt;%</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Coef, <span class="at">y =</span> Estimate, <span class="at">color =</span> Method)) <span class="sc">+</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">5</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Non-MCMC_methods_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>So we see that HMC and Meanfield obtain comparable results, while Fullrank is quite far off.</p>
+<section id="running-models-direclty-in-cmdstanr" class="level3">
+<h3 class="anchored" data-anchor-id="running-models-direclty-in-cmdstanr">Running models direclty in CMDSTANR</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For some methods it can be easier to run the model with CMDSTANR. This can feel a bit daunting, since CMDSTANR does not work with specifying formula’s like brm or lm. Instead we need to write the model in stan. Luckly for us the brms package has a function <em>stancode</em>, to obtain a stan program given a forumla:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain model code</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>model_code <span class="ot">&lt;-</span> <span class="fu">stancode</span>(G3 <span class="sc">~</span> ., <span class="at">family =</span> <span class="fu">gaussian</span>(), <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"sampling"</span>, <span class="at">prior =</span> hs_prior)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>model_code</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>// generated with brms 2.22.0
+functions {
+  /* Efficient computation of the horseshoe scale parameters
+   * see Appendix C.1 in https://projecteuclid.org/euclid.ejs/1513306866
+   * Args:
+   *   lambda: local shrinkage parameters
+   *   tau: global shrinkage parameter
+   *   c2: slap regularization parameter
+   * Returns:
+   *   scale parameter vector of the horseshoe prior
+   */
+  vector scales_horseshoe(vector lambda, real tau, real c2) {
+    int K = rows(lambda);
+    vector[K] lambda2 = square(lambda);
+    vector[K] lambda_tilde = sqrt(c2 * lambda2 ./ (c2 + tau^2 * lambda2));
+    return lambda_tilde * tau;
+  }
+}
+data {
+  int&lt;lower=1&gt; N;  // total number of observations
+  vector[N] Y;  // response variable
+  int&lt;lower=1&gt; K;  // number of population-level effects
+  matrix[N, K] X;  // population-level design matrix
+  int&lt;lower=1&gt; Kc;  // number of population-level effects after centering
+  int&lt;lower=1&gt; Kscales;  // number of local scale parameters
+  // data for the horseshoe prior
+  real&lt;lower=0&gt; hs_df;  // local degrees of freedom
+  real&lt;lower=0&gt; hs_df_global;  // global degrees of freedom
+  real&lt;lower=0&gt; hs_df_slab;  // slab degrees of freedom
+  real&lt;lower=0&gt; hs_scale_global;  // global prior scale
+  real&lt;lower=0&gt; hs_scale_slab;  // slab prior scale
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+  matrix[N, Kc] Xc;  // centered version of X without an intercept
+  vector[Kc] means_X;  // column means of X before centering
+  for (i in 2:K) {
+    means_X[i - 1] = mean(X[, i]);
+    Xc[, i - 1] = X[, i] - means_X[i - 1];
+  }
+}
+parameters {
+  vector[Kc] zb;  // unscaled coefficients
+  real Intercept;  // temporary intercept for centered predictors
+  // horseshoe shrinkage parameters
+  real&lt;lower=0&gt; hs_global;  // global shrinkage parameter
+  real&lt;lower=0&gt; hs_slab;  // slab regularization parameter
+  vector&lt;lower=0&gt;[Kscales] hs_local;  // local parameters for the horseshoe prior
+  real&lt;lower=0&gt; sigma;  // dispersion parameter
+}
+transformed parameters {
+  vector[Kc] b;  // scaled coefficients
+  vector&lt;lower=0&gt;[Kc] sdb;  // SDs of the coefficients
+  vector&lt;lower=0&gt;[Kscales] scales;  // local horseshoe scale parameters
+  real lprior = 0;  // prior contributions to the log posterior
+  // compute horseshoe scale parameters
+  scales = scales_horseshoe(hs_local, hs_global, hs_scale_slab^2 * hs_slab);
+  sdb = scales[(1):(Kc)];
+  b = zb .* sdb;  // scale coefficients
+  lprior += student_t_lpdf(Intercept | 3, 11, 4.4);
+  lprior += student_t_lpdf(hs_global | hs_df_global, 0, hs_scale_global * sigma)
+    - 1 * log(0.5);
+  lprior += inv_gamma_lpdf(hs_slab | 0.5 * hs_df_slab, 0.5 * hs_df_slab);
+  lprior += student_t_lpdf(sigma | 3, 0, 4.4)
+    - 1 * student_t_lccdf(0 | 3, 0, 4.4);
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    target += normal_id_glm_lpdf(Y | Xc, Intercept, b, sigma);
+  }
+  // priors including constants
+  target += lprior;
+  target += std_normal_lpdf(zb);
+  target += student_t_lpdf(hs_local | hs_df, 0, 1)
+    - rows(hs_local) * log(0.5);
+}
+generated quantities {
+  // actual population-level intercept
+  real b_Intercept = Intercept - dot_product(means_X, b);
+}</code></pre>
+</div>
+</div>
+<p>This saves us a considerable amount of work. CMDSTANR also has a specific way it wants the data, namely a list with the arguments in the data block above. This can be obtained with the <em>standata</em> function. And finally, we need to compile the model. The advantage of using CMDSTANR is that it offers more flexibility.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain data in the right format</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>model_data <span class="ot">&lt;-</span> <span class="fu">standata</span>(G3 <span class="sc">~</span> ., <span class="at">family =</span> <span class="fu">gaussian</span>(), <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"sampling"</span>, <span class="at">prior =</span> hs_prior)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(model_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 12
+ $ N              : int 395
+ $ Y              : int [1:395(1d)] 6 6 10 15 10 15 11 6 19 15 ...
+ $ K              : int 42
+ $ Kc             : num 41
+ $ X              : num [1:395, 1:42] 1 1 1 1 1 1 1 1 1 1 ...
+  ..- attr(*, "dimnames")=List of 2
+  .. ..$ : chr [1:395] "1" "2" "3" "4" ...
+  .. ..$ : chr [1:42] "Intercept" "schoolMS" "sexM" "age" ...
+  ..- attr(*, "assign")= int [1:42] 0 1 2 3 4 5 6 7 8 9 ...
+  ..- attr(*, "contrasts")=List of 17
+  .. ..$ school    : chr "contr.treatment"
+  .. ..$ sex       : chr "contr.treatment"
+  .. ..$ address   : chr "contr.treatment"
+  .. ..$ famsize   : chr "contr.treatment"
+  .. ..$ Pstatus   : chr "contr.treatment"
+  .. ..$ Mjob      : chr "contr.treatment"
+  .. ..$ Fjob      : chr "contr.treatment"
+  .. ..$ reason    : chr "contr.treatment"
+  .. ..$ guardian  : chr "contr.treatment"
+  .. ..$ schoolsup : chr "contr.treatment"
+  .. ..$ famsup    : chr "contr.treatment"
+  .. ..$ paid      : chr "contr.treatment"
+  .. ..$ activities: chr "contr.treatment"
+  .. ..$ nursery   : chr "contr.treatment"
+  .. ..$ higher    : chr "contr.treatment"
+  .. ..$ internet  : chr "contr.treatment"
+  .. ..$ romantic  : chr "contr.treatment"
+ $ Kscales        : num 41
+ $ hs_df          : num 3
+ $ hs_df_global   : num 1
+ $ hs_df_slab     : num 4
+ $ hs_scale_global: num 1
+ $ hs_scale_slab  : num 2
+ $ prior_only     : int 0
+ - attr(*, "class")= chr [1:2] "standata" "list"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compile the model</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>m_compiled <span class="ot">&lt;-</span> cmdstanr<span class="sc">::</span><span class="fu">cmdstan_model</span>(cmdstanr<span class="sc">::</span><span class="fu">write_stan_file</span>(model_code))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Below we run two extra model: a Laplace approximation and a Pathfinder <a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> approximation that is then used as initial values for HMC:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># laplace</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>model_lp <span class="ot">&lt;-</span> m_compiled<span class="sc">$</span><span class="fu">laplace</span>(<span class="at">data =</span> model_data, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Initial log joint probability = -1.00441e+06 
+    Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes  
+Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19) 
+Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19) 
+Error evaluating model log probability: Non-finite function evaluation. 
+Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 70, column 4 to column 62) 
+Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 70, column 4 to column 62) 
+      99       -881.19      0.589956       43.4094           1           1      174    
+    Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes  
+     199      -872.053     0.0088016       3.96852      0.4371      0.4371      289    
+    Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes  
+     299      -871.982    0.00227751      0.779228           1           1      401    
+    Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes  
+     390       -871.98   6.23698e-05     0.0574599           1           1      506    
+Optimization terminated normally:  
+  Convergence detected: relative gradient magnitude is below tolerance 
+Finished in  0.1 seconds.
+Calculating Hessian 
+Calculating inverse of Cholesky factor 
+Generating draws 
+iteration: 0 
+iteration: 100 
+iteration: 200 
+iteration: 300 
+iteration: 400 
+iteration: 500 
+iteration: 600 
+iteration: 700 
+iteration: 800 
+iteration: 900 
+Finished in  0.1 seconds.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pathfinder</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>model_pf <span class="ot">&lt;-</span> m_compiled<span class="sc">$</span><span class="fu">pathfinder</span>(<span class="at">data =</span> model_data, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Path [1] :Initial log joint density = -1004410.592741 
+Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19) 
+Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19) 
+Error evaluating model log probability: Non-finite function evaluation. 
+Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 70, column 4 to column 62) 
+Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 70, column 4 to column 62) 
+Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+             99      -8.812e+02      5.900e-01   4.341e+01    1.000e+00  1.000e+00      2476 -9.603e+02 -9.603e+02                   
+Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            199      -8.721e+02      8.802e-03   3.969e+00    4.371e-01  4.371e-01      4976 -1.043e+03 -1.043e+03                   
+Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            299      -8.720e+02      2.278e-03   7.792e-01    1.000e+00  1.000e+00      7476 -1.037e+03 -1.037e+03                   
+Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            390      -8.720e+02      6.237e-05   5.746e-02    1.000e+00  1.000e+00      9751 -1.039e+03 -1.039e+03                   
+Path [1] :Best Iter: [102] ELBO (-948.175274) evaluations: (9751) 
+Path [2] :Initial log joint density = -6782.162576 
+Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+             99      -8.744e+02      8.100e-02   8.050e+00    1.000e+00  1.000e+00      2476 -9.897e+02 -9.897e+02                   
+Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            199      -8.720e+02      2.677e-03   3.579e+00    1.000e+00  1.000e+00      4976 -1.012e+03 -1.012e+03                   
+Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            299      -8.720e+02      2.856e-03   1.155e+00    1.000e+00  1.000e+00      7476 -1.022e+03 -1.022e+03                   
+Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            386      -8.720e+02      1.001e-04   7.737e-02    1.000e+00  1.000e+00      9651 -1.037e+03 -1.037e+03                   
+Path [2] :Best Iter: [62] ELBO (-933.275817) evaluations: (9651) 
+Path [3] :Initial log joint density = -1999.794678 
+Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+             99      -8.753e+02      3.164e-02   8.192e+00    9.729e-01  9.729e-01      2476 -9.731e+02 -9.731e+02                   
+Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            199      -8.720e+02      3.502e-03   1.624e+00    8.884e-02  1.000e+00      4976 -1.075e+03 -1.075e+03                   
+Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            299      -8.720e+02      2.505e-04   2.006e-01    1.000e+00  1.000e+00      7476 -9.756e+02 -9.756e+02                   
+Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            308      -8.720e+02      2.559e-04   6.874e-02    1.000e+00  1.000e+00      7701 -9.884e+02 -9.884e+02                   
+Path [3] :Best Iter: [55] ELBO (-927.882732) evaluations: (7701) 
+Path [4] :Initial log joint density = -44656.679535 
+Error evaluating model log probability: Non-finite gradient. 
+Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+             99      -8.746e+02      2.739e-02   1.295e+01    1.000e+00  1.000e+00      2476 -1.045e+03 -1.045e+03                   
+Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            199      -8.720e+02      1.046e-02   1.723e+00    1.000e+00  1.000e+00      4976 -1.007e+03 -1.007e+03                   
+Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            299      -8.720e+02      3.481e-04   2.616e-01    2.763e-01  2.763e-01      7476 -9.875e+02 -9.875e+02                   
+Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+            350      -8.720e+02      9.476e-05   1.196e-01    1.000e+00  1.000e+00      8751 -1.017e+03 -1.017e+03                   
+Path [4] :Best Iter: [56] ELBO (-950.696632) evaluations: (8751) 
+Total log probability function evaluations:39754 
+Pareto k value (3.9) is greater than 0.7. Importance resampling was not able to improve the approximation, which may indicate that the approximation itself is poor. 
+Finished in  0.3 seconds.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># supply pathfinder results as inital values for HMC</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>model_pf_hmc <span class="ot">&lt;-</span> m_compiled<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> model_data, <span class="at">seed =</span> <span class="dv">123</span>, <span class="at">init =</span> model_pf, <span class="at">iter_warmup =</span> <span class="dv">100</span>, <span class="at">iter_sampling =</span> <span class="dv">2000</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running MCMC with 4 sequential chains...
+
+Chain 1 WARNING: There aren't enough warmup iterations to fit the 
+Chain 1          three stages of adaptation as currently configured. 
+Chain 1          Reducing each adaptation stage to 15%/75%/10% of 
+Chain 1          the given number of warmup iterations: 
+Chain 1            init_buffer = 15 
+Chain 1            adapt_window = 75 
+Chain 1            term_buffer = 10 
+Chain 1 Iteration:    1 / 2100 [  0%]  (Warmup) 
+Chain 1 Iteration:  100 / 2100 [  4%]  (Warmup) 
+Chain 1 Iteration:  101 / 2100 [  4%]  (Sampling) 
+Chain 1 Iteration:  200 / 2100 [  9%]  (Sampling) 
+Chain 1 Iteration:  300 / 2100 [ 14%]  (Sampling) 
+Chain 1 Iteration:  400 / 2100 [ 19%]  (Sampling) 
+Chain 1 Iteration:  500 / 2100 [ 23%]  (Sampling) 
+Chain 1 Iteration:  600 / 2100 [ 28%]  (Sampling) 
+Chain 1 Iteration:  700 / 2100 [ 33%]  (Sampling) 
+Chain 1 Iteration:  800 / 2100 [ 38%]  (Sampling) 
+Chain 1 Iteration:  900 / 2100 [ 42%]  (Sampling) 
+Chain 1 Iteration: 1000 / 2100 [ 47%]  (Sampling) 
+Chain 1 Iteration: 1100 / 2100 [ 52%]  (Sampling) 
+Chain 1 Iteration: 1200 / 2100 [ 57%]  (Sampling) 
+Chain 1 Iteration: 1300 / 2100 [ 61%]  (Sampling) 
+Chain 1 Iteration: 1400 / 2100 [ 66%]  (Sampling) 
+Chain 1 Iteration: 1500 / 2100 [ 71%]  (Sampling) 
+Chain 1 Iteration: 1600 / 2100 [ 76%]  (Sampling) 
+Chain 1 Iteration: 1700 / 2100 [ 80%]  (Sampling) 
+Chain 1 Iteration: 1800 / 2100 [ 85%]  (Sampling) 
+Chain 1 Iteration: 1900 / 2100 [ 90%]  (Sampling) 
+Chain 1 Iteration: 2000 / 2100 [ 95%]  (Sampling) 
+Chain 1 Iteration: 2100 / 2100 [100%]  (Sampling) 
+Chain 1 finished in 5.2 seconds.
+Chain 2 WARNING: There aren't enough warmup iterations to fit the 
+Chain 2          three stages of adaptation as currently configured. 
+Chain 2          Reducing each adaptation stage to 15%/75%/10% of 
+Chain 2          the given number of warmup iterations: 
+Chain 2            init_buffer = 15 
+Chain 2            adapt_window = 75 
+Chain 2            term_buffer = 10 
+Chain 2 Iteration:    1 / 2100 [  0%]  (Warmup) </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 2 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chain 2 Iteration:  100 / 2100 [  4%]  (Warmup) 
+Chain 2 Iteration:  101 / 2100 [  4%]  (Sampling) 
+Chain 2 Iteration:  200 / 2100 [  9%]  (Sampling) 
+Chain 2 Iteration:  300 / 2100 [ 14%]  (Sampling) 
+Chain 2 Iteration:  400 / 2100 [ 19%]  (Sampling) 
+Chain 2 Iteration:  500 / 2100 [ 23%]  (Sampling) 
+Chain 2 Iteration:  600 / 2100 [ 28%]  (Sampling) 
+Chain 2 Iteration:  700 / 2100 [ 33%]  (Sampling) 
+Chain 2 Iteration:  800 / 2100 [ 38%]  (Sampling) 
+Chain 2 Iteration:  900 / 2100 [ 42%]  (Sampling) 
+Chain 2 Iteration: 1000 / 2100 [ 47%]  (Sampling) 
+Chain 2 Iteration: 1100 / 2100 [ 52%]  (Sampling) 
+Chain 2 Iteration: 1200 / 2100 [ 57%]  (Sampling) 
+Chain 2 Iteration: 1300 / 2100 [ 61%]  (Sampling) 
+Chain 2 Iteration: 1400 / 2100 [ 66%]  (Sampling) 
+Chain 2 Iteration: 1500 / 2100 [ 71%]  (Sampling) 
+Chain 2 Iteration: 1600 / 2100 [ 76%]  (Sampling) 
+Chain 2 Iteration: 1700 / 2100 [ 80%]  (Sampling) 
+Chain 2 Iteration: 1800 / 2100 [ 85%]  (Sampling) 
+Chain 2 Iteration: 1900 / 2100 [ 90%]  (Sampling) 
+Chain 2 Iteration: 2000 / 2100 [ 95%]  (Sampling) 
+Chain 2 Iteration: 2100 / 2100 [100%]  (Sampling) 
+Chain 2 finished in 5.2 seconds.
+Chain 3 WARNING: There aren't enough warmup iterations to fit the 
+Chain 3          three stages of adaptation as currently configured. 
+Chain 3          Reducing each adaptation stage to 15%/75%/10% of 
+Chain 3          the given number of warmup iterations: 
+Chain 3            init_buffer = 15 
+Chain 3            adapt_window = 75 
+Chain 3            term_buffer = 10 
+Chain 3 Iteration:    1 / 2100 [  0%]  (Warmup) </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 Exception: student_t_lpdf: Scale parameter is 0, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 3 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chain 3 Iteration:  100 / 2100 [  4%]  (Warmup) 
+Chain 3 Iteration:  101 / 2100 [  4%]  (Sampling) 
+Chain 3 Iteration:  200 / 2100 [  9%]  (Sampling) 
+Chain 3 Iteration:  300 / 2100 [ 14%]  (Sampling) 
+Chain 3 Iteration:  400 / 2100 [ 19%]  (Sampling) 
+Chain 3 Iteration:  500 / 2100 [ 23%]  (Sampling) 
+Chain 3 Iteration:  600 / 2100 [ 28%]  (Sampling) 
+Chain 3 Iteration:  700 / 2100 [ 33%]  (Sampling) 
+Chain 3 Iteration:  800 / 2100 [ 38%]  (Sampling) 
+Chain 3 Iteration:  900 / 2100 [ 42%]  (Sampling) 
+Chain 3 Iteration: 1000 / 2100 [ 47%]  (Sampling) 
+Chain 3 Iteration: 1100 / 2100 [ 52%]  (Sampling) 
+Chain 3 Iteration: 1200 / 2100 [ 57%]  (Sampling) 
+Chain 3 Iteration: 1300 / 2100 [ 61%]  (Sampling) 
+Chain 3 Iteration: 1400 / 2100 [ 66%]  (Sampling) 
+Chain 3 Iteration: 1500 / 2100 [ 71%]  (Sampling) 
+Chain 3 Iteration: 1600 / 2100 [ 76%]  (Sampling) 
+Chain 3 Iteration: 1700 / 2100 [ 80%]  (Sampling) 
+Chain 3 Iteration: 1800 / 2100 [ 85%]  (Sampling) 
+Chain 3 Iteration: 1900 / 2100 [ 90%]  (Sampling) 
+Chain 3 Iteration: 2000 / 2100 [ 95%]  (Sampling) 
+Chain 3 Iteration: 2100 / 2100 [100%]  (Sampling) 
+Chain 3 finished in 5.2 seconds.
+Chain 4 WARNING: There aren't enough warmup iterations to fit the 
+Chain 4          three stages of adaptation as currently configured. 
+Chain 4          Reducing each adaptation stage to 15%/75%/10% of 
+Chain 4          the given number of warmup iterations: 
+Chain 4            init_buffer = 15 
+Chain 4            adapt_window = 75 
+Chain 4            term_buffer = 10 
+Chain 4 Iteration:    1 / 2100 [  0%]  (Warmup) </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 Exception: student_t_lpdf: Scale parameter is 0, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Chain 4 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chain 4 Iteration:  100 / 2100 [  4%]  (Warmup) 
+Chain 4 Iteration:  101 / 2100 [  4%]  (Sampling) 
+Chain 4 Iteration:  200 / 2100 [  9%]  (Sampling) 
+Chain 4 Iteration:  300 / 2100 [ 14%]  (Sampling) 
+Chain 4 Iteration:  400 / 2100 [ 19%]  (Sampling) 
+Chain 4 Iteration:  500 / 2100 [ 23%]  (Sampling) 
+Chain 4 Iteration:  600 / 2100 [ 28%]  (Sampling) 
+Chain 4 Iteration:  700 / 2100 [ 33%]  (Sampling) 
+Chain 4 Iteration:  800 / 2100 [ 38%]  (Sampling) 
+Chain 4 Iteration:  900 / 2100 [ 42%]  (Sampling) 
+Chain 4 Iteration: 1000 / 2100 [ 47%]  (Sampling) 
+Chain 4 Iteration: 1100 / 2100 [ 52%]  (Sampling) 
+Chain 4 Iteration: 1200 / 2100 [ 57%]  (Sampling) 
+Chain 4 Iteration: 1300 / 2100 [ 61%]  (Sampling) 
+Chain 4 Iteration: 1400 / 2100 [ 66%]  (Sampling) 
+Chain 4 Iteration: 1500 / 2100 [ 71%]  (Sampling) 
+Chain 4 Iteration: 1600 / 2100 [ 76%]  (Sampling) 
+Chain 4 Iteration: 1700 / 2100 [ 80%]  (Sampling) 
+Chain 4 Iteration: 1800 / 2100 [ 85%]  (Sampling) 
+Chain 4 Iteration: 1900 / 2100 [ 90%]  (Sampling) 
+Chain 4 Iteration: 2000 / 2100 [ 95%]  (Sampling) 
+Chain 4 Iteration: 2100 / 2100 [100%]  (Sampling) 
+Chain 4 finished in 5.2 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 5.2 seconds.
+Total execution time: 21.1 seconds.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: 2 of 8000 (0.0%) transitions ended with a divergence.
+See https://mc-stan.org/misc/warnings for details.</code></pre>
+</div>
+</div>
+<p>Let’s compare these results to what we obtained before:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>lp_est <span class="ot">=</span> model_lp<span class="sc">$</span><span class="fu">summary</span>() <span class="sc">|&gt;</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(variable <span class="sc">==</span> <span class="st">"b[40]"</span> <span class="sc">|</span> variable <span class="sc">==</span> <span class="st">"b[41]"</span>) </span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>pf_est <span class="ot">=</span> model_pf<span class="sc">$</span><span class="fu">summary</span>() <span class="sc">|&gt;</span></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(variable <span class="sc">==</span> <span class="st">"b[40]"</span> <span class="sc">|</span> variable <span class="sc">==</span> <span class="st">"b[41]"</span>) </span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a>hmc_pf_est <span class="ot">=</span> model_pf_hmc<span class="sc">$</span><span class="fu">summary</span>() <span class="sc">|&gt;</span></span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(variable <span class="sc">==</span> <span class="st">"b[40]"</span> <span class="sc">|</span> variable <span class="sc">==</span> <span class="st">"b[41]"</span>) </span>
+<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a>df_plot2 <span class="ot">=</span> <span class="fu">tibble</span>(</span>
+<span id="cb72-11"><a href="#cb72-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Method =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"Laplace"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Pathfinder"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Pathfinder -&gt; HMC"</span>, <span class="dv">2</span>)),</span>
+<span id="cb72-12"><a href="#cb72-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">Coef =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"G1"</span>, <span class="st">"G2"</span>), <span class="dv">3</span>),</span>
+<span id="cb72-13"><a href="#cb72-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimate =</span> <span class="fu">c</span>(lp_est<span class="sc">$</span>mean ,pf_est<span class="sc">$</span>mean , hmc_pf_est<span class="sc">$</span>mean ))</span>
+<span id="cb72-14"><a href="#cb72-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-15"><a href="#cb72-15" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(df_plot, df_plot2) <span class="sc">%&gt;%</span> </span>
+<span id="cb72-16"><a href="#cb72-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Coef, <span class="at">y =</span> Estimate, <span class="at">color =</span> Method)) <span class="sc">+</span></span>
+<span id="cb72-17"><a href="#cb72-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb72-18"><a href="#cb72-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb72-19"><a href="#cb72-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Method)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Non-MCMC_methods_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We see that Meanfield, Pathfinder, and Pathfinder -&gt; HMC can get close to HMC. Now of course this does not mean that this results in all cases. We should be carefull in using the approximate methods, and always condider if HMC is not a viable option.</p>
+</section>
+</section>
+<section id="original-computing-environment" class="level2">
+<h2 class="anchored" data-anchor-id="original-computing-environment">Original Computing Environment</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.4.2 (2024-10-31)
+ os       macOS Sequoia 15.2
+ system   aarch64, darwin20
+ ui       X11
+ language (EN)
+ collate  en_US.UTF-8
+ ctype    en_US.UTF-8
+ tz       Europe/Amsterdam
+ date     2025-07-01
+ pandoc   3.2 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
+ quarto   1.5.43 @ /usr/local/bin/quarto
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ package        * version     date (UTC) lib source
+ abind            1.4-8       2024-09-12 [2] CRAN (R 4.4.1)
+ backports        1.5.0       2024-05-23 [2] CRAN (R 4.4.0)
+ bayesplot        1.13.0.9000 2025-06-19 [1] https://stan-dev.r-universe.dev (R 4.4.3)
+ bridgesampling   1.1-2       2021-04-16 [1] CRAN (R 4.4.0)
+ brms           * 2.22.0      2024-09-23 [1] CRAN (R 4.4.1)
+ Brobdingnag      1.2-9       2022-10-19 [1] CRAN (R 4.4.0)
+ cachem           1.1.0       2024-05-16 [2] CRAN (R 4.4.0)
+ checkmate        2.3.2       2024-07-29 [2] CRAN (R 4.4.0)
+ cli              3.6.5       2025-04-23 [1] CRAN (R 4.4.1)
+ cmdstanr       * 0.8.1       2025-01-02 [1] https://stan-dev.r-universe.dev (R 4.4.2)
+ coda             0.19-4.1    2024-01-31 [1] CRAN (R 4.4.0)
+ codetools        0.2-20      2024-03-31 [2] CRAN (R 4.4.2)
+ curl             6.2.2       2025-03-24 [1] CRAN (R 4.4.1)
+ data.table       1.16.4      2024-12-06 [2] CRAN (R 4.4.1)
+ devtools         2.4.5       2022-10-11 [1] CRAN (R 4.4.0)
+ digest           0.6.37      2024-08-19 [2] CRAN (R 4.4.1)
+ distributional   0.5.0       2024-09-17 [1] CRAN (R 4.4.1)
+ dplyr          * 1.1.4       2023-11-17 [2] CRAN (R 4.4.0)
+ ellipsis         0.3.2       2021-04-29 [2] CRAN (R 4.4.0)
+ evaluate         1.0.1       2024-10-10 [2] CRAN (R 4.4.1)
+ farver           2.1.2       2024-05-13 [2] CRAN (R 4.4.0)
+ fastmap          1.2.0       2024-05-15 [2] CRAN (R 4.4.0)
+ fs               1.6.5       2024-10-30 [2] CRAN (R 4.4.1)
+ generics         0.1.4       2025-05-09 [1] CRAN (R 4.4.1)
+ ggplot2        * 3.5.2       2025-04-09 [1] CRAN (R 4.4.1)
+ glue             1.8.0       2024-09-30 [2] CRAN (R 4.4.1)
+ gridExtra        2.3         2017-09-09 [2] CRAN (R 4.4.0)
+ gtable           0.3.6       2024-10-25 [2] CRAN (R 4.4.1)
+ htmltools        0.5.8.1     2024-04-04 [2] CRAN (R 4.4.0)
+ htmlwidgets      1.6.4       2023-12-06 [2] CRAN (R 4.4.0)
+ httpuv           1.6.16      2025-04-16 [1] CRAN (R 4.4.1)
+ inline           0.3.21      2025-01-09 [1] CRAN (R 4.4.1)
+ jsonlite         1.8.9       2024-09-20 [2] CRAN (R 4.4.1)
+ knitr            1.49        2024-11-08 [2] CRAN (R 4.4.1)
+ labeling         0.4.3       2023-08-29 [2] CRAN (R 4.4.0)
+ later            1.4.2       2025-04-08 [1] CRAN (R 4.4.1)
+ lattice          0.22-6      2024-03-20 [2] CRAN (R 4.4.2)
+ lifecycle        1.0.4       2023-11-07 [2] CRAN (R 4.4.0)
+ loo              2.8.0.9000  2025-06-09 [1] https://stan-dev.r-universe.dev (R 4.4.3)
+ magrittr         2.0.3       2022-03-30 [2] CRAN (R 4.4.0)
+ Matrix           1.7-1       2024-10-18 [2] CRAN (R 4.4.2)
+ matrixStats      1.5.0       2025-01-07 [1] CRAN (R 4.4.1)
+ memoise          2.0.1       2021-11-26 [2] CRAN (R 4.4.0)
+ mime             0.12        2021-09-28 [2] CRAN (R 4.4.0)
+ miniUI           0.1.1.1     2018-05-18 [1] CRAN (R 4.4.0)
+ mvtnorm          1.3-3       2025-01-10 [1] CRAN (R 4.4.1)
+ nlme             3.1-166     2024-08-14 [2] CRAN (R 4.4.2)
+ pillar           1.10.2      2025-04-05 [1] CRAN (R 4.4.1)
+ pkgbuild         1.4.8       2025-05-26 [1] CRAN (R 4.4.1)
+ pkgconfig        2.0.3       2019-09-22 [2] CRAN (R 4.4.0)
+ pkgload          1.4.0       2024-06-28 [1] CRAN (R 4.4.0)
+ plyr             1.8.9       2023-10-02 [2] CRAN (R 4.4.0)
+ posterior        1.6.1       2025-02-27 [1] CRAN (R 4.4.1)
+ processx         3.8.6       2025-02-21 [1] CRAN (R 4.4.1)
+ profvis          0.4.0       2024-09-20 [1] CRAN (R 4.4.1)
+ promises         1.3.2       2024-11-28 [1] CRAN (R 4.4.1)
+ ps               1.9.1       2025-04-12 [1] CRAN (R 4.4.1)
+ purrr            1.0.4       2025-02-05 [1] CRAN (R 4.4.1)
+ QuickJSR         1.8.0       2025-06-09 [1] CRAN (R 4.4.1)
+ R6               2.6.1       2025-02-15 [1] CRAN (R 4.4.1)
+ RColorBrewer     1.1-3       2022-04-03 [2] CRAN (R 4.4.0)
+ Rcpp           * 1.0.14      2025-01-12 [1] CRAN (R 4.4.1)
+ RcppParallel     5.1.10      2025-01-24 [1] CRAN (R 4.4.1)
+ remotes          2.5.0       2024-03-17 [2] CRAN (R 4.4.0)
+ reshape2         1.4.4       2020-04-09 [2] CRAN (R 4.4.0)
+ rlang            1.1.6       2025-04-11 [1] CRAN (R 4.4.1)
+ rmarkdown        2.29        2024-11-04 [2] CRAN (R 4.4.1)
+ rstan            2.36.0.9000 2025-06-17 [1] https://stan-dev.r-universe.dev (R 4.4.3)
+ rstantools       2.4.0.9000  2025-06-09 [1] https://stan-dev.r-universe.dev (R 4.4.3)
+ rstudioapi       0.17.1      2024-10-22 [2] CRAN (R 4.4.1)
+ scales           1.4.0       2025-04-24 [1] CRAN (R 4.4.1)
+ sessioninfo      1.2.3       2025-02-05 [1] CRAN (R 4.4.1)
+ shiny            1.10.0      2024-12-14 [1] CRAN (R 4.4.1)
+ StanHeaders      2.36.0.9000 2025-06-17 [1] https://stan-dev.r-universe.dev (R 4.4.3)
+ stringi          1.8.7       2025-03-27 [1] CRAN (R 4.4.1)
+ stringr          1.5.1       2023-11-14 [2] CRAN (R 4.4.0)
+ tensorA          0.36.2.1    2023-12-13 [1] CRAN (R 4.4.0)
+ tibble           3.3.0       2025-06-08 [1] CRAN (R 4.4.1)
+ tidyr          * 1.3.1       2024-01-24 [2] CRAN (R 4.4.0)
+ tidyselect       1.2.1       2024-03-11 [2] CRAN (R 4.4.0)
+ urlchecker       1.0.1       2021-11-30 [1] CRAN (R 4.4.1)
+ usethis          3.1.0       2024-11-26 [1] CRAN (R 4.4.1)
+ utf8             1.2.6       2025-06-08 [1] CRAN (R 4.4.1)
+ V8               6.0.3       2025-03-26 [1] CRAN (R 4.4.1)
+ vctrs            0.6.5       2023-12-01 [2] CRAN (R 4.4.0)
+ withr            3.0.2       2024-10-28 [2] CRAN (R 4.4.1)
+ xfun             0.49        2024-10-31 [2] CRAN (R 4.4.1)
+ xtable           1.8-4       2019-04-21 [1] CRAN (R 4.4.1)
+ yaml             2.3.10      2024-07-26 [2] CRAN (R 4.4.0)
+
+ [1] /Users/4243579/Library/R/arm64/4.4/library
+ [2] /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library
+ * ── Packages attached to the search path.
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
+</div>
+</div>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Piironen, J., &amp; Vehtari, A. (2017). Sparsity information and regularization in the horseshoe and other shrinkage priors.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Van Erp, S., Oberski, D. L., &amp; Mulder, J. (2019). Shrinkage priors for Bayesian penalized regression. Journal of Mathematical Psychology, 89, 31-50.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Hoffman, M. D., &amp; Gelman, A. (2014). The No-U-Turn sampler: adaptively setting path lengths in Hamiltonian Monte Carlo. J. Mach. Learn. Res., 15(1), 1593-1623.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Kucukelbir, A., Ranganath, R., Gelman, A., &amp; Blei, D. (2015). Automatic variational inference in Stan. Advances in neural information processing systems, 28.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Zhang, L., Carpenter, B., Gelman, A., &amp; Vehtari, A. (2022). Pathfinder: Parallel quasi-Newton variational inference. Journal of Machine Learning Research, 23(306), 1-49.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

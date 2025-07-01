@@ -1,0 +1,208 @@
+---
+title: "Non-MCMC methods"
+format: 
+  html:
+    toc: true
+author: Florian van Leeuwen
+
+execute: 
+  echo: true
+  cache: true 
+---
+
+This document illustrates using different approximators in `Stan`, which is the program underlying various R-packages for Bayesian analysis, including `brms`. 
+
+## Preliminaries
+```{r}
+#| echo: true
+#| message: false
+library(brms)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+set.seed(07082023)
+```
+
+## An example: Predicting students' math performance.
+
+To illustrate Bayesian convergence and checks, we will use a data set that is available from the [UCI Machine Learning repository](https://archive.ics.uci.edu). The data set we use can be downloaded [here](https://archive.ics.uci.edu/dataset/320/student+performance) and contains two data sets and a merged file. We will use the "student-mat.csv" file.
+
+We will use linear regression analysis to predict the final math grade of Portugese students in secondary schools. First, we load in the data. Make sure the data is saved in your current working directory or change the path to the data in the code below.
+
+```{r}
+dat <- read.table("student-mat.csv", sep = ";", header = TRUE)
+head(dat)
+```
+
+We will predict the math grade at the third period *G3* based on all other available data and we will use a horseshoe prior to help induce some sparsity. This is a shrinkage priors that attamps to (mainly) shrink non-important predictors, for more information on the prior see [^1] [^2].
+
+[^1]: Piironen, J., & Vehtari, A. (2017). Sparsity information and regularization in the horseshoe and other shrinkage priors.
+
+[^2]:Van Erp, S., Oberski, D. L., & Mulder, J. (2019). Shrinkage priors for Bayesian penalized regression. Journal of Mathematical Psychology, 89, 31-50.
+
+```{r}
+#| cache: true
+start_time <- Sys.time()
+
+hs_prior <- set_prior(horseshoe(df = 3)) # select prior
+
+fit1 <- brm(G3 ~ ., data = dat, algorithm = "sampling", prior = hs_prior, seed = 123)
+summary(fit1)
+
+end_time <- Sys.time()
+runtime1 <- end_time - start_time
+```
+
+Note that here, we rely on the default prior distributions in `brms`.
+
+## Non-MCMC methods
+By default brm using HMC, where the NUTS algorithms [^3] is used to help with the sampling. In this case sampling is quite quick, but let's say we are really busy and we want the model estimates even quicker. 
+
+[^3]: Hoffman, M. D., & Gelman, A. (2014). The No-U-Turn sampler: adaptively setting path lengths in Hamiltonian Monte Carlo. J. Mach. Learn. Res., 15(1), 1593-1623.
+
+In the mean field method in STAN independent Gaussian are assumed as the distributions for our latent variables in the unconstrained space. The last part might be a bit confusing, but imagine estimating a variance term with a Gaussian. We would run into the problem that there would be some density below zero, and this is impossible for a variance term. So, we could first transform the variable to become unconstrained (e.g., take the log) then estimate the Gaussian in the this unconstrained space and thus back-transform the parameter to the original space. See footnote [^4] for more information. 
+
+[^4]: Kucukelbir, A., Ranganath, R., Gelman, A., & Blei, D. (2015). Automatic variational inference in Stan. Advances in neural information processing systems, 28.
+```{r}
+#| cache: true
+start_time <- Sys.time()
+
+fit2 <- brm(G3 ~ ., data = dat, algorithm = "meanfield", prior = hs_prior, seed = 123)
+summary(fit2)
+
+end_time <- Sys.time()
+runtime2 <- end_time - start_time
+```
+
+Alternatively, we can use the full-rank method that assumes a joint Gaussian for the latent variables. This might sound like an advantage, but note that this method models a covariance matrix with p * p elements, whereas meanfield only models the diagonal so p * 1. We will thus run into scaling problems when p (the number of latent variables) is large. The method is not very stable, try changing the seed to see what happens.
+
+```{r}
+#| cache: true
+start_time <- Sys.time()
+
+fit3 <- brm(G3 ~ ., data = dat, algorithm = "fullrank", prior = hs_prior, seed = 123)
+
+summary(fit3)
+
+end_time <- Sys.time()
+runtime3 <- end_time - start_time
+```
+
+Lastly, we can use the Laplace method (for some reason not supported in brm now). 
+
+```{r}
+#| cache: true
+# start_time <- Sys.time()
+
+# fit4 <- brm(G3 ~ sex + studytime + paid + higher, data = dat, algorithm = "laplace")
+# summary(fit4)
+
+# end_time <- Sys.time()
+# runtime4 <- end_time - start_time
+```
+The running time for the different models is:
+
+```{r, echo = F}
+tibble(
+  method = c("HMC", "Meanfield", "Fullrank"),
+  run_time = c(runtime1, runtime2, runtime3)
+)
+```
+
+The Non-MCMC methods are a bit quicker. Note that a very large part of this is due to the compilation of the model and not the estimation itself. 
+
+
+Let's compare the coefficients for the previous test scores in period 1 *G1* and period 2 *G2*:
+
+```{r}
+df_plot = tibble(
+  Method = c(rep("HMC", 2), rep("Meanfield", 2), rep("Fullrank", 2)),
+  Coef = rep(c("G1", "G2"), 3),
+  Estimate = c(
+    summary(fit1)$fixed[41:42, ]$Estimate,
+    summary(fit2)$fixed[41:42, ]$Estimate,
+    summary(fit3)$fixed[41:42, ]$Estimate
+  )
+) 
+
+df_plot %>%
+  ggplot(aes(x = Coef, y = Estimate, color = Method)) +
+  geom_point(size = 5, alpha = 0.9) +
+  theme_minimal()
+```
+
+So we see that HMC and Meanfield obtain comparable results, while Fullrank is quite far off. 
+
+### Running models direclty in CMDSTANR
+```{r}
+library(cmdstanr)
+```
+
+For some methods it can be easier to run the model with CMDSTANR. This can feel a bit daunting, since CMDSTANR does not work with specifying formula's like brm or lm. Instead we need to write the model in stan. Luckly for us the brms package has a function *stancode*, to obtain a stan program given a forumla: 
+
+```{r}
+#| cache: true
+# obtain model code
+model_code <- stancode(G3 ~ ., family = gaussian(), data = dat, algorithm = "sampling", prior = hs_prior)
+
+model_code
+```
+
+This saves us a considerable amount of work. CMDSTANR also has a specific way it wants the data, namely a list with the arguments in the data block above. This can be obtained with the *standata* function. And finally, we need to compile the model. The advantage of using CMDSTANR is that it offers more flexibility.  
+
+```{r}
+# obtain data in the right format
+model_data <- standata(G3 ~ ., family = gaussian(), data = dat, algorithm = "sampling", prior = hs_prior)
+
+str(model_data)
+
+# compile the model
+m_compiled <- cmdstanr::cmdstan_model(cmdstanr::write_stan_file(model_code))
+```
+
+Below we run two extra model: a Laplace approximation and a Pathfinder [^5] approximation that is then used as initial values for HMC:
+
+[^5]: Zhang, L., Carpenter, B., Gelman, A., & Vehtari, A. (2022). Pathfinder: Parallel quasi-Newton variational inference. Journal of Machine Learning Research, 23(306), 1-49.
+
+```{r}
+# laplace
+model_lp <- m_compiled$laplace(data = model_data, seed = 123)
+
+# pathfinder
+model_pf <- m_compiled$pathfinder(data = model_data, seed = 123)
+  
+# supply pathfinder results as inital values for HMC
+model_pf_hmc <- m_compiled$sample(data = model_data, seed = 123, init = model_pf, iter_warmup = 100, iter_sampling = 2000, chains = 4)
+```
+
+Let's compare these results to what we obtained before:
+```{r}
+lp_est = model_lp$summary() |>
+  dplyr::filter(variable == "b[40]" | variable == "b[41]") 
+
+pf_est = model_pf$summary() |>
+  dplyr::filter(variable == "b[40]" | variable == "b[41]") 
+
+hmc_pf_est = model_pf_hmc$summary() |>
+  dplyr::filter(variable == "b[40]" | variable == "b[41]") 
+
+df_plot2 = tibble(
+  Method = c(rep("Laplace", 2), rep("Pathfinder", 2), rep("Pathfinder -> HMC", 2)),
+  Coef = rep(c("G1", "G2"), 3),
+  Estimate = c(lp_est$mean ,pf_est$mean , hmc_pf_est$mean ))
+
+rbind(df_plot, df_plot2) %>% 
+  ggplot(aes(x = Coef, y = Estimate, color = Method)) +
+  geom_point(size = 4, alpha = 0.5) +
+  theme_minimal() +
+  facet_wrap(~Method)
+```
+
+We see that Meanfield, Pathfinder, and Pathfinder -> HMC can get close to HMC. Now of course this does not mean that this results in all cases. We should be carefull in using the approximate methods, and always condider if HMC is not a viable option. 
+
+## Original Computing Environment
+
+```{r}
+devtools::session_info()
+```
