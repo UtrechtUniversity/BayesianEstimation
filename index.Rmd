@@ -186,7 +186,7 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 Note that the exercise requires a working version of the BRMS packages. See the `How to prepare` page if you do not have this yet. 
 
-- [Slides day 2](content/tuesday/Day2_WAMBS_Summerschool_2024.pdf)
+- Slides day 2
 
 
 
@@ -243,7 +243,7 @@ Day 3: we discuss estimation methods including alternatives that can be more eff
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
-- <a href="content/wednesday/slides_day3.pdf" target="_blank">Slides day 3</a>
+- Slides day 3
 
 - <a href="content/wednesday/Non-MCMC_methods" target="_blank">Markdown file on using non-MCMC methods</a>
 
@@ -279,7 +279,7 @@ Day 4: although the prior distribution can offer many advantages, the prior can 
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
-- <a href="content/thursday/slides_day4.pdf" target="_blank">Slides day 4</a>
+- Slides day 4
 
 - <a href="content/thursday/exercises_Bayesian_regularization.html" target="_blank">Practical day 4</a>
 
@@ -303,7 +303,7 @@ Day 5: today we elaborate on ways in which informative priors can be specified. 
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
-- <a href="content/friday/Day_5_expert_elicitation_2024.pdf" target="_blank">Slides day 5</a>
+- Slides day 5
 
 
 
