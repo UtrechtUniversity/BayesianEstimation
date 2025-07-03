@@ -35,7 +35,7 @@ dat <- read.table("student-mat.csv", sep = ";", header = TRUE)
 head(dat)
 ```
 
-We will predict the math grade at the third period *G3* based on all other available data and we will use a horseshoe prior to help induce some sparsity. This is a shrinkage priors that attamps to (mainly) shrink non-important predictors, for more information on the prior see [^1] [^2].
+We will predict the math grade at the third period *G3* based on all other available data and we will use a horseshoe prior to help induce some sparsity. This is a shrinkage priors that attempts to (mainly) shrink non-important predictors. For more information on the horseshoe prior see day 4 of this course and references [^1] [^2].
 
 [^1]: Piironen, J., & Vehtari, A. (2017). Sparsity information and regularization in the horseshoe and other shrinkage priors.
 
@@ -54,14 +54,14 @@ end_time <- Sys.time()
 runtime1 <- end_time - start_time
 ```
 
-Note that here, we rely on the default prior distributions in `brms`.
+Note that here, we rely on the default hyperparameter settings in `brms`.
 
 ## Non-MCMC methods
-By default brm using HMC, where the NUTS algorithms [^3] is used to help with the sampling. In this case sampling is quite quick, but let's say we are really busy and we want the model estimates even quicker. 
+By default `brms` uses HMC, where the NUTS algorithms [^3] is used to help with the sampling. In this case sampling is quite quick, but let's say we are really busy and we want the model estimates even quicker. 
 
 [^3]: Hoffman, M. D., & Gelman, A. (2014). The No-U-Turn sampler: adaptively setting path lengths in Hamiltonian Monte Carlo. J. Mach. Learn. Res., 15(1), 1593-1623.
 
-In the mean field method in STAN independent Gaussian are assumed as the distributions for our latent variables in the unconstrained space. The last part might be a bit confusing, but imagine estimating a variance term with a Gaussian. We would run into the problem that there would be some density below zero, and this is impossible for a variance term. So, we could first transform the variable to become unconstrained (e.g., take the log) then estimate the Gaussian in the this unconstrained space and thus back-transform the parameter to the original space. See footnote [^4] for more information. 
+In the mean field method in `Stan` independent Gaussians are assumed as the distributions for our latent variables in the unconstrained space. The last part might be a bit confusing, but imagine estimating a variance term with a Gaussian. We would run into the problem that there would be some density below zero, and this is impossible for a variance term. So, we could first transform the variable to become unconstrained (e.g., take the log) then estimate the Gaussian in this unconstrained space and subsequently back-transform the parameter to the original space. See footnote [^4] for more information. 
 
 [^4]: Kucukelbir, A., Ranganath, R., Gelman, A., & Blei, D. (2015). Automatic variational inference in Stan. Advances in neural information processing systems, 28.
 ```{r}
@@ -89,18 +89,6 @@ end_time <- Sys.time()
 runtime3 <- end_time - start_time
 ```
 
-Lastly, we can use the Laplace method (for some reason not supported in brm now). 
-
-```{r}
-#| cache: true
-# start_time <- Sys.time()
-
-# fit4 <- brm(G3 ~ sex + studytime + paid + higher, data = dat, algorithm = "laplace")
-# summary(fit4)
-
-# end_time <- Sys.time()
-# runtime4 <- end_time - start_time
-```
 The running time for the different models is:
 
 ```{r, echo = F}
@@ -132,14 +120,14 @@ df_plot %>%
   theme_minimal()
 ```
 
-So we see that HMC and Meanfield obtain comparable results, while Fullrank is quite far off. 
+We see that HMC and Meanfield obtain comparable results, while Fullrank is quite far off. 
 
 ### Running models direclty in CMDSTANR
 ```{r}
 library(cmdstanr)
 ```
 
-For some methods it can be easier to run the model with CMDSTANR. This can feel a bit daunting, since CMDSTANR does not work with specifying formula's like brm or lm. Instead we need to write the model in stan. Luckly for us the brms package has a function *stancode*, to obtain a stan program given a forumla: 
+For some methods it can be easier to run the model with `cmdstanr` This can feel a bit daunting, since `cmdstanr` does not work with specifying formulas like `brm` or `lm`. Instead we need to write the model in `Stan`. Luckily for us the `brms` package has a function *stancode*, to obtain a stan program given a formula: 
 
 ```{r}
 #| cache: true
@@ -149,7 +137,7 @@ model_code <- stancode(G3 ~ ., family = gaussian(), data = dat, algorithm = "sam
 model_code
 ```
 
-This saves us a considerable amount of work. CMDSTANR also has a specific way it wants the data, namely a list with the arguments in the data block above. This can be obtained with the *standata* function. And finally, we need to compile the model. The advantage of using CMDSTANR is that it offers more flexibility.  
+This saves us a considerable amount of work. `cmdstanr` also has a specific way it wants the data, namely a list with the arguments in the data block above. This can be obtained with the *standata* function. And finally, we need to compile the model. The advantage of using `cmdstanr` is that it offers more flexibility.  
 
 ```{r}
 # obtain data in the right format
@@ -161,7 +149,7 @@ str(model_data)
 m_compiled <- cmdstanr::cmdstan_model(cmdstanr::write_stan_file(model_code))
 ```
 
-Below we run two extra model: a Laplace approximation and a Pathfinder [^5] approximation that is then used as initial values for HMC:
+Below we run two extra models: a Laplace approximation and a Pathfinder [^5] approximation of which the results are subsequently used as initial values for HMC:
 
 [^5]: Zhang, L., Carpenter, B., Gelman, A., & Vehtari, A. (2022). Pathfinder: Parallel quasi-Newton variational inference. Journal of Machine Learning Research, 23(306), 1-49.
 
@@ -199,7 +187,7 @@ rbind(df_plot, df_plot2) %>%
   facet_wrap(~Method)
 ```
 
-We see that Meanfield, Pathfinder, and Pathfinder -> HMC can get close to HMC. Now of course this does not mean that this results in all cases. We should be carefull in using the approximate methods, and always condider if HMC is not a viable option. 
+We see that Meanfield, Pathfinder, and Pathfinder -> HMC can get close to HMC. Now of course this does not mean that this is always the case. We should be very careful in using the approximate methods and for example use these methods during the model building stage in which we might want to quickly run multiple iterations of a model, but relying on HMC for the final inferences.
 
 ## Original Computing Environment
 

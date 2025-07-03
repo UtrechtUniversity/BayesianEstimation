@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.43">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -167,7 +167,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 6       10 15 15 15</code></pre>
 </div>
 </div>
-<p>We will predict the math grade at the third period <em>G3</em> based on all other available data and we will use a horseshoe prior to help induce some sparsity. This is a shrinkage priors that attamps to (mainly) shrink non-important predictors, for more information on the prior see <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p>We will predict the math grade at the third period <em>G3</em> based on all other available data and we will use a horseshoe prior to help induce some sparsity. This is a shrinkage priors that attempts to (mainly) shrink non-important predictors. For more information on the horseshoe prior see day 4 of this course and references <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>start_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -178,29 +178,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>Compiling Stan program...</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Trying to compile a simple C file</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-using C compiler: ‘Apple clang version 16.0.0 (clang-1600.0.26.6)’
-using SDK: ‘MacOSX15.2.sdk’
-clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/4243579/Library/R/arm64/4.4/library/Rcpp/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/unsupported"  -I"/Users/4243579/Library/R/arm64/4.4/library/BH/include" -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/src/"  -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/RcppParallel/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1  -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
-In file included from &lt;built-in&gt;:1:
-/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:3:10: fatal error: 'stdexcept' file not found
-    3 | #include &lt;stdexcept&gt;
-      |          ^~~~~~~~~~~
-1 error generated.
-make: *** [foo.o] Error 1</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
 <pre><code>Start sampling</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 4.8e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.48 seconds.
+Chain 1: Gradient evaluation took 5.7e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.57 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -217,15 +202,15 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 1.418 seconds (Warm-up)
-Chain 1:                1.276 seconds (Sampling)
-Chain 1:                2.694 seconds (Total)
+Chain 1:  Elapsed Time: 1.451 seconds (Warm-up)
+Chain 1:                1.386 seconds (Sampling)
+Chain 1:                2.837 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 1.2e-05 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+Chain 2: Gradient evaluation took 1.3e-05 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -242,15 +227,15 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 1.322 seconds (Warm-up)
-Chain 2:                1.26 seconds (Sampling)
-Chain 2:                2.582 seconds (Total)
+Chain 2:  Elapsed Time: 1.605 seconds (Warm-up)
+Chain 2:                1.391 seconds (Sampling)
+Chain 2:                2.996 seconds (Total)
 Chain 2: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
 Chain 3: 
-Chain 3: Gradient evaluation took 1.4e-05 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
+Chain 3: Gradient evaluation took 1.2e-05 seconds
+Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
 Chain 3: Adjust your expectations accordingly!
 Chain 3: 
 Chain 3: 
@@ -267,15 +252,15 @@ Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 3: 
-Chain 3:  Elapsed Time: 1.381 seconds (Warm-up)
-Chain 3:                1.243 seconds (Sampling)
-Chain 3:                2.624 seconds (Total)
+Chain 3:  Elapsed Time: 1.356 seconds (Warm-up)
+Chain 3:                1.464 seconds (Sampling)
+Chain 3:                2.82 seconds (Total)
 Chain 3: 
 
 SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
 Chain 4: 
-Chain 4: Gradient evaluation took 1.1e-05 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+Chain 4: Gradient evaluation took 1.9e-05 seconds
+Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.19 seconds.
 Chain 4: Adjust your expectations accordingly!
 Chain 4: 
 Chain 4: 
@@ -292,22 +277,22 @@ Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 4: 
-Chain 4:  Elapsed Time: 1.258 seconds (Warm-up)
-Chain 4:                1.244 seconds (Sampling)
-Chain 4:                2.502 seconds (Total)
+Chain 4:  Elapsed Time: 1.443 seconds (Warm-up)
+Chain 4:                1.403 seconds (Sampling)
+Chain 4:                2.846 seconds (Total)
 Chain 4: </code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: There were 1 divergent transitions after warmup. See
+<pre><code>Warning: There were 10 divergent transitions after warmup. See
 https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 to find out why this is a problem and how to eliminate them.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: There were 1 divergent transitions after warmup. Increasing
+<pre><code>Warning: There were 10 divergent transitions after warmup. Increasing
 adapt_delta above 0.8 may help. See
 http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
 </div>
@@ -321,87 +306,72 @@ Formula: G3 ~ school + sex + age + address + famsize + Pstatus + Medu + Fedu + M
 
 Regression Coefficients:
                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept           -1.32      1.58    -4.16     1.81 1.00     2795     3093
-schoolMS             0.05      0.15    -0.17     0.47 1.00     4372     3685
-sexM                 0.03      0.10    -0.15     0.29 1.00     5456     3820
-age                 -0.11      0.08    -0.29     0.02 1.00     2318     2499
-addressU            -0.00      0.10    -0.24     0.22 1.00     6269     2893
-famsizeLE3           0.01      0.10    -0.19     0.24 1.00     6386     3695
-PstatusT            -0.03      0.12    -0.32     0.21 1.00     5362     3372
-Medu                 0.02      0.07    -0.10     0.18 1.00     4354     3859
-Fedu                -0.02      0.07    -0.18     0.10 1.00     4633     3801
-Mjobhealth          -0.00      0.12    -0.27     0.26 1.00     5320     3420
-Mjobother            0.01      0.10    -0.20     0.23 1.00     5611     3483
-Mjobservices         0.01      0.10    -0.21     0.24 1.00     6025     3917
-Mjobteacher          0.00      0.11    -0.25     0.26 1.00     6136     3788
-Fjobhealth           0.05      0.16    -0.20     0.49 1.00     4676     2977
-Fjobother            0.05      0.11    -0.14     0.34 1.00     4847     3504
-Fjobservices        -0.10      0.16    -0.50     0.12 1.00     3328     3289
-Fjobteacher          0.01      0.13    -0.26     0.30 1.00     5565     3587
-reasonhome          -0.07      0.13    -0.40     0.11 1.00     4583     3732
-reasonother          0.04      0.14    -0.19     0.42 1.00     4763     3637
-reasonreputation     0.03      0.11    -0.17     0.30 1.00     5625     3587
-guardianmother       0.06      0.12    -0.12     0.39 1.00     4559     3527
-guardianother       -0.03      0.14    -0.38     0.23 1.00     6006     3310
-traveltime           0.04      0.09    -0.11     0.25 1.00     5423     3522
-studytime           -0.05      0.08    -0.24     0.08 1.00     5047     3481
-failures            -0.08      0.11    -0.35     0.08 1.00     3850     3304
-schoolsupyes         0.08      0.16    -0.14     0.51 1.00     4214     3264
-famsupyes            0.03      0.10    -0.16     0.27 1.00     5394     3489
-paidyes              0.02      0.09    -0.16     0.26 1.00     5641     3506
-activitiesyes       -0.11      0.14    -0.46     0.08 1.00     3347     3267
-nurseryyes          -0.04      0.11    -0.33     0.15 1.00     5166     3694
-higheryes            0.03      0.15    -0.25     0.43 1.00     4959     3579
-internetyes         -0.03      0.12    -0.33     0.18 1.00     5300     3386
-romanticyes         -0.09      0.14    -0.45     0.09 1.00     4108     4041
-famrel               0.25      0.12     0.01     0.49 1.00     2079     1164
-freetime             0.03      0.06    -0.09     0.17 1.00     4949     3516
-goout                0.01      0.06    -0.10     0.14 1.00     5946     3553
-Dalc                -0.01      0.07    -0.18     0.13 1.00     5134     3623
-Walc                 0.05      0.07    -0.06     0.22 1.00     3225     3419
-health               0.03      0.05    -0.06     0.15 1.00     4368     3824
-absences             0.04      0.01     0.01     0.06 1.00     3262     2040
-G1                   0.13      0.06     0.01     0.25 1.00     2354     1397
-G2                   1.00      0.05     0.90     1.10 1.00     2490     2278
+Intercept           -1.30      1.54    -4.11     1.84 1.00     2771     2635
+schoolMS             0.05      0.15    -0.17     0.44 1.00     4830     3435
+sexM                 0.03      0.11    -0.16     0.29 1.00     5483     3476
+age                 -0.11      0.08    -0.29     0.02 1.00     2310     2817
+addressU            -0.00      0.10    -0.23     0.21 1.00     5755     3592
+famsizeLE3           0.01      0.10    -0.19     0.25 1.00     6375     3768
+PstatusT            -0.03      0.13    -0.36     0.19 1.00     6138     3373
+Medu                 0.02      0.07    -0.10     0.18 1.00     5128     3720
+Fedu                -0.02      0.07    -0.18     0.10 1.00     5352     3702
+Mjobhealth          -0.00      0.12    -0.28     0.27 1.00     5837     3583
+Mjobother            0.01      0.10    -0.20     0.23 1.00     5285     3504
+Mjobservices         0.01      0.10    -0.21     0.24 1.00     6833     3439
+Mjobteacher          0.00      0.12    -0.27     0.25 1.00     5466     3756
+Fjobhealth           0.04      0.16    -0.21     0.47 1.00     4864     3265
+Fjobother            0.04      0.11    -0.16     0.33 1.00     4308     2931
+Fjobservices        -0.10      0.15    -0.50     0.10 1.00     3852     3477
+Fjobteacher         -0.00      0.14    -0.31     0.30 1.00     5094     2890
+reasonhome          -0.07      0.13    -0.41     0.10 1.00     4931     3116
+reasonother          0.04      0.14    -0.19     0.41 1.00     5940     3685
+reasonreputation     0.03      0.11    -0.16     0.30 1.00     5782     3754
+guardianmother       0.06      0.12    -0.12     0.36 1.00     5184     3763
+guardianother       -0.04      0.14    -0.39     0.21 1.00     4341     3796
+traveltime           0.04      0.09    -0.11     0.26 1.00     5495     3730
+studytime           -0.05      0.08    -0.25     0.08 1.00     5032     3619
+failures            -0.08      0.11    -0.34     0.07 1.00     4153     3168
+schoolsupyes         0.07      0.15    -0.15     0.48 1.00     4186     3322
+famsupyes            0.03      0.11    -0.16     0.28 1.00     5069     3293
+paidyes              0.02      0.10    -0.16     0.25 1.00     6206     3477
+activitiesyes       -0.10      0.14    -0.45     0.08 1.00     3334     2979
+nurseryyes          -0.03      0.11    -0.32     0.18 1.00     5684     3251
+higheryes            0.03      0.15    -0.25     0.42 1.00     5188     3717
+internetyes         -0.04      0.12    -0.34     0.16 1.00     5800     3531
+romanticyes         -0.10      0.14    -0.45     0.09 1.00     3837     3151
+famrel               0.26      0.12     0.01     0.49 1.00     2095     1162
+freetime             0.03      0.06    -0.09     0.18 1.00     4813     3673
+goout                0.01      0.06    -0.10     0.14 1.00     6175     3668
+Dalc                -0.01      0.07    -0.19     0.14 1.00     5203     3923
+Walc                 0.05      0.07    -0.05     0.22 1.00     4017     3649
+health               0.03      0.05    -0.06     0.15 1.00     4154     3454
+absences             0.04      0.01     0.01     0.06 1.00     2900     2425
+G1                   0.14      0.06     0.01     0.25 1.00     3395     1644
+G2                   1.00      0.05     0.89     1.10 1.00     3606     2510
 
 Further Distributional Parameters:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     1.88      0.07     1.75     2.02 1.00     5567     2832
+sigma     1.88      0.07     1.75     2.03 1.00     5601     2874
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>end_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>runtime1 <span class="ot">&lt;-</span> end_time <span class="sc">-</span> start_time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>end_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>runtime1 <span class="ot">&lt;-</span> end_time <span class="sc">-</span> start_time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Note that here, we rely on the default prior distributions in <code>brms</code>.</p>
+<p>Note that here, we rely on the default hyperparameter settings in <code>brms</code>.</p>
 </section>
 <section id="non-mcmc-methods" class="level2">
 <h2 class="anchored" data-anchor-id="non-mcmc-methods">Non-MCMC methods</h2>
-<p>By default brm using HMC, where the NUTS algorithms <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> is used to help with the sampling. In this case sampling is quite quick, but let’s say we are really busy and we want the model estimates even quicker.</p>
-<p>In the mean field method in STAN independent Gaussian are assumed as the distributions for our latent variables in the unconstrained space. The last part might be a bit confusing, but imagine estimating a variance term with a Gaussian. We would run into the problem that there would be some density below zero, and this is impossible for a variance term. So, we could first transform the variable to become unconstrained (e.g., take the log) then estimate the Gaussian in the this unconstrained space and thus back-transform the parameter to the original space. See footnote <a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> for more information.</p>
+<p>By default <code>brms</code> uses HMC, where the NUTS algorithms <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> is used to help with the sampling. In this case sampling is quite quick, but let’s say we are really busy and we want the model estimates even quicker.</p>
+<p>In the mean field method in <code>Stan</code> independent Gaussians are assumed as the distributions for our latent variables in the unconstrained space. The last part might be a bit confusing, but imagine estimating a variance term with a Gaussian. We would run into the problem that there would be some density below zero, and this is impossible for a variance term. So, we could first transform the variable to become unconstrained (e.g., take the log) then estimate the Gaussian in this unconstrained space and subsequently back-transform the parameter to the original space. See footnote <a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> for more information.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>start_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> ., <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"meanfield"</span>, <span class="at">prior =</span> hs_prior, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>start_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> ., <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"meanfield"</span>, <span class="at">prior =</span> hs_prior, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Compiling Stan program...</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Trying to compile a simple C file</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-using C compiler: ‘Apple clang version 16.0.0 (clang-1600.0.26.6)’
-using SDK: ‘MacOSX15.2.sdk’
-clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/4243579/Library/R/arm64/4.4/library/Rcpp/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/unsupported"  -I"/Users/4243579/Library/R/arm64/4.4/library/BH/include" -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/src/"  -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/RcppParallel/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1  -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
-In file included from &lt;built-in&gt;:1:
-/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:3:10: fatal error: 'stdexcept' file not found
-    3 | #include &lt;stdexcept&gt;
-      |          ^~~~~~~~~~~
-1 error generated.
-make: *** [foo.o] Error 1</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Start sampling</code></pre>
@@ -415,8 +385,8 @@ Chain 1: ------------------------------------------------------------
 Chain 1: 
 Chain 1: 
 Chain 1: 
-Chain 1: Gradient evaluation took 4.9e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.49 seconds.
+Chain 1: Gradient evaluation took 5.1e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.51 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -430,25 +400,23 @@ Chain 1: Success! Found best value [eta = 1] earlier than expected.
 Chain 1: 
 Chain 1: Begin stochastic gradient ascent.
 Chain 1:   iter             ELBO   delta_ELBO_mean   delta_ELBO_med   notes 
-Chain 1:    100        -1465.769             1.000            1.000
-Chain 1:    200         -954.727             0.768            1.000
-Chain 1:    300         -877.914             0.311            0.535
-Chain 1:    400         -902.521             0.057            0.087
-Chain 1:    500         -864.152             0.036            0.044
-Chain 1:    600         -890.797             0.037            0.044
-Chain 1:    700         -859.211             0.033            0.037
-Chain 1:    800         -857.468             0.019            0.037
-Chain 1:    900         -857.828             0.001            0.002   MEAN ELBO CONVERGED   MEDIAN ELBO CONVERGED
+Chain 1:    100        -4787.992             1.000            1.000
+Chain 1:    200        -1409.481             1.698            2.397
+Chain 1:    300        -1063.746             1.361            2.397
+Chain 1:    400         -904.832             0.250            0.325
+Chain 1:    500         -866.982             0.110            0.176
+Chain 1:    600         -868.700             0.023            0.044
+Chain 1:    700         -861.113             0.005            0.009   MEAN ELBO CONVERGED   MEDIAN ELBO CONVERGED
 Chain 1: 
 Chain 1: Drawing a sample of size 1000 from the approximate posterior... 
 Chain 1: COMPLETED.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Pareto k diagnostic value is 1.82. Resampling is disabled. Decreasing
+<pre><code>Warning: Pareto k diagnostic value is 2. Resampling is disabled. Decreasing
 tol_rel_obj may help if variational algorithm has terminated prematurely.
 Otherwise consider using sampling instead.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -459,80 +427,65 @@ Formula: G3 ~ school + sex + age + address + famsize + Pstatus + Medu + Fedu + M
 
 Regression Coefficients:
                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept           -1.37      2.60    -4.95     3.37 1.00      931      783
-schoolMS             0.02      0.13    -0.13     0.20 1.00      970     1016
-sexM                 0.01      0.06    -0.10     0.13 1.00      909      846
-age                 -0.06      0.14    -0.36     0.07 1.00      926      871
-addressU            -0.01      0.11    -0.17     0.13 1.00     1084      732
-famsizeLE3           0.00      0.08    -0.12     0.16 1.00      909      734
-PstatusT             0.01      0.09    -0.17     0.20 1.00     1008     1025
-Medu                 0.01      0.06    -0.09     0.13 1.00      842      942
-Fedu                 0.00      0.05    -0.11     0.11 1.00      771      975
-Mjobhealth           0.00      0.06    -0.10     0.13 1.00      882      904
-Mjobother            0.00      0.10    -0.15     0.17 1.00     1007     1026
-Mjobservices         0.01      0.08    -0.13     0.17 1.00      991      983
-Mjobteacher          0.00      0.07    -0.14     0.17 1.00      847      925
-Fjobhealth           0.00      0.16    -0.27     0.25 1.00     1086      905
-Fjobother            0.02      0.09    -0.12     0.21 1.00      936      944
-Fjobservices        -0.02      0.06    -0.17     0.07 1.00      989      935
-Fjobteacher          0.01      0.09    -0.18     0.23 1.00      929      944
-reasonhome          -0.01      0.07    -0.17     0.10 1.00     1092     1017
-reasonother          0.01      0.08    -0.14     0.18 1.00      879      834
-reasonreputation     0.01      0.07    -0.12     0.18 1.00     1025      948
-guardianmother       0.02      0.08    -0.10     0.21 1.00      831      832
-guardianother       -0.01      0.09    -0.23     0.15 1.00      899      902
-traveltime           0.01      0.05    -0.06     0.12 1.00     1057      937
-studytime           -0.01      0.06    -0.14     0.08 1.00      965      937
-failures            -0.05      0.14    -0.37     0.08 1.00      928      903
-schoolsupyes         0.01      0.08    -0.12     0.19 1.00     1196      983
-famsupyes            0.00      0.07    -0.14     0.12 1.00     1000     1067
-paidyes              0.01      0.06    -0.10     0.17 1.01      791      854
-activitiesyes       -0.01      0.05    -0.15     0.07 1.00      990      882
-nurseryyes          -0.01      0.06    -0.15     0.09 1.00      890     1023
-higheryes            0.01      0.13    -0.20     0.24 1.00     1028      979
-internetyes         -0.01      0.08    -0.18     0.14 1.00      837      767
-romanticyes         -0.03      0.11    -0.28     0.12 1.00      954      990
-famrel               0.17      0.16     0.00     0.63 1.00      615      902
-freetime             0.01      0.06    -0.11     0.15 1.00     1088      941
-goout                0.02      0.06    -0.07     0.16 1.00     1117      941
-Dalc                -0.00      0.06    -0.12     0.11 1.00      993      616
-Walc                 0.01      0.05    -0.06     0.11 1.00     1038     1035
-health               0.01      0.05    -0.08     0.13 1.00      877      837
-absences             0.04      0.02     0.01     0.08 1.00      750      849
-G1                   0.08      0.05     0.02     0.20 1.00     1077     1021
-G2                   1.00      0.05     0.89     1.11 1.00     1030      705
+Intercept           -0.60      1.91    -3.70     3.88 1.00     1026      982
+schoolMS             0.02      0.17    -0.29     0.38 1.00      955      881
+sexM                 0.03      0.14    -0.20     0.34 1.00     1081      813
+age                 -0.09      0.09    -0.35     0.02 1.00      965      934
+addressU            -0.02      0.09    -0.25     0.13 1.00     1021      906
+famsizeLE3           0.02      0.17    -0.28     0.36 1.00     1043     1014
+PstatusT            -0.02      0.13    -0.29     0.19 1.00      992      950
+Medu                 0.02      0.07    -0.09     0.17 1.00      911      706
+Fedu                -0.00      0.07    -0.13     0.12 1.00     1009      797
+Mjobhealth           0.00      0.27    -0.55     0.51 1.00      870      879
+Mjobother            0.01      0.16    -0.28     0.32 1.00     1047      944
+Mjobservices         0.00      0.11    -0.24     0.23 1.00      976      901
+Mjobteacher          0.01      0.18    -0.26     0.31 1.00      995      919
+Fjobhealth           0.02      0.26    -0.36     0.42 1.00      931      956
+Fjobother            0.02      0.07    -0.09     0.20 1.00      981      745
+Fjobservices        -0.04      0.15    -0.37     0.19 1.00     1030      869
+Fjobteacher          0.01      0.16    -0.25     0.33 1.00      873      852
+reasonhome          -0.04      0.11    -0.28     0.13 1.00     1065      979
+reasonother          0.00      0.13    -0.25     0.28 1.00      993      689
+reasonreputation     0.02      0.12    -0.19     0.31 1.00      946      823
+guardianmother       0.04      0.13    -0.14     0.34 1.00      955     1026
+guardianother       -0.02      0.17    -0.34     0.24 1.00      931      950
+traveltime           0.02      0.11    -0.15     0.24 1.00      921      840
+studytime           -0.02      0.09    -0.21     0.12 1.00     1101      941
+failures            -0.10      0.18    -0.51     0.08 1.01      791      900
+schoolsupyes         0.02      0.13    -0.19     0.28 1.00     1137     1065
+famsupyes            0.01      0.11    -0.20     0.24 1.00      996      997
+paidyes              0.02      0.10    -0.15     0.25 1.00      937      908
+activitiesyes       -0.07      0.18    -0.46     0.14 1.00     1021      983
+nurseryyes          -0.03      0.14    -0.35     0.22 1.00     1003     1017
+higheryes            0.00      0.16    -0.34     0.35 1.00     1050      982
+internetyes         -0.02      0.16    -0.37     0.25 1.00     1040      973
+romanticyes         -0.05      0.10    -0.28     0.09 1.00      926      988
+famrel               0.21      0.15     0.02     0.55 1.00      966      944
+freetime             0.02      0.07    -0.10     0.19 1.00     1139     1072
+goout                0.01      0.06    -0.13     0.13 1.00     1017      847
+Dalc                -0.00      0.15    -0.26     0.34 1.00      967     1025
+Walc                 0.03      0.11    -0.12     0.23 1.00     1058      983
+health               0.01      0.06    -0.11     0.15 1.00      969     1021
+absences             0.03      0.01     0.01     0.06 1.00      978      885
+G1                   0.12      0.04     0.06     0.21 1.00     1003      909
+G2                   0.94      0.05     0.86     1.03 1.00      981      841
 
 Further Distributional Parameters:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     1.94      0.07     1.80     2.09 1.00      945      979
+sigma     1.88      0.07     1.75     2.01 1.00     1126      979
 
 Draws were sampled using variational(meanfield). </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>end_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>runtime2 <span class="ot">&lt;-</span> end_time <span class="sc">-</span> start_time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>end_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>runtime2 <span class="ot">&lt;-</span> end_time <span class="sc">-</span> start_time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Alternatively, we can use the full-rank method that assumes a joint Gaussian for the latent variables. This might sound like an advantage, but note that this method models a covariance matrix with p * p elements, whereas meanfield only models the diagonal so p * 1. We will thus run into scaling problems when p (the number of latent variables) is large. The method is not very stable, try changing the seed to see what happens.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>start_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>fit3 <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> ., <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"fullrank"</span>, <span class="at">prior =</span> hs_prior, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>start_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>fit3 <span class="ot">&lt;-</span> <span class="fu">brm</span>(G3 <span class="sc">~</span> ., <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"fullrank"</span>, <span class="at">prior =</span> hs_prior, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Compiling Stan program...</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Trying to compile a simple C file</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
-using C compiler: ‘Apple clang version 16.0.0 (clang-1600.0.26.6)’
-using SDK: ‘MacOSX15.2.sdk’
-clang -arch arm64 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I"/Users/4243579/Library/R/arm64/4.4/library/Rcpp/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/"  -I"/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/unsupported"  -I"/Users/4243579/Library/R/arm64/4.4/library/BH/include" -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/src/"  -I"/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/RcppParallel/include/"  -I"/Users/4243579/Library/R/arm64/4.4/library/rstan/include" -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include '/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp'  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1  -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
-In file included from &lt;built-in&gt;:1:
-/Users/4243579/Library/R/arm64/4.4/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:3:10: fatal error: 'stdexcept' file not found
-    3 | #include &lt;stdexcept&gt;
-      |          ^~~~~~~~~~~
-1 error generated.
-make: *** [foo.o] Error 1</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Start sampling</code></pre>
@@ -546,8 +499,8 @@ Chain 1: ------------------------------------------------------------
 Chain 1: 
 Chain 1: 
 Chain 1: 
-Chain 1: Gradient evaluation took 4.6e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.46 seconds.
+Chain 1: Gradient evaluation took 5.8e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.58 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -562,26 +515,26 @@ Chain 1: Success! Found best value [eta = 0.1].
 Chain 1: 
 Chain 1: Begin stochastic gradient ascent.
 Chain 1:   iter             ELBO   delta_ELBO_mean   delta_ELBO_med   notes 
-Chain 1:    100     -9698200.101             1.000            1.000
-Chain 1:    200     -5128251.044             0.946            1.000
-Chain 1:    300     -6650854.476             0.560            0.891
-Chain 1:    400     -5143251.315             0.261            0.293
-Chain 1:    500     -4204996.753             0.258            0.293
-Chain 1:    600     -3019285.499             0.308            0.393
-Chain 1:    700     -6304929.364             0.457            0.521
-Chain 1:    800     -4550711.654             0.453            0.521
-Chain 1:    900     -4952024.088             0.233            0.385
-Chain 1:   1000     -4712437.049             0.066            0.081
-Chain 1:   1100     -5285984.949             0.080            0.109
-Chain 1:   1200     -4517100.585             0.139            0.170
-Chain 1:   1300     -2310156.660             0.563            0.955   MAY BE DIVERGING... INSPECT ELBO
-Chain 1:   1400     -1189211.407             0.949            0.955   MAY BE DIVERGING... INSPECT ELBO
-Chain 1:   1500     -3079943.893             0.778            0.943   MAY BE DIVERGING... INSPECT ELBO
-Chain 1:   1600     -1650931.340             0.740            0.866   MAY BE DIVERGING... INSPECT ELBO
-Chain 1:   1700     -1554952.660             0.464            0.866   MAY BE DIVERGING... INSPECT ELBO
-Chain 1:   1800      -999820.190             0.308            0.555   MAY BE DIVERGING... INSPECT ELBO
-Chain 1:   1900     -1609221.673             0.467            0.555   MAY BE DIVERGING... INSPECT ELBO
-Chain 1:   2000     -1898863.020             0.266            0.379
+Chain 1:    100     -1570572.728             1.000            1.000
+Chain 1:    200     -2509069.245             0.687            1.000
+Chain 1:    300     -1147790.101             0.780            1.186
+Chain 1:    400      -834083.132             0.781            1.186
+Chain 1:    500     -5679402.311             0.615            0.853
+Chain 1:    600     -1941955.052             1.389            1.925
+Chain 1:    700      -801479.661             1.674            1.925
+Chain 1:    800     -3334258.175             1.091            1.423
+Chain 1:    900     -1344409.066             1.120            1.480
+Chain 1:   1000     -1402021.976             0.761            1.480
+Chain 1:   1100     -2747478.626             0.265            0.490
+Chain 1:   1200      -718264.802             1.657            2.825   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1300      -572418.060             1.540            2.825   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1400      -850924.894             0.291            0.327
+Chain 1:   1500      -655335.368             0.313            0.327
+Chain 1:   1600     -1619042.102             0.447            0.595   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1700      -860072.591             0.739            0.882   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1800      -969877.707             0.498            0.882   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   1900      -460214.634             0.610            1.107   MAY BE DIVERGING... INSPECT ELBO
+Chain 1:   2000      -835518.060             0.778            1.107   MAY BE DIVERGING... INSPECT ELBO
 Chain 1: Informational Message: The maximum number of iterations is reached! The algorithm may not have converged.
 Chain 1: This variational approximation is not guaranteed to be meaningful.
 Chain 1: 
@@ -593,7 +546,7 @@ Chain 1: COMPLETED.</code></pre>
 tol_rel_obj may help if variational algorithm has terminated prematurely.
 Otherwise consider using sampling instead.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -604,67 +557,57 @@ Formula: G3 ~ school + sex + age + address + famsize + Pstatus + Medu + Fedu + M
 
 Regression Coefficients:
                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept            5.49     16.56   -25.71    40.34 1.00     1030      907
-schoolMS             0.27      0.50    -0.02     1.55 1.01      842      956
-sexM                 0.80      1.13    -0.00     3.88 1.00      795      878
-age                  0.20      0.43    -0.07     1.39 1.00      995      849
-addressU            -0.05      0.62    -1.37     1.14 1.00      859      888
-famsizeLE3          -0.04      1.11    -2.29     2.30 1.00      904      841
-PstatusT            -0.92      1.34    -4.23     0.84 1.00     1074      956
-Medu                -0.75      1.09    -3.41     0.88 1.00     1060      923
-Fedu                -0.70      0.99    -3.29     0.20 1.00      863      975
-Mjobhealth           0.75      1.18    -0.62     4.03 1.00     1005      983
-Mjobother           -0.25      0.54    -1.91     0.01 1.00      956     1022
-Mjobservices         0.34      0.62    -0.09     1.92 1.00     1041      902
-Mjobteacher          0.51      1.14    -1.21     3.17 1.00      815      944
-Fjobhealth           1.16      1.33     0.01     4.76 1.00     1024      980
-Fjobother           -0.03      0.75    -1.93     1.43 1.00     1025     1024
-Fjobservices        -0.12      0.26    -0.73     0.04 1.00      980     1072
-Fjobteacher         -0.05      0.17    -0.45     0.14 1.00     1025      884
-reasonhome          -0.01      0.24    -0.54     0.42 1.00      960      844
-reasonother          0.18      0.46    -0.09     1.20 1.00     1129     1014
-reasonreputation    -0.07      0.76    -1.75     1.39 1.00     1011      880
-guardianmother       0.03      0.29    -0.46     0.52 1.00      913      773
-guardianother        0.18      0.46    -0.35     1.42 1.00      952      799
-traveltime           0.07      0.22    -0.13     0.75 1.00      933      983
-studytime            0.56      0.78    -0.12     2.59 1.00     1017      949
-failures            -1.24      1.36    -5.00    -0.00 1.00      724      769
-schoolsupyes        -0.13      0.54    -1.49     0.70 1.00      918      941
-famsupyes            0.65      1.12    -0.62     3.67 1.00     1033      877
-paidyes             -0.10      0.47    -1.16     0.72 1.00      957      875
-activitiesyes       -0.09      0.27    -0.67     0.14 1.00      980      802
-nurseryyes           0.70      1.02     0.01     3.57 1.00      920      970
-higheryes            0.01      0.34    -0.61     0.72 1.00     1093      881
-internetyes         -0.60      0.82    -2.86     0.10 1.00      950      815
-romanticyes         -0.99      1.32    -4.24     0.30 1.00     1032      973
-famrel               0.15      0.26    -0.01     0.92 1.00      924      888
-freetime             0.06      0.22    -0.14     0.54 1.00     1006      854
-goout               -0.17      0.75    -1.85     1.12 1.00      986      820
-Dalc                 1.14      1.31    -0.39     4.58 1.00     1042     1045
-Walc                -1.49      1.63    -5.36     0.05 1.00      943      767
-health               0.18      0.42    -0.30     1.08 1.00      925      971
-absences            -0.08      0.81    -2.01     1.60 1.00      939      812
-G1                   0.19      0.59    -0.48     1.56 1.00     1026      982
-G2                  -0.53      1.07    -3.19     1.19 1.00      789      983
+Intercept           -0.95     11.97   -22.98    25.49 1.00      849      903
+schoolMS             0.10      0.35    -0.42     0.87 1.00     1068     1069
+sexM                 0.45      0.84    -1.08     2.43 1.00      997      873
+age                 -0.11      0.45    -1.14     0.55 1.00      974      941
+addressU             0.90      0.85    -0.18     3.11 1.00     1045      797
+famsizeLE3           0.11      0.41    -0.52     1.07 1.00      930      689
+PstatusT            -0.05      0.75    -1.70     1.44 1.00      912      870
+Medu                 0.49      0.74    -0.56     2.43 1.00      901      944
+Fedu                 0.66      0.64     0.00     2.24 1.00      663      748
+Mjobhealth          -0.10      0.56    -1.50     1.01 1.00      872      973
+Mjobother            0.17      0.53    -0.82     1.40 1.00      972      890
+Mjobservices         0.54      0.63     0.00     2.33 1.00      898      941
+Mjobteacher         -0.56      0.63    -2.14     0.10 1.00     1027      743
+Fjobhealth          -0.27      0.43    -1.47     0.05 1.00      988      962
+Fjobother           -0.04      0.22    -0.52     0.29 1.00     1062      916
+Fjobservices        -0.88      0.84    -2.83     0.25 1.00      905      956
+Fjobteacher          0.24      0.68    -1.09     1.76 1.00     1102      981
+reasonhome           0.02      0.34    -0.60     0.83 1.00      957      945
+reasonother         -0.25      0.47    -1.51     0.43 1.00      924      901
+reasonreputation     0.44      0.80    -0.95     2.37 1.00      962      919
+guardianmother       0.55      0.76    -0.75     2.29 1.00     1009      918
+guardianother        0.06      0.23    -0.31     0.65 1.00      882      986
+traveltime           0.30      0.41    -0.09     1.46 1.00      924      952
+studytime            0.28      0.42    -0.08     1.43 1.00      943     1021
+failures             0.47      0.93    -1.02     2.54 1.00      962      881
+schoolsupyes        -0.01      0.24    -0.57     0.49 1.00      953     1012
+famsupyes           -0.30      0.53    -1.74     0.34 1.00      912      907
+paidyes             -0.03      0.50    -0.96     1.09 1.00      901      906
+activitiesyes       -0.25      0.41    -1.32     0.29 1.00      992     1003
+nurseryyes          -0.37      0.63    -1.89     0.67 1.00      995      903
+higheryes           -0.19      0.85    -1.95     1.42 1.00      660      799
+internetyes          0.20      0.75    -1.09     1.95 1.00     1020     1071
+romanticyes          0.08      0.32    -0.49     0.90 1.00      861      916
+famrel               0.79      0.78    -0.16     2.79 1.00      949      751
+freetime             0.13      0.25    -0.10     0.79 1.00      782     1023
+goout                0.08      0.35    -0.56     0.91 1.00     1063      978
+Dalc                -0.71      0.75    -2.69     0.10 1.00      958      879
+Walc                 1.24      1.05    -0.13     3.72 1.00     1122      725
+health              -0.16      0.27    -0.82     0.05 1.00     1106      908
+absences            -0.40      0.68    -1.88     0.70 1.00      813      908
+G1                  -0.24      0.36    -1.17     0.03 1.00      896      820
+G2                  -0.28      0.44    -1.58     0.25 1.00     1013      912
 
 Further Distributional Parameters:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     0.38      0.35     0.06     1.41 1.00      973      872
+sigma     0.66      0.62     0.10     2.24 1.00      957      944
 
 Draws were sampled using variational(fullrank). </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>end_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>runtime3 <span class="ot">&lt;-</span> end_time <span class="sc">-</span> start_time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Lastly, we can use the Laplace method (for some reason not supported in brm now).</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># start_time &lt;- Sys.time()</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co"># fit4 &lt;- brm(G3 ~ sex + studytime + paid + higher, data = dat, algorithm = "laplace")</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># summary(fit4)</span></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># end_time &lt;- Sys.time()</span></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co"># runtime4 &lt;- end_time - start_time</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>end_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>runtime3 <span class="ot">&lt;-</span> end_time <span class="sc">-</span> start_time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The running time for the different models is:</p>
 <div class="cell">
@@ -672,52 +615,64 @@ Draws were sampled using variational(fullrank). </code></pre>
 <pre><code># A tibble: 3 × 2
   method    run_time     
   &lt;chr&gt;     &lt;drtn&gt;       
-1 HMC       34.83166 secs
-2 Meanfield 23.22624 secs
-3 Fullrank  22.51083 secs</code></pre>
+1 HMC       38.41162 secs
+2 Meanfield 23.35223 secs
+3 Fullrank  24.01643 secs</code></pre>
 </div>
 </div>
 <p>The Non-MCMC methods are a bit quicker. Note that a very large part of this is due to the compilation of the model and not the estimation itself.</p>
 <p>Let’s compare the coefficients for the previous test scores in period 1 <em>G1</em> and period 2 <em>G2</em>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>df_plot <span class="ot">=</span> <span class="fu">tibble</span>(</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Method =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"HMC"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Meanfield"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Fullrank"</span>, <span class="dv">2</span>)),</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Coef =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"G1"</span>, <span class="st">"G2"</span>), <span class="dv">3</span>),</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimate =</span> <span class="fu">c</span>(</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(fit1)<span class="sc">$</span>fixed[<span class="dv">41</span><span class="sc">:</span><span class="dv">42</span>, ]<span class="sc">$</span>Estimate,</span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(fit2)<span class="sc">$</span>fixed[<span class="dv">41</span><span class="sc">:</span><span class="dv">42</span>, ]<span class="sc">$</span>Estimate,</span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(fit3)<span class="sc">$</span>fixed[<span class="dv">41</span><span class="sc">:</span><span class="dv">42</span>, ]<span class="sc">$</span>Estimate</span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df_plot <span class="ot">=</span> <span class="fu">tibble</span>(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Method =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"HMC"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Meanfield"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Fullrank"</span>, <span class="dv">2</span>)),</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Coef =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"G1"</span>, <span class="st">"G2"</span>), <span class="dv">3</span>),</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimate =</span> <span class="fu">c</span>(</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(fit1)<span class="sc">$</span>fixed[<span class="dv">41</span><span class="sc">:</span><span class="dv">42</span>, ]<span class="sc">$</span>Estimate,</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(fit2)<span class="sc">$</span>fixed[<span class="dv">41</span><span class="sc">:</span><span class="dv">42</span>, ]<span class="sc">$</span>Estimate,</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summary</span>(fit3)<span class="sc">$</span>fixed[<span class="dv">41</span><span class="sc">:</span><span class="dv">42</span>, ]<span class="sc">$</span>Estimate</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: There were 1 divergent transitions after warmup. Increasing
+<pre><code>Warning: There were 10 divergent transitions after warmup. Increasing
 adapt_delta above 0.8 may help. See
 http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>df_plot <span class="sc">%&gt;%</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Coef, <span class="at">y =</span> Estimate, <span class="at">color =</span> Method)) <span class="sc">+</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">5</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>df_plot <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Coef, <span class="at">y =</span> Estimate, <span class="at">color =</span> Method)) <span class="sc">+</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">5</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Non-MCMC_methods_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Non-MCMC_methods_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>So we see that HMC and Meanfield obtain comparable results, while Fullrank is quite far off.</p>
+<p>We see that HMC and Meanfield obtain comparable results, while Fullrank is quite far off.</p>
 <section id="running-models-direclty-in-cmdstanr" class="level3">
 <h3 class="anchored" data-anchor-id="running-models-direclty-in-cmdstanr">Running models direclty in CMDSTANR</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>This is cmdstanr version 0.8.1</code></pre>
 </div>
-<p>For some methods it can be easier to run the model with CMDSTANR. This can feel a bit daunting, since CMDSTANR does not work with specifying formula’s like brm or lm. Instead we need to write the model in stan. Luckly for us the brms package has a function <em>stancode</em>, to obtain a stan program given a forumla:</p>
+<div class="cell-output cell-output-stderr">
+<pre><code>- CmdStanR documentation and vignettes: mc-stan.org/cmdstanr</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- CmdStan path: /Users/Erp00018/.cmdstan/cmdstan-2.36.0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>- CmdStan version: 2.36.0</code></pre>
+</div>
+</div>
+<p>For some methods it can be easier to run the model with <code>cmdstanr</code> This can feel a bit daunting, since <code>cmdstanr</code> does not work with specifying formulas like <code>brm</code> or <code>lm</code>. Instead we need to write the model in <code>Stan</code>. Luckily for us the <code>brms</code> package has a function <em>stancode</em>, to obtain a stan program given a formula:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain model code</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>model_code <span class="ot">&lt;-</span> <span class="fu">stancode</span>(G3 <span class="sc">~</span> ., <span class="at">family =</span> <span class="fu">gaussian</span>(), <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"sampling"</span>, <span class="at">prior =</span> hs_prior)</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>model_code</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain model code</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>model_code <span class="ot">&lt;-</span> <span class="fu">stancode</span>(G3 <span class="sc">~</span> ., <span class="at">family =</span> <span class="fu">gaussian</span>(), <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"sampling"</span>, <span class="at">prior =</span> hs_prior)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>model_code</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>// generated with brms 2.22.0
 functions {
@@ -802,12 +757,12 @@ generated quantities {
 }</code></pre>
 </div>
 </div>
-<p>This saves us a considerable amount of work. CMDSTANR also has a specific way it wants the data, namely a list with the arguments in the data block above. This can be obtained with the <em>standata</em> function. And finally, we need to compile the model. The advantage of using CMDSTANR is that it offers more flexibility.</p>
+<p>This saves us a considerable amount of work. <code>cmdstanr</code> also has a specific way it wants the data, namely a list with the arguments in the data block above. This can be obtained with the <em>standata</em> function. And finally, we need to compile the model. The advantage of using <code>cmdstanr</code> is that it offers more flexibility.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain data in the right format</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>model_data <span class="ot">&lt;-</span> <span class="fu">standata</span>(G3 <span class="sc">~</span> ., <span class="at">family =</span> <span class="fu">gaussian</span>(), <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"sampling"</span>, <span class="at">prior =</span> hs_prior)</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(model_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain data in the right format</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>model_data <span class="ot">&lt;-</span> <span class="fu">standata</span>(G3 <span class="sc">~</span> ., <span class="at">family =</span> <span class="fu">gaussian</span>(), <span class="at">data =</span> dat, <span class="at">algorithm =</span> <span class="st">"sampling"</span>, <span class="at">prior =</span> hs_prior)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(model_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>List of 12
  $ N              : int 395
@@ -846,21 +801,21 @@ generated quantities {
  $ prior_only     : int 0
  - attr(*, "class")= chr [1:2] "standata" "list"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compile the model</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>m_compiled <span class="ot">&lt;-</span> cmdstanr<span class="sc">::</span><span class="fu">cmdstan_model</span>(cmdstanr<span class="sc">::</span><span class="fu">write_stan_file</span>(model_code))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compile the model</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>m_compiled <span class="ot">&lt;-</span> cmdstanr<span class="sc">::</span><span class="fu">cmdstan_model</span>(cmdstanr<span class="sc">::</span><span class="fu">write_stan_file</span>(model_code))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Below we run two extra model: a Laplace approximation and a Pathfinder <a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> approximation that is then used as initial values for HMC:</p>
+<p>Below we run two extra models: a Laplace approximation and a Pathfinder <a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> approximation of which the results are subsequently used as initial values for HMC:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># laplace</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>model_lp <span class="ot">&lt;-</span> m_compiled<span class="sc">$</span><span class="fu">laplace</span>(<span class="at">data =</span> model_data, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># laplace</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>model_lp <span class="ot">&lt;-</span> m_compiled<span class="sc">$</span><span class="fu">laplace</span>(<span class="at">data =</span> model_data, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Initial log joint probability = -1.00441e+06 
     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes  
-Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19) 
-Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19) 
+Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 61, column 2 to line 62, column 19) 
+Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 61, column 2 to line 62, column 19) 
 Error evaluating model log probability: Non-finite function evaluation. 
-Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 70, column 4 to column 62) 
-Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 70, column 4 to column 62) 
+Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 70, column 4 to column 62) 
+Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 70, column 4 to column 62) 
       99       -881.19      0.589956       43.4094           1           1      174    
     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes  
      199      -872.053     0.0088016       3.96852      0.4371      0.4371      289    
@@ -870,7 +825,7 @@ Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must 
      390       -871.98   6.23698e-05     0.0574599           1           1      506    
 Optimization terminated normally:  
   Convergence detected: relative gradient magnitude is below tolerance 
-Finished in  0.1 seconds.
+Finished in  0.2 seconds.
 Calculating Hessian 
 Calculating inverse of Cholesky factor 
 Generating draws 
@@ -886,15 +841,15 @@ iteration: 800
 iteration: 900 
 Finished in  0.1 seconds.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pathfinder</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>model_pf <span class="ot">&lt;-</span> m_compiled<span class="sc">$</span><span class="fu">pathfinder</span>(<span class="at">data =</span> model_data, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pathfinder</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>model_pf <span class="ot">&lt;-</span> m_compiled<span class="sc">$</span><span class="fu">pathfinder</span>(<span class="at">data =</span> model_data, <span class="at">seed =</span> <span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Path [1] :Initial log joint density = -1004410.592741 
-Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19) 
-Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19) 
+Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 61, column 2 to line 62, column 19) 
+Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 61, column 2 to line 62, column 19) 
 Error evaluating model log probability: Non-finite function evaluation. 
-Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 70, column 4 to column 62) 
-Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 70, column 4 to column 62) 
+Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 70, column 4 to column 62) 
+Exception: normal_id_glm_lpdf: Matrix of independent variables is inf, but must be finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 70, column 4 to column 62) 
 Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
              99      -8.812e+02      5.900e-01   4.341e+01    1.000e+00  1.000e+00      2476 -9.603e+02 -9.603e+02                   
 Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
@@ -939,8 +894,8 @@ Total log probability function evaluations:39754
 Pareto k value (3.9) is greater than 0.7. Importance resampling was not able to improve the approximation, which may indicate that the approximation itself is poor. 
 Finished in  0.3 seconds.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># supply pathfinder results as inital values for HMC</span></span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>model_pf_hmc <span class="ot">&lt;-</span> m_compiled<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> model_data, <span class="at">seed =</span> <span class="dv">123</span>, <span class="at">init =</span> model_pf, <span class="at">iter_warmup =</span> <span class="dv">100</span>, <span class="at">iter_sampling =</span> <span class="dv">2000</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># supply pathfinder results as inital values for HMC</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>model_pf_hmc <span class="ot">&lt;-</span> m_compiled<span class="sc">$</span><span class="fu">sample</span>(<span class="at">data =</span> model_data, <span class="at">seed =</span> <span class="dv">123</span>, <span class="at">init =</span> model_pf, <span class="at">iter_warmup =</span> <span class="dv">100</span>, <span class="at">iter_sampling =</span> <span class="dv">2000</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 sequential chains...
 
@@ -974,7 +929,7 @@ Chain 1 Iteration: 1800 / 2100 [ 85%]  (Sampling)
 Chain 1 Iteration: 1900 / 2100 [ 90%]  (Sampling) 
 Chain 1 Iteration: 2000 / 2100 [ 95%]  (Sampling) 
 Chain 1 Iteration: 2100 / 2100 [100%]  (Sampling) 
-Chain 1 finished in 5.2 seconds.
+Chain 1 finished in 5.3 seconds.
 Chain 2 WARNING: There aren't enough warmup iterations to fit the 
 Chain 2          three stages of adaptation as currently configured. 
 Chain 2          Reducing each adaptation stage to 15%/75%/10% of 
@@ -988,7 +943,7 @@ Chain 2 Iteration:    1 / 2100 [  0%]  (Warmup) </code></pre>
 <pre><code>Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Chain 2 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19)</code></pre>
+<pre><code>Chain 2 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 61, column 2 to line 62, column 19)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
@@ -1022,7 +977,7 @@ Chain 2 Iteration: 1800 / 2100 [ 85%]  (Sampling)
 Chain 2 Iteration: 1900 / 2100 [ 90%]  (Sampling) 
 Chain 2 Iteration: 2000 / 2100 [ 95%]  (Sampling) 
 Chain 2 Iteration: 2100 / 2100 [100%]  (Sampling) 
-Chain 2 finished in 5.2 seconds.
+Chain 2 finished in 5.4 seconds.
 Chain 3 WARNING: There aren't enough warmup iterations to fit the 
 Chain 3          three stages of adaptation as currently configured. 
 Chain 3          Reducing each adaptation stage to 15%/75%/10% of 
@@ -1036,7 +991,7 @@ Chain 3 Iteration:    1 / 2100 [  0%]  (Warmup) </code></pre>
 <pre><code>Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Chain 3 Exception: student_t_lpdf: Scale parameter is 0, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19)</code></pre>
+<pre><code>Chain 3 Exception: student_t_lpdf: Scale parameter is 0, but must be positive finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 61, column 2 to line 62, column 19)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
@@ -1070,7 +1025,7 @@ Chain 3 Iteration: 1800 / 2100 [ 85%]  (Sampling)
 Chain 3 Iteration: 1900 / 2100 [ 90%]  (Sampling) 
 Chain 3 Iteration: 2000 / 2100 [ 95%]  (Sampling) 
 Chain 3 Iteration: 2100 / 2100 [100%]  (Sampling) 
-Chain 3 finished in 5.2 seconds.
+Chain 3 finished in 5.4 seconds.
 Chain 4 WARNING: There aren't enough warmup iterations to fit the 
 Chain 4          three stages of adaptation as currently configured. 
 Chain 4          Reducing each adaptation stage to 15%/75%/10% of 
@@ -1084,7 +1039,7 @@ Chain 4 Iteration:    1 / 2100 [  0%]  (Warmup) </code></pre>
 <pre><code>Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Chain 4 Exception: student_t_lpdf: Scale parameter is 0, but must be positive finite! (in '/var/folders/h7/zy0pkpk92mg4dyfz4d4k74rr0000gn/T/Rtmpyb9DtS/model-ac14dc0dba8.stan', line 61, column 2 to line 62, column 19)</code></pre>
+<pre><code>Chain 4 Exception: student_t_lpdf: Scale parameter is inf, but must be positive finite! (in '/var/folders/_n/t9lx5kvs1qbgkx8nb8cxfy4r0000gn/T/RtmpAipoiE/model-249e952e8a0.stan', line 61, column 2 to line 62, column 19)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
@@ -1118,163 +1073,161 @@ Chain 4 Iteration: 1800 / 2100 [ 85%]  (Sampling)
 Chain 4 Iteration: 1900 / 2100 [ 90%]  (Sampling) 
 Chain 4 Iteration: 2000 / 2100 [ 95%]  (Sampling) 
 Chain 4 Iteration: 2100 / 2100 [100%]  (Sampling) 
-Chain 4 finished in 5.2 seconds.
+Chain 4 finished in 5.4 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 5.2 seconds.
-Total execution time: 21.1 seconds.</code></pre>
+Mean chain execution time: 5.4 seconds.
+Total execution time: 21.8 seconds.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: 2 of 8000 (0.0%) transitions ended with a divergence.
+<pre><code>Warning: 4 of 8000 (0.0%) transitions ended with a divergence.
 See https://mc-stan.org/misc/warnings for details.</code></pre>
 </div>
 </div>
 <p>Let’s compare these results to what we obtained before:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>lp_est <span class="ot">=</span> model_lp<span class="sc">$</span><span class="fu">summary</span>() <span class="sc">|&gt;</span></span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(variable <span class="sc">==</span> <span class="st">"b[40]"</span> <span class="sc">|</span> variable <span class="sc">==</span> <span class="st">"b[41]"</span>) </span>
-<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>pf_est <span class="ot">=</span> model_pf<span class="sc">$</span><span class="fu">summary</span>() <span class="sc">|&gt;</span></span>
-<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(variable <span class="sc">==</span> <span class="st">"b[40]"</span> <span class="sc">|</span> variable <span class="sc">==</span> <span class="st">"b[41]"</span>) </span>
-<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a>hmc_pf_est <span class="ot">=</span> model_pf_hmc<span class="sc">$</span><span class="fu">summary</span>() <span class="sc">|&gt;</span></span>
-<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(variable <span class="sc">==</span> <span class="st">"b[40]"</span> <span class="sc">|</span> variable <span class="sc">==</span> <span class="st">"b[41]"</span>) </span>
-<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a>df_plot2 <span class="ot">=</span> <span class="fu">tibble</span>(</span>
-<span id="cb72-11"><a href="#cb72-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Method =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"Laplace"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Pathfinder"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Pathfinder -&gt; HMC"</span>, <span class="dv">2</span>)),</span>
-<span id="cb72-12"><a href="#cb72-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">Coef =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"G1"</span>, <span class="st">"G2"</span>), <span class="dv">3</span>),</span>
-<span id="cb72-13"><a href="#cb72-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimate =</span> <span class="fu">c</span>(lp_est<span class="sc">$</span>mean ,pf_est<span class="sc">$</span>mean , hmc_pf_est<span class="sc">$</span>mean ))</span>
-<span id="cb72-14"><a href="#cb72-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-15"><a href="#cb72-15" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(df_plot, df_plot2) <span class="sc">%&gt;%</span> </span>
-<span id="cb72-16"><a href="#cb72-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Coef, <span class="at">y =</span> Estimate, <span class="at">color =</span> Method)) <span class="sc">+</span></span>
-<span id="cb72-17"><a href="#cb72-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb72-18"><a href="#cb72-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb72-19"><a href="#cb72-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Method)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>lp_est <span class="ot">=</span> model_lp<span class="sc">$</span><span class="fu">summary</span>() <span class="sc">|&gt;</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(variable <span class="sc">==</span> <span class="st">"b[40]"</span> <span class="sc">|</span> variable <span class="sc">==</span> <span class="st">"b[41]"</span>) </span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>pf_est <span class="ot">=</span> model_pf<span class="sc">$</span><span class="fu">summary</span>() <span class="sc">|&gt;</span></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(variable <span class="sc">==</span> <span class="st">"b[40]"</span> <span class="sc">|</span> variable <span class="sc">==</span> <span class="st">"b[41]"</span>) </span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>hmc_pf_est <span class="ot">=</span> model_pf_hmc<span class="sc">$</span><span class="fu">summary</span>() <span class="sc">|&gt;</span></span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(variable <span class="sc">==</span> <span class="st">"b[40]"</span> <span class="sc">|</span> variable <span class="sc">==</span> <span class="st">"b[41]"</span>) </span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a>df_plot2 <span class="ot">=</span> <span class="fu">tibble</span>(</span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Method =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"Laplace"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Pathfinder"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"Pathfinder -&gt; HMC"</span>, <span class="dv">2</span>)),</span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">Coef =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"G1"</span>, <span class="st">"G2"</span>), <span class="dv">3</span>),</span>
+<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimate =</span> <span class="fu">c</span>(lp_est<span class="sc">$</span>mean ,pf_est<span class="sc">$</span>mean , hmc_pf_est<span class="sc">$</span>mean ))</span>
+<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(df_plot, df_plot2) <span class="sc">%&gt;%</span> </span>
+<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Coef, <span class="at">y =</span> Estimate, <span class="at">color =</span> Method)) <span class="sc">+</span></span>
+<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb69-18"><a href="#cb69-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb69-19"><a href="#cb69-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Method)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Non-MCMC_methods_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Non-MCMC_methods_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>We see that Meanfield, Pathfinder, and Pathfinder -&gt; HMC can get close to HMC. Now of course this does not mean that this results in all cases. We should be carefull in using the approximate methods, and always condider if HMC is not a viable option.</p>
+<p>We see that Meanfield, Pathfinder, and Pathfinder -&gt; HMC can get close to HMC. Now of course this does not mean that this is always the case. We should be very careful in using the approximate methods and for example use these methods during the model building stage in which we might want to quickly run multiple iterations of a model, but relying on HMC for the final inferences.</p>
 </section>
 </section>
 <section id="original-computing-environment" class="level2">
 <h2 class="anchored" data-anchor-id="original-computing-environment">Original Computing Environment</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>─ Session info ───────────────────────────────────────────────────────────────
  setting  value
- version  R version 4.4.2 (2024-10-31)
- os       macOS Sequoia 15.2
+ version  R version 4.3.3 (2024-02-29)
+ os       macOS 15.5
  system   aarch64, darwin20
  ui       X11
  language (EN)
  collate  en_US.UTF-8
  ctype    en_US.UTF-8
  tz       Europe/Amsterdam
- date     2025-07-01
+ date     2025-07-02
  pandoc   3.2 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
- quarto   1.5.43 @ /usr/local/bin/quarto
 
 ─ Packages ───────────────────────────────────────────────────────────────────
- package        * version     date (UTC) lib source
- abind            1.4-8       2024-09-12 [2] CRAN (R 4.4.1)
- backports        1.5.0       2024-05-23 [2] CRAN (R 4.4.0)
- bayesplot        1.13.0.9000 2025-06-19 [1] https://stan-dev.r-universe.dev (R 4.4.3)
- bridgesampling   1.1-2       2021-04-16 [1] CRAN (R 4.4.0)
- brms           * 2.22.0      2024-09-23 [1] CRAN (R 4.4.1)
- Brobdingnag      1.2-9       2022-10-19 [1] CRAN (R 4.4.0)
- cachem           1.1.0       2024-05-16 [2] CRAN (R 4.4.0)
- checkmate        2.3.2       2024-07-29 [2] CRAN (R 4.4.0)
- cli              3.6.5       2025-04-23 [1] CRAN (R 4.4.1)
- cmdstanr       * 0.8.1       2025-01-02 [1] https://stan-dev.r-universe.dev (R 4.4.2)
- coda             0.19-4.1    2024-01-31 [1] CRAN (R 4.4.0)
- codetools        0.2-20      2024-03-31 [2] CRAN (R 4.4.2)
- curl             6.2.2       2025-03-24 [1] CRAN (R 4.4.1)
- data.table       1.16.4      2024-12-06 [2] CRAN (R 4.4.1)
- devtools         2.4.5       2022-10-11 [1] CRAN (R 4.4.0)
- digest           0.6.37      2024-08-19 [2] CRAN (R 4.4.1)
- distributional   0.5.0       2024-09-17 [1] CRAN (R 4.4.1)
- dplyr          * 1.1.4       2023-11-17 [2] CRAN (R 4.4.0)
- ellipsis         0.3.2       2021-04-29 [2] CRAN (R 4.4.0)
- evaluate         1.0.1       2024-10-10 [2] CRAN (R 4.4.1)
- farver           2.1.2       2024-05-13 [2] CRAN (R 4.4.0)
- fastmap          1.2.0       2024-05-15 [2] CRAN (R 4.4.0)
- fs               1.6.5       2024-10-30 [2] CRAN (R 4.4.1)
- generics         0.1.4       2025-05-09 [1] CRAN (R 4.4.1)
- ggplot2        * 3.5.2       2025-04-09 [1] CRAN (R 4.4.1)
- glue             1.8.0       2024-09-30 [2] CRAN (R 4.4.1)
- gridExtra        2.3         2017-09-09 [2] CRAN (R 4.4.0)
- gtable           0.3.6       2024-10-25 [2] CRAN (R 4.4.1)
- htmltools        0.5.8.1     2024-04-04 [2] CRAN (R 4.4.0)
- htmlwidgets      1.6.4       2023-12-06 [2] CRAN (R 4.4.0)
- httpuv           1.6.16      2025-04-16 [1] CRAN (R 4.4.1)
- inline           0.3.21      2025-01-09 [1] CRAN (R 4.4.1)
- jsonlite         1.8.9       2024-09-20 [2] CRAN (R 4.4.1)
- knitr            1.49        2024-11-08 [2] CRAN (R 4.4.1)
- labeling         0.4.3       2023-08-29 [2] CRAN (R 4.4.0)
- later            1.4.2       2025-04-08 [1] CRAN (R 4.4.1)
- lattice          0.22-6      2024-03-20 [2] CRAN (R 4.4.2)
- lifecycle        1.0.4       2023-11-07 [2] CRAN (R 4.4.0)
- loo              2.8.0.9000  2025-06-09 [1] https://stan-dev.r-universe.dev (R 4.4.3)
- magrittr         2.0.3       2022-03-30 [2] CRAN (R 4.4.0)
- Matrix           1.7-1       2024-10-18 [2] CRAN (R 4.4.2)
- matrixStats      1.5.0       2025-01-07 [1] CRAN (R 4.4.1)
- memoise          2.0.1       2021-11-26 [2] CRAN (R 4.4.0)
- mime             0.12        2021-09-28 [2] CRAN (R 4.4.0)
- miniUI           0.1.1.1     2018-05-18 [1] CRAN (R 4.4.0)
- mvtnorm          1.3-3       2025-01-10 [1] CRAN (R 4.4.1)
- nlme             3.1-166     2024-08-14 [2] CRAN (R 4.4.2)
- pillar           1.10.2      2025-04-05 [1] CRAN (R 4.4.1)
- pkgbuild         1.4.8       2025-05-26 [1] CRAN (R 4.4.1)
- pkgconfig        2.0.3       2019-09-22 [2] CRAN (R 4.4.0)
- pkgload          1.4.0       2024-06-28 [1] CRAN (R 4.4.0)
- plyr             1.8.9       2023-10-02 [2] CRAN (R 4.4.0)
- posterior        1.6.1       2025-02-27 [1] CRAN (R 4.4.1)
- processx         3.8.6       2025-02-21 [1] CRAN (R 4.4.1)
- profvis          0.4.0       2024-09-20 [1] CRAN (R 4.4.1)
- promises         1.3.2       2024-11-28 [1] CRAN (R 4.4.1)
- ps               1.9.1       2025-04-12 [1] CRAN (R 4.4.1)
- purrr            1.0.4       2025-02-05 [1] CRAN (R 4.4.1)
- QuickJSR         1.8.0       2025-06-09 [1] CRAN (R 4.4.1)
- R6               2.6.1       2025-02-15 [1] CRAN (R 4.4.1)
- RColorBrewer     1.1-3       2022-04-03 [2] CRAN (R 4.4.0)
- Rcpp           * 1.0.14      2025-01-12 [1] CRAN (R 4.4.1)
- RcppParallel     5.1.10      2025-01-24 [1] CRAN (R 4.4.1)
- remotes          2.5.0       2024-03-17 [2] CRAN (R 4.4.0)
- reshape2         1.4.4       2020-04-09 [2] CRAN (R 4.4.0)
- rlang            1.1.6       2025-04-11 [1] CRAN (R 4.4.1)
- rmarkdown        2.29        2024-11-04 [2] CRAN (R 4.4.1)
- rstan            2.36.0.9000 2025-06-17 [1] https://stan-dev.r-universe.dev (R 4.4.3)
- rstantools       2.4.0.9000  2025-06-09 [1] https://stan-dev.r-universe.dev (R 4.4.3)
- rstudioapi       0.17.1      2024-10-22 [2] CRAN (R 4.4.1)
- scales           1.4.0       2025-04-24 [1] CRAN (R 4.4.1)
- sessioninfo      1.2.3       2025-02-05 [1] CRAN (R 4.4.1)
- shiny            1.10.0      2024-12-14 [1] CRAN (R 4.4.1)
- StanHeaders      2.36.0.9000 2025-06-17 [1] https://stan-dev.r-universe.dev (R 4.4.3)
- stringi          1.8.7       2025-03-27 [1] CRAN (R 4.4.1)
- stringr          1.5.1       2023-11-14 [2] CRAN (R 4.4.0)
- tensorA          0.36.2.1    2023-12-13 [1] CRAN (R 4.4.0)
- tibble           3.3.0       2025-06-08 [1] CRAN (R 4.4.1)
- tidyr          * 1.3.1       2024-01-24 [2] CRAN (R 4.4.0)
- tidyselect       1.2.1       2024-03-11 [2] CRAN (R 4.4.0)
- urlchecker       1.0.1       2021-11-30 [1] CRAN (R 4.4.1)
- usethis          3.1.0       2024-11-26 [1] CRAN (R 4.4.1)
- utf8             1.2.6       2025-06-08 [1] CRAN (R 4.4.1)
- V8               6.0.3       2025-03-26 [1] CRAN (R 4.4.1)
- vctrs            0.6.5       2023-12-01 [2] CRAN (R 4.4.0)
- withr            3.0.2       2024-10-28 [2] CRAN (R 4.4.1)
- xfun             0.49        2024-10-31 [2] CRAN (R 4.4.1)
- xtable           1.8-4       2019-04-21 [1] CRAN (R 4.4.1)
- yaml             2.3.10      2024-07-26 [2] CRAN (R 4.4.0)
+ package        * version  date (UTC) lib source
+ abind            1.4-8    2024-09-12 [2] CRAN (R 4.3.3)
+ backports        1.5.0    2024-05-23 [2] CRAN (R 4.3.3)
+ bayesplot        1.12.0   2025-04-10 [1] CRAN (R 4.3.3)
+ bridgesampling   1.1-2    2021-04-16 [2] CRAN (R 4.3.0)
+ brms           * 2.22.0   2024-09-23 [1] CRAN (R 4.3.3)
+ Brobdingnag      1.2-9    2022-10-19 [2] CRAN (R 4.3.3)
+ cachem           1.1.0    2024-05-16 [2] CRAN (R 4.3.3)
+ callr            3.7.6    2024-03-25 [2] CRAN (R 4.3.3)
+ checkmate        2.3.2    2024-07-29 [2] CRAN (R 4.3.3)
+ cli              3.6.5    2025-04-23 [1] CRAN (R 4.3.3)
+ cmdstanr       * 0.8.1    2025-03-03 [1] https://stan-dev.r-universe.dev (R 4.3.3)
+ coda             0.19-4.1 2024-01-31 [2] CRAN (R 4.3.3)
+ codetools        0.2-19   2023-02-01 [2] CRAN (R 4.3.3)
+ colorspace       2.1-1    2024-07-26 [2] CRAN (R 4.3.3)
+ data.table       1.16.4   2024-12-06 [2] CRAN (R 4.3.3)
+ devtools         2.4.5    2022-10-11 [2] CRAN (R 4.3.0)
+ digest           0.6.37   2024-08-19 [2] CRAN (R 4.3.3)
+ distributional   0.5.0    2024-09-17 [2] CRAN (R 4.3.3)
+ dplyr          * 1.1.4    2023-11-17 [2] CRAN (R 4.3.1)
+ ellipsis         0.3.2    2021-04-29 [2] CRAN (R 4.3.3)
+ evaluate         1.0.3    2025-01-10 [2] CRAN (R 4.3.3)
+ farver           2.1.2    2024-05-13 [2] CRAN (R 4.3.3)
+ fastmap          1.2.0    2024-05-15 [2] CRAN (R 4.3.3)
+ fs               1.6.5    2024-10-30 [2] CRAN (R 4.3.3)
+ generics         0.1.4    2025-05-09 [1] CRAN (R 4.3.3)
+ ggplot2        * 3.5.2    2025-04-09 [1] CRAN (R 4.3.3)
+ glue             1.8.0    2024-09-30 [2] CRAN (R 4.3.3)
+ gridExtra        2.3      2017-09-09 [2] CRAN (R 4.3.3)
+ gtable           0.3.6    2024-10-25 [2] CRAN (R 4.3.3)
+ htmltools        0.5.8.1  2024-04-04 [2] CRAN (R 4.3.3)
+ htmlwidgets      1.6.4    2023-12-06 [2] CRAN (R 4.3.1)
+ httpuv           1.6.15   2024-03-26 [2] CRAN (R 4.3.1)
+ inline           0.3.21   2025-01-09 [2] CRAN (R 4.3.3)
+ jsonlite         1.8.9    2024-09-20 [2] CRAN (R 4.3.3)
+ knitr            1.49     2024-11-08 [2] CRAN (R 4.3.3)
+ labeling         0.4.3    2023-08-29 [2] CRAN (R 4.3.3)
+ later            1.4.1    2024-11-27 [2] CRAN (R 4.3.3)
+ lattice          0.22-5   2023-10-24 [2] CRAN (R 4.3.3)
+ lifecycle        1.0.4    2023-11-07 [2] CRAN (R 4.3.3)
+ loo              2.8.0    2024-07-03 [1] CRAN (R 4.3.3)
+ magrittr         2.0.3    2022-03-30 [2] CRAN (R 4.3.3)
+ Matrix           1.6-5    2024-01-11 [2] CRAN (R 4.3.3)
+ matrixStats      1.5.0    2025-01-07 [2] CRAN (R 4.3.3)
+ memoise          2.0.1    2021-11-26 [2] CRAN (R 4.3.3)
+ mime             0.12     2021-09-28 [2] CRAN (R 4.3.3)
+ miniUI           0.1.1.1  2018-05-18 [2] CRAN (R 4.3.0)
+ mvtnorm          1.3-3    2025-01-10 [2] CRAN (R 4.3.3)
+ nlme             3.1-164  2023-11-27 [2] CRAN (R 4.3.3)
+ pillar           1.10.2   2025-04-05 [1] CRAN (R 4.3.3)
+ pkgbuild         1.4.7    2025-03-24 [1] CRAN (R 4.3.3)
+ pkgconfig        2.0.3    2019-09-22 [2] CRAN (R 4.3.3)
+ pkgload          1.4.0    2024-06-28 [2] CRAN (R 4.3.3)
+ plyr             1.8.9    2023-10-02 [2] CRAN (R 4.3.3)
+ posterior        1.6.1    2025-02-27 [1] CRAN (R 4.3.3)
+ processx         3.8.6    2025-02-21 [1] CRAN (R 4.3.3)
+ profvis          0.4.0    2024-09-20 [2] CRAN (R 4.3.3)
+ promises         1.3.2    2024-11-28 [2] CRAN (R 4.3.3)
+ ps               1.9.1    2025-04-12 [1] CRAN (R 4.3.3)
+ purrr            1.0.4    2025-02-05 [1] CRAN (R 4.3.3)
+ QuickJSR         1.7.0    2025-03-31 [1] CRAN (R 4.3.3)
+ R6               2.6.1    2025-02-15 [1] CRAN (R 4.3.3)
+ RColorBrewer     1.1-3    2022-04-03 [2] CRAN (R 4.3.3)
+ Rcpp           * 1.0.14   2025-01-12 [2] CRAN (R 4.3.3)
+ RcppParallel     5.1.10   2025-01-24 [2] CRAN (R 4.3.3)
+ remotes          2.5.0    2024-03-17 [2] CRAN (R 4.3.3)
+ reshape2         1.4.4    2020-04-09 [2] CRAN (R 4.3.0)
+ rlang            1.1.6    2025-04-11 [1] CRAN (R 4.3.3)
+ rmarkdown        2.29     2024-11-04 [2] CRAN (R 4.3.3)
+ rstan            2.32.7   2025-03-10 [1] CRAN (R 4.3.3)
+ rstantools       2.4.0    2024-01-31 [1] CRAN (R 4.3.3)
+ rstudioapi       0.17.1   2024-10-22 [2] CRAN (R 4.3.3)
+ scales           1.4.0    2025-04-24 [1] CRAN (R 4.3.3)
+ sessioninfo      1.2.2    2021-12-06 [2] CRAN (R 4.3.0)
+ shiny            1.10.0   2024-12-14 [2] CRAN (R 4.3.3)
+ StanHeaders      2.32.10  2024-07-15 [1] CRAN (R 4.3.3)
+ stringi          1.8.7    2025-03-27 [1] CRAN (R 4.3.3)
+ stringr          1.5.1    2023-11-14 [2] CRAN (R 4.3.1)
+ tensorA          0.36.2.1 2023-12-13 [2] CRAN (R 4.3.3)
+ tibble           3.2.1    2023-03-20 [2] CRAN (R 4.3.0)
+ tidyr          * 1.3.1    2024-01-24 [2] CRAN (R 4.3.1)
+ tidyselect       1.2.1    2024-03-11 [2] CRAN (R 4.3.1)
+ urlchecker       1.0.1    2021-11-30 [2] CRAN (R 4.3.3)
+ usethis          3.1.0    2024-11-26 [2] CRAN (R 4.3.3)
+ utf8             1.2.5    2025-05-01 [1] CRAN (R 4.3.3)
+ vctrs            0.6.5    2023-12-01 [2] CRAN (R 4.3.3)
+ withr            3.0.2    2024-10-28 [2] CRAN (R 4.3.3)
+ xfun             0.50     2025-01-07 [2] CRAN (R 4.3.3)
+ xtable           1.8-4    2019-04-21 [2] CRAN (R 4.3.3)
+ yaml             2.3.10   2024-07-26 [2] CRAN (R 4.3.3)
 
- [1] /Users/4243579/Library/R/arm64/4.4/library
- [2] /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library
- * ── Packages attached to the search path.
+ [1] /Users/Erp00018/Library/R/arm64/4.3/library
+ [2] /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library
 
 ──────────────────────────────────────────────────────────────────────────────</code></pre>
 </div>
