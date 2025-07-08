@@ -57,7 +57,7 @@ The instructors will clarify the differences between the philosophies and interp
 |:--------|:-------|:-------------|
 | 09.00 | 12.00  | Lecture |
 |       | <a href="https://www.uu.nl/educatorium" target="_blank">Lunch</a> |            
-| 13:30 | 16.00  | Computer lab |
+| 13:00 | 16.00  | Computer lab |
 
 
 ### Lecture Hall locations
