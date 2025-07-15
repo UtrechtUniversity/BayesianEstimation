@@ -251,7 +251,7 @@ This practical goes through the steps to perform prior and posterior predictive 
 
 For the practical in R, click <a href="content/wednesday/prior_posterior_predictive_practical.html" target="_blank">here</a>.
 
-For the practical in Python, click <a href="content/wednesday/prior_posterior_predictive_practical_python.ipynb" target="_blank">here</a>.
+For the practical in Python, please download <a href="content/wednesday/prior_posterior_predictive_practical_python.ipynb" target="_blank">this Jupyter notebook</a>.
 
 - [data file time_data](content/wednesday/time_data.csv)
 
