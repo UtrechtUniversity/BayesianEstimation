@@ -174,12 +174,13 @@ Or maybe what combinations of the two.
 pp_check(fit, prefix = "ppd", type = "stat_2d")
 ```
 
-We see that most models produce positive means with small standard deviations. Perhaps we think these values are plausible, especially since they produce a broad range of possibilities. Perhaps we think we need to adjust our model a bit. Let's say that we would like to imply a bit more bike thefts on average and more uncertainty. We could adjust our priors to incorporate this. We also specify a broader prior on the residuals. To see which prior was used originally by default we can extract the prior from the fitobject:
+We see that most generated data sets based on these priors and this model produce positive means with small standard deviations. Perhaps we think these values are plausible, especially since they produce a broad range of possibilities. Perhaps we think we need to adjust our model a bit. Let's say that we would like to imply a bit more bike thefts on average and more uncertainty. We could adjust our priors to incorporate this. We also specify a broader prior on the residuals. To see which prior was used originally by default we can extract the prior from the fitobject:
 
 ```{r}
 fit$prior
 ```
 
+Try to specify the priors in such a way that you imply a bit more bike thefts on average and more uncertainty. Specify and fit this revised model, again using `sample_prior = "only" ` to obtain the prior predictive samples.
 
 ```{r wider-priors}
 #| echo: true
@@ -210,7 +211,7 @@ pp_check(fit2, type = "dens_overlay", prefix = "ppd", ndraws = 100) +
   ggtitle("New priors") + xlim(-50, 100) + ylim(0, 0.5)
 ```
 
-The new priors seem much more flat and wide, but it's hard to see. Maybe checking the statistics will help more. 
+The new priors seem to lead to data set distributions that are more flat and wide, but it's hard to see. Maybe checking the statistics will help more. 
 
 ```{r}
 #| layout-ncol: 2
@@ -292,7 +293,7 @@ bike_thefts_new <- (intercept + slope * temperature_new + rnorm(n_new, sd = nois
 data_new <- tibble(temperature = temperature_new, bike_thefts = bike_thefts_new)
 ```
 
-We don't run the model again, we make use of the fited model we had. 
+We don't run the model again, we make use of the fitted model we already have. 
 
 ```{r}
 pp_check(fit3, type = "dens_overlay", prefix = "ppc", ndraws = 100,
@@ -305,7 +306,7 @@ Great, with new data we also do well!
 
 ## Did we learn?
 
-Now did we learn more about the parameters? Our model did well to predict our existing data and new data. But did we decrease our uncertainty about the parameters in this model? We can provide some nice insights into this. We also sampled from the priors so we can easily visualize this. 
+Now did we learn more about the parameters? Our model did well to predict our existing data and new data. But did we decrease our uncertainty about the parameters in this model? We can provide some nice insights into this. Because we specified `sample_prior = "yes"` we also saved our prior samples so we can easily visualize this. 
 
 ```{r}
 mcmc_plot(fit3, type = "dens", variable = c("prior_Intercept", "b_Intercept")) + 
@@ -321,7 +322,9 @@ We could also express this in terms of posterior shrinkage[^1] using
 $$
 s = 1 - \frac{\sigma^2_\text{posterior}}{\sigma^2_\text{prior}}.
 $$
-To calculate this we can use the following code^[In the output you can notice that next to the _b_Intercept_, there also is a _Intercept_ parameter. This is due to the fact that `brms` mean-centeres the predictors prior to the analysis. The _Intercept_ parameter is the mean-centered parameter, the _b_Intercept_ parameter is the parameter transformed back to its original scale. For more information see also [this](https://discourse.mc-stan.org/t/what-is-the-difference-between-intercept-and-b-intercept/20423/7) post.].
+Since the posterior distribution combines the information in the prior with the information in the likelihood of the data, it will usually have less uncertainty so a smaller variance. If the data is highly informative compared to the prior, the posterior shrinkage will be close to 1. If the data provides little additional information, the posterior shrinkage will be close to 0.
+
+To calculate this we can use the following code^[In the output you can notice that next to the _b_Intercept_, there also is a _Intercept_ parameter. This is due to the fact that `brms` mean-centers the predictors prior to the analysis. The _Intercept_ parameter is the mean-centered parameter, the _b_Intercept_ parameter is the parameter transformed back to its original scale. For more information see also [this](https://discourse.mc-stan.org/t/what-is-the-difference-between-intercept-and-b-intercept/20423/7) post.].
 
 ```{r}
 # to get the parameter estimates. Note that Est.Error is sd not variance. 
@@ -507,7 +510,7 @@ pp_check(fit_ml, type = "dens_overlay_grouped", ndraws = 100, group = "trialtype
 pp_check(fit_ml, type = "stat_2d")
 ```
 
-Okay, if we split out per trial type our model doesn't fully capture all bumps but it's not to bad. The general mean and standard deviation are captured well. Now let's check where we encountered problems last time. 
+Okay, if we split out per trial type our model doesn't fully capture all bumps but it's not too bad. The general mean and standard deviation are captured well. Now let's check where we encountered problems last time. 
 
 ```{r}
 pp_check(fit_ml, prefix = "ppc", type = "intervals_grouped", group = "id",
@@ -516,7 +519,7 @@ pp_check(fit_ml, prefix = "ppc", type = "intervals_grouped", group = "id",
 
 We are now at least making differentiation between trial numbers, individuals and trends within individuals. See for instance the contrast between infant number 1 and infant number 8. If you'd look closely these predictions are also more specific compared to the earlier predictions, the uncertainty intervals are less wide. We still seem to capture most data points. Therefore, we can conclude that we made an improvement in the model. A next step could be to include autoregressive effects for example and see if the model further improves. 
 
-We hope this example illustrates that we need to think at what level we want to check our model. Perhaps on an overall level we are doing fine, but if we are interested in data at a individual level or even at a trial level, we need to look how we are doing there. Posterior predictive checks can help to identify what is going on (e.g. we do not differentiate between individuals). We can adjust and hopefully improve our models based on that information. 
+We hope this example illustrates that we need to think at what level we want to check our model. Perhaps on an overall level we are doing fine, but if we are interested in data at an individual level or even at a trial level, we need to look how we are doing at that level. Posterior predictive checks can help to identify what is going on (e.g., we do not differentiate between individuals). We can adjust and hopefully improve our models based on that information. 
 
 
 
