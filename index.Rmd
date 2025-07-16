@@ -299,6 +299,8 @@ This practical goes through the steps to perform a Bayesian regularized regressi
 
 For the practical in R, click <a href="content/thursday/exercises_Bayesian_regularization.html" target="_blank">here</a>.
 
+For the practical in Python, please download <a href="content/thursday/exercise_Bayesian_regularization_python.ipynb" target="_blank">this Jupyter notebook</a>.
+
 - [abalone.data](content/thursday/abalone.data) This data is shared by Nash, Warwick, Sellers, Tracy, Talbot, Simon, Cawthorn, Andrew, and Ford, Wes. (1995). Abalone. UCI Machine Learning Repository. https://doi.org/10.24432/C55C7W. 
 
 ## Column 2
