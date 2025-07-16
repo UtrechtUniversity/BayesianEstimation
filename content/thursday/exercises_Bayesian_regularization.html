@@ -586,8 +586,8 @@ F-statistic: 38.94 on 1 and 98 DF,  p-value: 1.117e-08</code></pre>
 </div>
 </div>
 </section>
-<section id="recap" class="level2">
-<h2 class="anchored" data-anchor-id="recap">Recap</h2>
+<section id="intermediate-summary" class="level2">
+<h2 class="anchored" data-anchor-id="intermediate-summary">Intermediate summary</h2>
 <p>So far, we have conducted a Bayesian regularized regression analysis to predict the age of abalone. We started with a simple normal prior (also called a ridge prior) and noted that this prior heavily pulled all variables toward zero. Next, we considered a Student’s t prior and horseshoe prior which showed slightly different shrinkage behaviors for some variables. However, throughout this process, we forgot one very important thing that we should always consider in a Bayesian analysis: the scale of our variables! If we had been more careful in our prior specification (see also the WAMBS checklist from day 2), we would probably have figured out that our normal shrinkage prior is more informative for some variables compared to others given the differing scales. Whenever this is the case, either specify separate priors for each regression coefficient that depend on the scale of the coefficient or scale the variables before the analysis.</p>
 </section>
 <section id="projection-predictive-variable-selection" class="level2">
@@ -674,8 +674,8 @@ attr(,"class")
 </details>
 </div>
 </section>
-<section id="recap-1" class="level2">
-<h2 class="anchored" data-anchor-id="recap-1">Recap</h2>
+<section id="recap" class="level2">
+<h2 class="anchored" data-anchor-id="recap">Recap</h2>
 <p>In these exercise, you have seen the effects of different shrinkage priors in a Bayesian regularized linear regression analysis and compared different ways of selecting variables. Ultimately, the goal of the analysis is to decide which variables are important in predicting a certain outcome but also to be confident that the results are robust. The prior sensitivity analysis can help in this regard although it is important to note that in some cases, results will differ across different shrinkage priors. This illustrates the importance of understanding your prior and the influence it has on the results. So make sure you think carefully about your (shrinkage) prior distribution; make sure you understand it and its influence on the results; and report your results in a transparent manner.</p>
 </section>
 <section id="further-exercises" class="level2">
@@ -710,7 +710,6 @@ attr(,"class")
  brms           * 2.22.0   2024-09-23 [1] CRAN (R 4.5.0)
  Brobdingnag      1.2-9    2022-10-19 [1] CRAN (R 4.5.0)
  cachem           1.1.0    2024-05-16 [1] CRAN (R 4.5.0)
- callr            3.7.6    2024-03-25 [1] CRAN (R 4.5.0)
  checkmate        2.3.2    2024-07-29 [1] CRAN (R 4.5.0)
  cli              3.6.5    2025-04-23 [1] CRAN (R 4.5.0)
  coda             0.19-4.1 2024-01-31 [1] CRAN (R 4.5.0)
@@ -728,7 +727,6 @@ attr(,"class")
  generics         0.1.4    2025-05-09 [1] CRAN (R 4.5.0)
  GGally         * 2.2.1    2024-02-14 [1] CRAN (R 4.5.0)
  ggplot2        * 3.5.2    2025-04-09 [1] CRAN (R 4.5.0)
- ggridges         0.5.6    2024-01-23 [1] CRAN (R 4.5.0)
  ggstats          0.10.0   2025-07-02 [1] CRAN (R 4.5.0)
  glue             1.8.0    2024-09-30 [1] CRAN (R 4.5.0)
  gridExtra        2.3      2017-09-09 [1] CRAN (R 4.5.0)
@@ -758,11 +756,9 @@ attr(,"class")
  pkgload          1.4.0    2024-06-28 [1] CRAN (R 4.5.0)
  plyr             1.8.9    2023-10-02 [1] CRAN (R 4.5.0)
  posterior        1.6.1    2025-02-27 [1] CRAN (R 4.5.0)
- processx         3.8.6    2025-02-21 [1] CRAN (R 4.5.0)
  profvis          0.4.0    2024-09-20 [1] CRAN (R 4.5.0)
  projpred       * 2.9.0    2025-07-08 [1] CRAN (R 4.5.0)
  promises         1.3.3    2025-05-29 [1] CRAN (R 4.5.0)
- ps               1.9.1    2025-04-12 [1] CRAN (R 4.5.0)
  purrr          * 1.1.0    2025-07-10 [1] CRAN (R 4.5.0)
  QuickJSR         1.8.0    2025-06-09 [1] CRAN (R 4.5.0)
  R6               2.6.1    2025-02-15 [1] CRAN (R 4.5.0)
@@ -770,7 +766,6 @@ attr(,"class")
  Rcpp           * 1.1.0    2025-07-02 [1] CRAN (R 4.5.0)
  RcppParallel     5.1.10   2025-01-24 [1] CRAN (R 4.5.0)
  remotes          2.5.0    2024-03-17 [1] CRAN (R 4.5.0)
- reshape2         1.4.4    2020-04-09 [1] CRAN (R 4.5.0)
  rlang            1.1.6    2025-04-11 [1] CRAN (R 4.5.0)
  rmarkdown        2.29     2024-11-04 [1] CRAN (R 4.5.0)
  rstan            2.32.7   2025-03-10 [1] CRAN (R 4.5.0)

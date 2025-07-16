@@ -412,7 +412,7 @@ mcmc_areas(fit_hs, pars = c("b_Shell_weight", "b_Shucked_weight"), prob = 0.95, 
 mcmc_areas(fit_hs_scaled, pars = c("b_Shell_weight", "b_Shucked_weight"), prob = 0.95, prob_outer = 1)
 ```
 
-## Recap
+## Intermediate summary
 
 So far, we have conducted a Bayesian regularized regression analysis to predict the age of abalone. We started with a simple normal prior (also called a ridge prior) and noted that this prior heavily pulled all variables toward zero. Next, we considered a Student's t prior and horseshoe prior which showed slightly different shrinkage behaviors for some variables. However, throughout this process, we forgot one very important thing that we should always consider in a Bayesian analysis: the scale of our variables! If we had been more careful in our prior specification (see also the WAMBS checklist from day 2), we would probably have figured out that our normal shrinkage prior is more informative for some variables compared to others given the differing scales. Whenever this is the case, either specify separate priors for each regression coefficient that depend on the scale of the coefficient or scale the variables before the analysis.
 
