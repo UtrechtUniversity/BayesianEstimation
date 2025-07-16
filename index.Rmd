@@ -291,7 +291,13 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 - Slides day 4
 
-- <a href="content/thursday/exercises_Bayesian_regularization.html" target="_blank">Practical day 4</a>
+The exercises are available in R and Python, so you can choose the program you are most familiar with. Note that, if you work in R, the exercise requires a working version of the `brms` packages. See the `How to prepare` page if you do not have this yet. If you work in Python, we advise you to download the Jupyter notebooks and open them in [Google colab](https://colab.google) to work on the practical.
+
+**Practical 'Bayesian regularized regression'**
+
+This practical goes through the steps to perform a Bayesian regularized regression with `brms` (in R) or `bambi` (in Python) to predict the age of abalone. Note that there are some differences in the R and Python exercises due to the implementation of different shrinkage priors in `brms` and `bambi`. In addition, projection predictive variable selection is not (yet) available for use with `bambi`.
+
+For the practical in R, click <a href="content/thursday/exercises_Bayesian_regularization.html" target="_blank">here</a>.
 
 - [abalone.data](content/thursday/abalone.data) This data is shared by Nash, Warwick, Sellers, Tracy, Talbot, Simon, Cawthorn, Andrew, and Ford, Wes. (1995). Abalone. UCI Machine Learning Repository. https://doi.org/10.24432/C55C7W. 
 
