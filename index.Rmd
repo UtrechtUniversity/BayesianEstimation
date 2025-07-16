@@ -299,7 +299,9 @@ We adapt the course as we go. To ensure that you work with the latest iteration 
 
 ### Useful references
 
-van Erp, S. (2020). A tutorial on Bayesian penalized regression with shrinkage priors for small sample sizes. Small sample size solutions, 71-84. https://library.oapen.org/bitstream/handle/20.500.12657/22385/9780367221898_text%20(1).pdf?sequence=1#page=85
+van Erp, S., Oberski, D. L., & Mulder, J. (2019). Shrinkage Priors for Bayesian Penalized Regression. Journal of Mathematical Psychology, 89, 31-50. [doi:10.1016/j.jmp.2018.12.004](https://www.sciencedirect.com/science/article/abs/pii/S0022249618300567).
+
+van Erp, S. (2020). [A tutorial on Bayesian penalized regression with shrinkage priors for small sample sizes](https://library.oapen.org/bitstream/handle/20.500.12657/22385/9780367221898_text%20(1).pdf?sequence=1#page=85). Small sample size solutions, 71-84. 
 
 https://github.com/UtrechtUniversity/BayesianEstimation
 
