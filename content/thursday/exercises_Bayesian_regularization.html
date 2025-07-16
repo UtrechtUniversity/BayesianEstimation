@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -23,7 +23,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -34,7 +34,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -59,6 +59,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -88,8 +89,35 @@ div.csl-indent {
 <link href="exercises_Bayesian_regularization_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="exercises_Bayesian_regularization_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -120,22 +148,25 @@ div.csl-indent {
   </div>
   
 
+
 </header>
+
 
 <p>With these exercises, you will gain a practical understanding of different shrinkage priors and how to run a Bayesian regularized linear regression analysis using <code>brms</code>. In addition, we will consider the use of prior sensitivity analysis in Bayesian (regularized) analyses. Some knowledge of Bayesian analysis and familiarity with <code>brms</code> is assumed.</p>
 <section id="preliminaries" class="level2">
 <h2 class="anchored" data-anchor-id="preliminaries">Preliminaries</h2>
 <p>First, we load several packages to run the analyses and visualize the data and results. We also set a random seed so that the results are reproducible.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(projpred)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">03072023</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(projpred)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">03072023</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="data-abalone-shells" class="level2">
@@ -206,24 +237,49 @@ div.csl-indent {
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(Sex)) <span class="sc">+</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="exercises_Bayesian_regularization_files/figure-html/datvis1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep</span>(is.numeric) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">keep</span>(is.numeric) <span class="sc">%&gt;%</span> </span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(value)) <span class="sc">+</span></span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> key, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="exercises_Bayesian_regularization_files/figure-html/datvis1-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>We can also visualize the bivariate relationships between variables. The code below shows paired scatterplots on the lower diagonal, correlations on the upper diagonal and marginal distributions on the diagonal.</p>
-<p>Recreate this plot and try to separate the plots based on the categorical variable <em>Sex</em> (hint: you can add a colour variable via the <code>aes()</code> function as in a regular <code>ggplot</code>.</p>
+<p>Recreate this plot and try to colour the plots based on the categorical variable <em>Sex</em> (hint: you can add a colour variable via the <code>aes()</code> function as in a regular <code>ggplot</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="exercises_Bayesian_regularization_files/figure-html/datvis2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell output">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(train, <span class="fu">aes</span>(<span class="at">colour =</span> <span class="st">`</span><span class="at">Sex</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="exercises_Bayesian_regularization_files/figure-html/datvis3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <section id="assumptions" class="level3">
@@ -234,71 +290,72 @@ div.csl-indent {
 <section id="predicting-the-age-of-abalone-without-regularization" class="level2">
 <h2 class="anchored" data-anchor-id="predicting-the-age-of-abalone-without-regularization">Predicting the age of abalone without regularization</h2>
 <p>For reference, we will start with a Bayesian regression analysis without regularization. In this application, this is possible because we have more observations than variables in our model. However, as the number of observations per variable decreases, regularization becomes more useful to avoid overfitting and ultimately, as the number of variables exceeds the number of observations, regularization is needed to run the model <span class="citation" data-cites="McNeish2015">(<a href="#ref-McNeish2015" role="doc-biblioref">McNeish 2015</a>)</span>. Apart from the issue of overfitting, regularization is useful to identify which variables are important in predicting the outcome, in this case: the age of abalone.</p>
-<p>Run a regression analysis on the training data, using all variables to predict the age of abalone (i.e., the <em>Rings</em> variable). Do you recall which priors <code>brms</code> uses by default? How could you check which priors are being used?</p>
-<div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-8_772c34f8f16cfa456f2ee2689c41a1bc">
-<details>
+<p>Run a regression analysis on the training data, using all variables to predict the age of abalone (i.e., the <em>Rings</em> variable). Use a seed value of 42 to make sure you obtain the same results. Do you recall which priors <code>brms</code> uses by default? How could you check which priors are being used?</p>
+<div class="cell">
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fit_default <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fit_default <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train, <span class="at">seed =</span> <span class="dv">42</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We would like to select those variables that are most important in predicting abalone age. One way of doing this is by considering the 95% credible interval. This Bayesian equivalent of the classical confidence interval can be interpreted as being the interval in which the true value lies with 95% probability. If zero is included in this interval for a given predictor, we might therefore conclude that it is likely that the true effect is zero and exclude that predictor. Consider the 95% credible intervals: which predictors would you exclude and which predictors would be retained? Write this down for future reference.</p>
-<div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-9_142baf29483ae6346c759be123054ebd">
-<details>
+<div class="cell">
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_default)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected predictors: SexM and Shell_weight</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_default)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected predictors: Whole_weight, Shucked_weight, and Viscera_weight</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section id="predicting-the-age-of-abalone-with-regularization" class="level2">
 <h2 class="anchored" data-anchor-id="predicting-the-age-of-abalone-with-regularization">Predicting the age of abalone with regularization</h2>
 <p>We will now run the analysis with regularization. We focus on the most simple shrinkage prior possible: a normal prior with a small variance<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
-<p>In <code>brms</code>, the normal prior is specified with a mean and standard deviation. So if we wish to specify a prior with a variance of <span class="math inline">\(\sigma^2 = 0.01\)</span>, we should take the square root of this value (<code>sqrt(0.01)</code>) to obtain the standard deviation <span class="math inline">\(\sigma\)</span>. We can add the prior by adding the argument <code>prior = prior(normal(0, 0.1)</code> to the <code>brm</code> call. Run the regularized analysis and use the 95% credible intervals to decide which variables are relevant in predicting the age of abalone. While you are waiting for the model to compile and sample, think about what results you would expect. Specifically, do you think we will select less or more variables compared to the previous, default analysis?</p>
-<div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-10_5016719f2c924385b90545bf1ab0a8b0">
-<details>
+<p>In <code>brms</code>, the normal prior is specified with a mean and standard deviation. So if we wish to specify a prior with a variance of <span class="math inline">\(\sigma^2 = 0.01\)</span>, we should take the square root of this value (<code>sqrt(0.01)</code>) to obtain the standard deviation <span class="math inline">\(\sigma\)</span>. We can add the prior by adding the argument <code>prior = prior(normal(0, 0.1)</code> to the <code>brm</code> call. Run the regularized analysis and use the 95% credible intervals to decide which variables are relevant in predicting the age of abalone. Again, use a seed (542 this time) to make sure you obtain reproducible results. While you are waiting for the model to compile and sample, think about what results you would expect. Specifically, do you think we will select less or more variables compared to the previous, default analysis?</p>
+<div class="cell">
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fit_ridge <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.1</span>)),</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fit_ridge <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.1</span>)),</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">seed =</span> <span class="dv">542</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-11_5d419cebae8090242192637128e20fdf">
-<details>
+<div class="cell">
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ridge)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># None of the variables are selected</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ridge)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># None of the variables are selected</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>We have now applied a very influential shrinkage prior, resulting in a large amount of regularization. As a result, the posterior distributions are narrowly concentrated around zero. This can be seen in the summary, based on the small estimated regression coefficients and narrow credible intervals. However, an advantage of the Bayesian framework is that we can also plot the posterior distributions. With the code below we compare the posterior densities for three parameters with and without regularization. The <code>prob</code> argument is used to specify the shaded probability in the density. Do you see the influence of the normal shrinkage prior reflected in the plotted posterior densities?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_default,</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Diameter"</span>, <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shell_weight"</span>),</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">75</span>)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge,</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Diameter"</span>, <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shell_weight"</span>),</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">75</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_default,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Diameter"</span>, <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shell_weight"</span>),</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">75</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Diameter"</span>, <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shell_weight"</span>),</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">75</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Similar plots can be created for the other parameters in the model: regression coefficients can be named using <code>b_variable_name</code> and the residual error standard deviation is named <code>sigma</code>. Consider the posterior densities for <code>sigma</code> across both fitobjects; are they equal? Do you expect them to be equal based on the prior distributions?</p>
-<div class="cell" data-hash="exercises_Bayesian_regularization_cache/html/unnamed-chunk-13_c50fdd78d43bb99edab03dc0c39c9724">
-<details>
+<div class="cell">
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_default,</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"sigma"</span>),</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="dv">1</span>, <span class="fl">4.5</span>)</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"sigma"</span>),</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="dv">1</span>, <span class="fl">4.5</span>)</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># The posterior densities are not the same, but the priors are. </span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"># The shrinkage prior influences the regression coefficients by </span></span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co"># pulling them to zero which in turn influences the residuals and </span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co"># thus the residual standard deviation, which is larger for the </span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co"># shrinkage prior.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_default,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"sigma"</span>),</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="dv">1</span>, <span class="fl">4.5</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"sigma"</span>),</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">prob_outer =</span> <span class="dv">1</span>, <span class="at">prob =</span> <span class="fl">0.95</span>) <span class="sc">+</span> <span class="fu">xlim</span>(<span class="dv">1</span>, <span class="fl">4.5</span>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(fit_default)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co"># The posterior densities are not the same, but the priors are. </span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co"># The shrinkage prior influences the regression coefficients by </span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co"># pulling them to zero which in turn influences the residuals and </span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co"># thus the residual standard deviation, which is larger for the </span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co"># shrinkage prior.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -312,91 +369,90 @@ div.csl-indent {
 </ul>
 <p>Before using these priors, let’s visualize them to understand their behavior a bit better. First, we need draws from the prior distributions. To obtain these, we run <code>brms</code> using the argument <code>sample_prior = "only"</code>. This will result in a fit object containing only draws from the prior distribution. Use the code below to sample from the three shrinkage priors.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>prior_t <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"student_t(3, 0, 0.1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>),</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>) </span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>prior_hs <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">horseshoe</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale_global =</span> <span class="dv">1</span>,</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_global =</span> <span class="dv">1</span>, <span class="at">scale_slab =</span> <span class="dv">2</span>,</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_slab =</span> <span class="dv">4</span>, <span class="at">par_ratio =</span> <span class="cn">NULL</span>,</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">autoscale =</span> <span class="cn">TRUE</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>prior_t <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"student_t(3, 0, 0.1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">786</span>) </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>prior_hs <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">horseshoe</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale_global =</span> <span class="dv">1</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_global =</span> <span class="dv">1</span>, <span class="at">scale_slab =</span> <span class="dv">2</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_slab =</span> <span class="dv">4</span>, <span class="at">par_ratio =</span> <span class="cn">NULL</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">autoscale =</span> <span class="cn">TRUE</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">sample_prior =</span> <span class="st">"only"</span>,</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">146</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, you can use the <code>mcmc_areas</code> function to plot the prior distributions for specific parameters. However, it can be more insightful to plot the prior distributions together in one figure. To do this, we first need to combine the prior draws. Then, we can plot the prior for a specific regression coefficient, for example <code>b_Height</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>draws_t <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(prior_t)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>draws_t<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"t"</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>draws_hs <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(prior_hs)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>draws_hs<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"hs"</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>sel <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"b_SexI"</span>, <span class="st">"b_SexM"</span>, <span class="st">"b_Length"</span>, <span class="st">"b_Diameter"</span>, <span class="st">"b_Height"</span>, </span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shucked_weight"</span>, <span class="st">"b_Viscera_weight"</span>,</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Shell_weight"</span>, <span class="st">"prior"</span>)</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>draws <span class="ot">&lt;-</span> <span class="fu">rbind.data.frame</span>(draws_t[, sel], </span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>                          draws_hs[, sel])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Dropping 'draws_df' class as required metadata was removed.
-Warning: Dropping 'draws_df' class as required metadata was removed.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(draws, <span class="fu">aes</span>(b_Height, <span class="at">colour=</span>prior)) <span class="sc">+</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> </span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>) <span class="sc">+</span> </span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 68 rows containing non-finite outside the scale range
-(`stat_density()`).</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>draws_t <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(prior_t)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>draws_t<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"t"</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>draws_hs <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(prior_hs)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>draws_hs<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"hs"</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>sel <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"b_SexI"</span>, <span class="st">"b_SexM"</span>, <span class="st">"b_Length"</span>, <span class="st">"b_Diameter"</span>, <span class="st">"b_Height"</span>, </span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shucked_weight"</span>, <span class="st">"b_Viscera_weight"</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Shell_weight"</span>, <span class="st">"prior"</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>draws <span class="ot">&lt;-</span> <span class="fu">rbind.data.frame</span>(draws_t[, sel], </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>                          draws_hs[, sel])</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(draws, <span class="fu">aes</span>(b_Height, <span class="at">colour=</span>prior)) <span class="sc">+</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> </span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>) <span class="sc">+</span> </span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
 </div>
-<p>This way, we can compare different parametric forms and see, for example, that with these settings Student’s t prior has much lighter tails than the horeseshoe prior.</p>
-<p>We can also adapt the hyperparameters of each prior. For the next exercise, pick one of the shrinkage priors (ridge, Student’s t, or horseshoe) and adapt the hyperparameters. Consider three or four different settings. For the horseshoe you can review the documentation for an interpretation of the hyperparameters via <code>?horseshoe</code>. Note that the location of each prior should remain at zero to ensure shrinkage towards zero. Visualize the prior for different hyperparameter settings and try to reason whether you would expect different results in terms of shrinkage towards zero and, ultimately, variable selection. In addition to visualizing the prior distribution itself, you can also perform prior predictive checks and visualize possible distributions of data generated for a specific data set (see day 3).</p>
+</div>
+<p>This way, we can compare different parametric forms and see, for example, that with these settings Student’s t prior has much lighter tails than the horseshoe prior.</p>
+<p>We can also adapt the hyperparameters of each prior. For the next exercise, adapt the hyperparameters of the Student’s t prior. Consider three or four different settings. Note that the location of the prior should remain at zero to ensure shrinkage towards zero, however, you can change both the degrees of freedom and the scale of the prior. Visualize the prior for different hyperparameter settings and try to reason whether you would expect different results in terms of shrinkage towards zero and, ultimately, variable selection. In addition to visualizing the prior distribution itself, you can also perform prior predictive checks and visualize possible distributions of data generated for a specific data set (see day 3).</p>
 <section id="comparing-results-across-different-priors" class="level3">
 <h3 class="anchored" data-anchor-id="comparing-results-across-different-priors">Comparing results across different priors</h3>
-<p>Now that we have a good idea of the different shrinkage prior distributions, we can run the analysis for different prior specifications and compare the outcome of interest, in our case: the selection of variables to predict abalone age. Run the analysis with Student’s t and horseshoe priors specified above. You can also add one or more of the priors you investigated yourself. Compare the amount of shrinkage, for example by looking at the estimated regression coefficients or the full posteriors, as well as the number of selected variables based on the 95% credible intervals. Do the results differ across different shrinkage priors and are the differences in line with your intuition regarding the shrinkage behaviors of the priors?</p>
+<p>Now that we have a good idea of the different shrinkage prior distributions, we can run the analysis for different prior specifications and compare the outcome of interest, in our case: the selection of variables to predict abalone age. Run the analysis with the original Student’s t and horseshoe priors specified above. You can also add one or more of the priors you investigated yourself.</p>
+<p>Compare the amount of shrinkage, for example by looking at the estimated regression coefficients or the full posteriors, as well as the number of selected variables based on the 95% credible intervals. Do the results differ across different shrinkage priors and are the differences in line with your intuition regarding the shrinkage behaviors of the priors?</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>fit_t <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"student_t(3, 0, 0.1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>))</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Indicates no relevant variables (like the ridge)</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>fit_hs <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">horseshoe</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale_global =</span> <span class="dv">1</span>,</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_global =</span> <span class="dv">1</span>, <span class="at">scale_slab =</span> <span class="dv">2</span>,</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_slab =</span> <span class="dv">4</span>, <span class="at">par_ratio =</span> <span class="cn">NULL</span>,</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">autoscale =</span> <span class="cn">TRUE</span>), <span class="at">class =</span> <span class="st">"b"</span>))</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Selects SexM and Shell_weight</span></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize differences</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>draws_ridge <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_ridge)</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>draws_ridge<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"ridge"</span></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>draws_t <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_t)</span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>draws_t<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"t"</span></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>draws_hs <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_hs)</span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>draws_hs<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"hs"</span></span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>sel <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"b_SexI"</span>, <span class="st">"b_SexM"</span>, <span class="st">"b_Length"</span>, <span class="st">"b_Diameter"</span>, <span class="st">"b_Height"</span>, </span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shucked_weight"</span>, <span class="st">"b_Viscera_weight"</span>,</span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Shell_weight"</span>, <span class="st">"prior"</span>)</span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>draws <span class="ot">&lt;-</span> <span class="fu">rbind.data.frame</span>(draws_ridge[, sel],</span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>                          draws_t[, sel],</span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>                          draws_hs[, sel])</span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>draws<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(draws)</span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>draws_long <span class="ot">&lt;-</span> <span class="fu">gather</span>(draws, </span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>                     <span class="at">key =</span> <span class="st">"parameter"</span>,</span>
-<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>                     <span class="at">value =</span> <span class="st">"value"</span>,</span>
-<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>                     <span class="sc">-</span>prior)</span>
-<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(draws_long, <span class="fu">aes</span>(value, <span class="at">colour=</span>prior)) <span class="sc">+</span></span>
-<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
-<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> parameter, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
-<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a><span class="co"># We see very similar results for the ridge and Student's t; these priors shrink coefficients heavily, with no escape for larger coefficients. The horseshoe also shows similar results and less shrinkage for some parameters, as we would expect based on the prior plots.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>fit_t <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"student_t(3, 0, 0.1)"</span>, <span class="at">class =</span> <span class="st">"b"</span>), </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">seed =</span> <span class="dv">786</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Indicates no relevant variables (like the ridge), but note the increased uncertainty (caused by a bimodal posterior) for Whole_weight</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>fit_hs <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">horseshoe</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale_global =</span> <span class="dv">1</span>,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_global =</span> <span class="dv">1</span>, <span class="at">scale_slab =</span> <span class="dv">2</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">df_slab =</span> <span class="dv">4</span>, <span class="at">par_ratio =</span> <span class="cn">NULL</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">autoscale =</span> <span class="cn">TRUE</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">seed =</span> <span class="dv">146</span>)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Also selects no variables, but note how the credible intervals show more uncertainty for some variables, especially the weight variables</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize differences in the posteriors</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>draws_ridge <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_ridge)</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>draws_ridge<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"ridge"</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>draws_t <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_t)</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>draws_t<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"t"</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>draws_hs <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(fit_hs)</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>draws_hs<span class="sc">$</span>prior <span class="ot">&lt;-</span> <span class="st">"hs"</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>sel <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"b_SexI"</span>, <span class="st">"b_SexM"</span>, <span class="st">"b_Length"</span>, <span class="st">"b_Diameter"</span>, <span class="st">"b_Height"</span>, </span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Whole_weight"</span>, <span class="st">"b_Shucked_weight"</span>, <span class="st">"b_Viscera_weight"</span>,</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>          <span class="st">"b_Shell_weight"</span>, <span class="st">"prior"</span>)</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>draws <span class="ot">&lt;-</span> <span class="fu">rbind.data.frame</span>(draws_ridge[, sel],</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>                          draws_t[, sel],</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>                          draws_hs[, sel])</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>draws_long <span class="ot">&lt;-</span> <span class="fu">gather</span>(draws, </span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>                     <span class="at">key =</span> <span class="st">"parameter"</span>,</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>                     <span class="at">value =</span> <span class="st">"value"</span>,</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>                     <span class="sc">-</span>prior)</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(draws_long, <span class="fu">aes</span>(value, <span class="at">colour=</span>prior)) <span class="sc">+</span></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> parameter, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -418,8 +474,8 @@ Note
 <h2 class="anchored" data-anchor-id="did-we-forget-anything">Did we forget anything?</h2>
 <p>So far, we have done a lot: we have investigated different shrinkage priors and compared their influence in predicting abalone age. We have seen that different types of shrinkage priors have different prior densities which result in different shrinkage behaviors and ultimately, different results. However, as you considered the potential influence of the shrinkage priors you might already have wondered about the role that the scales of the variables play. This is actually a very important point in Bayesian analysis in general, and even more so in Bayesian regularization in particular. The scale of the variables will influence the plausible parameter space of the regression coefficients and this will influence the informativeness of the prior distribution. To illustrate this, consider one variable in our data set, the <code>Length</code> of the shells. In this data set, <code>Length</code> is measured in millimeter and if we use this variable in a simple linear regression to predict the abalone age, we get an estimated regression coefficient of 15.6.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -443,136 +499,111 @@ F-statistic: 38.94 on 1 and 98 DF,  p-value: 1.117e-08</code></pre>
 </div>
 <p>We can view this estimate as the general, unregularized estimate so using flat priors. You can check this by running the same analysis with <code>brms</code> and its default priors.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train, <span class="at">seed =</span> <span class="dv">387</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Now consider a normal shrinkage prior with a standard deviation of <span class="math inline">\(\sigma = 10\)</span>. This prior looks like this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="dv">100000</span>, <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">10</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="dv">100000</span>, <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">10</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
 </div>
-<p>You can see that most of the prior mass lies between -20 and 20. How much influence do you think this prior will exert on the regression coefficient of <code>Length</code>, that is estimated to be around 14 when using flat priors? You can check your intuition by running the analysis.</p>
+</div>
+<p>You can see that most of the prior mass lies between -20 and 20. How much influence do you think this prior will exert on the regression coefficient of <code>Length</code>, that is estimated to be around 15 when using flat priors? You can check your intuition by running the analysis.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train,</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"normal(0, 10)"</span>, <span class="at">class =</span> <span class="st">"b"</span>))</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># There is practically no influence of this prior; it is relatively uninformative given the scale of the variable.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length, <span class="at">data =</span> train,</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"normal(0, 10)"</span>, <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">seed =</span> <span class="dv">156</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co"># There is practically no influence of this prior; it is relatively uninformative given the scale of the variable.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Suppose that <code>Length</code> was measured in centimeters instead of millimeters. Let’s create a new variable, <code>Length_cm</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>train_new <span class="ot">&lt;-</span> train</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>train_new<span class="sc">$</span>Length_cm <span class="ot">&lt;-</span> train_new<span class="sc">$</span>Length<span class="sc">/</span><span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>train_new <span class="ot">&lt;-</span> train</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>train_new<span class="sc">$</span>Length_cm <span class="ot">&lt;-</span> train_new<span class="sc">$</span>Length<span class="sc">/</span><span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Run the analysis again, but now with the length measured in centimeters as predictor. First run a classical regression model to check the size of the effect without any regularization or shrinkage due to the prior and then run the model with the normal(0, 10) prior.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Rings <span class="sc">~</span> Length_cm, <span class="at">data =</span> train_new)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length_cm, <span class="at">data =</span> train_new,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"normal(0, 10)"</span>, <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">seed =</span> <span class="dv">928</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, the effect is shrunken heavily!</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>Now, our normal(0, 10) prior is much more informative!</p>
-<div class="cell">
-<details>
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>fit1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Rings <span class="sc">~</span> Length_cm, <span class="at">data =</span> train_new)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit1)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Length_cm, <span class="at">data =</span> train_new,</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="st">"normal(0, 10)"</span>, <span class="at">class =</span> <span class="st">"b"</span>))</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit2)</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, the effect is shrunken heavily!</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
 <p>You can imagine that if we have variables measured on different scales, say one variable in cm and another in mm, that specifying one common shrinkage prior (or even a prior in general) is not a good idea because the informativeness of the prior, and thus the amount of shrinkage, will depend on the scale of the variable. Therefore, it is highly recommended to always standardize your variables before applying regularization. This makes it easier to specify one general shrinkage prior for all coefficients.</p>
-<p>Rerun the analysis with the original ridge shrinkage prior but this time first scaling the data.</p>
+<p>Rerun the analysis with the horseshoe prior but this time first scaling the data.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>train_scaled <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">scale</span>(train[, <span class="sc">-</span><span class="dv">1</span>], <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>train_scaled<span class="sc">$</span>Sex <span class="ot">&lt;-</span> train<span class="sc">$</span>Sex</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>fit_ridge_scaled <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train_scaled,</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.1</span>)),</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>)</span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ridge_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code> Family: gaussian 
-  Links: mu = identity; sigma = identity 
-Formula: Rings ~ Length + Diameter + Height + Whole_weight + Shucked_weight + Viscera_weight + Shell_weight + Sex 
-   Data: train_scaled (Number of observations: 100) 
-  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
-         total post-warmup draws = 4000
-
-Regression Coefficients:
-               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept          0.02      0.09    -0.16     0.20 1.00     5924     2969
-Length             0.06      0.09    -0.11     0.23 1.00     5671     2879
-Diameter           0.07      0.09    -0.10     0.25 1.00     5712     2759
-Height             0.16      0.08    -0.00     0.32 1.00     5144     2627
-Whole_weight       0.07      0.09    -0.10     0.24 1.00     5289     2901
-Shucked_weight    -0.05      0.09    -0.22     0.13 1.00     5373     2664
-Viscera_weight     0.02      0.09    -0.15     0.20 1.00     6719     3189
-Shell_weight       0.17      0.09     0.00     0.34 1.00     5798     3162
-SexI              -0.08      0.09    -0.26     0.10 1.00     5723     2242
-SexM               0.03      0.09    -0.15     0.20 1.00     6887     2922
-
-Further Distributional Parameters:
-      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     0.81      0.06     0.70     0.94 1.00     5866     3127
-
-Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
-and Tail_ESS are effective sample size measures, and Rhat is the potential
-scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-</div>
-<details>
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, we would select Shell_weight and Shucked_weight based on the 95% CI!</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Shell_weight"</span>, <span class="st">"b_Shucked_weight"</span>), <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">prob_outer =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>train_scaled <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">scale</span>(train[, <span class="sc">-</span><span class="dv">1</span>], <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>train_scaled<span class="sc">$</span>Sex <span class="ot">&lt;-</span> train<span class="sc">$</span>Sex</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>fit_hs_scaled <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> ., <span class="at">data =</span> train_scaled,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior =</span> <span class="fu">set_prior</span>(<span class="fu">horseshoe</span>(<span class="at">df =</span> <span class="dv">1</span>, <span class="at">scale_global =</span> <span class="dv">1</span>,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">df_global =</span> <span class="dv">1</span>, <span class="at">scale_slab =</span> <span class="dv">2</span>,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">df_slab =</span> <span class="dv">4</span>, <span class="at">par_ratio =</span> <span class="cn">NULL</span>,</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">autoscale =</span> <span class="cn">TRUE</span>), <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">refresh =</span> <span class="dv">0</span>, <span class="at">silent =</span> <span class="dv">2</span>, <span class="at">seed =</span> <span class="dv">115</span>)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_hs_scaled)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, we would select Shell_weight and Shucked_weight based on the 95% CI!</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_hs, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Shell_weight"</span>, <span class="st">"b_Shucked_weight"</span>), <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">prob_outer =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="exercises_Bayesian_regularization_files/figure-html/fit_hs_scaled-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
-<details>
+</div>
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_ridge_scaled, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Shell_weight"</span>, <span class="st">"b_Shucked_weight"</span>), <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">prob_outer =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_areas</span>(fit_hs_scaled, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_Shell_weight"</span>, <span class="st">"b_Shucked_weight"</span>), <span class="at">prob =</span> <span class="fl">0.95</span>, <span class="at">prob_outer =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="exercises_Bayesian_regularization_files/figure-html/fit_hs_scaled-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
+<section id="recap" class="level2">
+<h2 class="anchored" data-anchor-id="recap">Recap</h2>
+<p>So far, we have conducted a Bayesian regularized regression analysis to predict the age of abalone. We started with a simple normal prior (also called a ridge prior) and noted that this prior heavily pulled all variables toward zero. Next, we considered a Student’s t prior and horseshoe prior which showed slightly different shrinkage behaviors for some variables. However, throughout this process, we forgot one very important thing that we should always consider in a Bayesian analysis: the scale of our variables! If we had been more careful in our prior specification (see also the WAMBS checklist from day 2), we would probably have figured out that our normal shrinkage prior is more informative for some variables compared to others given the differing scales. Whenever this is the case, either specify separate priors for each regression coefficient that depend on the scale of the coefficient or scale the variables before the analysis.</p>
+</section>
 <section id="projection-predictive-variable-selection" class="level2">
 <h2 class="anchored" data-anchor-id="projection-predictive-variable-selection">Projection predictive variable selection</h2>
-<p>One of the main goals of our analysis is to select which variables are important in predicting the age of abalone. In traditional regularized regression, a penalty such as the lasso is able to set regression coefficients to exactly zero. However, in the Bayesian framework where we rely on posterior summary statistics such as the mean or median, regularized estimates will never be exactly zero. We thus need an additional step to perform variable selection. Up until now, we have used the marginal 95% credible interval to do so, but there are alternatives. One alternative would be to use a cut-off for the estimate, for example 0.1 and select a parameter if its regression coefficient exceeds this value. However, as you can imagine, the choice of cut-off value is rather arbitrary. Actually, the credible interval criterion we have considered thus far is also a rather arbitrary criterion: why use the 95% interval and not the 80% interval? Or the 88.8% interval?<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>One of the main goals of our analysis is to select which variables are important in predicting the age of abalone. In traditional regularized regression, a penalty such as the lasso is able to set regression coefficients to exactly zero. However, in the Bayesian framework where we rely on posterior summary statistics such as the mean or median, regularized estimates will never be exactly zero. We thus need an additional step to perform variable selection. Up until now, we have used the marginal 95% credible interval to do so, but there are alternatives. One alternative would be to use a cut-off for the estimate, for example 0.1 and select a parameter if its regression coefficient exceeds this value. However, as you can imagine, the choice of cut-off value is rather arbitrary. Actually, the credible interval criterion we have considered thus far is also a rather arbitrary criterion: why use the 95% interval and not the 94% interval? Or the 88.8% interval?<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
 <p>An alternative variable selection method is projection predictive variable selection. The basic idea behind this method is that the best possible prediction will be obtained when all variables are used. However, this model is not very parsimonious so we use this model as a reference and then look for a simpler model that gives similar answers to the full model in terms of predictive ability. By doing so, a more parsimonious model is obtained.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
 <p>The projection predictive method is implemented in the <code>projpred</code> package. To perform the variable selection, two functions can be used: <code>varsel</code> and <code>cv_varsel</code>. The latter function performs cross-validation by first searching for the best submodel given a specific number of predictors on a training set and subsequently evaluating the predictive performance of the submodels on a test set. This cross-validation approach is recommended over <code>varsel</code> to avoid overfitting. However, <code>cv_varsel</code> is also much slower compared to <code>varsel</code>, so for the purpose of these exercises we will rely on the faster <code>varsel</code> function.</p>
-<p>First, we run the variable selection for the original model with the normal shrinkage prior. We then obtain the optimal model size and check which predictors should be included given this optimal model size.</p>
+<p>We will run the variable selection for the scaled model with the horseshoe prior. We then obtain the optimal model size and check which predictors should be included given this optimal model size.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>vs <span class="ot">&lt;-</span> <span class="fu">varsel</span>(fit_ridge_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>-----
-Running the search ...
-10% of terms selected
-20% of terms selected
-30% of terms selected
-50% of terms selected
-60% of terms selected
-70% of terms selected
-80% of terms selected
-100% of terms selected
------
------
-Running the performance evaluation with `refit_prj = TRUE` ...
------</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>nsel <span class="ot">&lt;-</span> <span class="fu">suggest_size</span>(vs)</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ranking</span>(vs, <span class="at">nterms_max =</span> nsel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>vs <span class="ot">&lt;-</span> <span class="fu">varsel</span>(fit_hs_scaled, <span class="at">seed =</span> <span class="dv">364</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>nsel <span class="ot">&lt;-</span> <span class="fu">suggest_size</span>(vs)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ranking</span>(vs, <span class="at">nterms_max =</span> nsel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$fulldata
-[1] "Diameter"     "Shell_weight" "Height"       "Sex"         
+[1] "Shell_weight"   "Shucked_weight" "Height"         "Sex"           
+[5] "Whole_weight"   "Diameter"       "Viscera_weight"
 
 $foldwise
 NULL
@@ -583,37 +614,68 @@ attr(,"class")
 </div>
 <p>Note that the <code>suggest_size</code> function is easy to use, but: it provides only a heuristic for determining optimal model size. A better approach is to plot a performance statistic, which can be easily done as follows:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(vs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(vs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="exercises_Bayesian_regularization_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
 </div>
-<p>By default, <code>elpd</code>, the expected log predictive density is plotted. The important thing to consider is when this value levels off: that indicates that the performance does not change as we include more predictors. Thus, based on this plot we can conclude that we can obtain sufficient predictive performance with four predictors, the same number as suggested by the <code>suggest_size</code> function.</p>
+</div>
+<p>By default, <code>elpd</code>, the expected log predictive density is plotted. The important thing to consider is when this value levels off: that indicates that the performance does not change as we include more predictors. The dashed line indicates the predictive performance of the reference model, so the model including all predictors. Based on this plot we can conclude that we can obtain sufficient predictive performance with five or six predictors, a bit less than suggested by the <code>suggest_size</code> function.</p>
 <p>Now, compare the selected variables to those selected using the other shrinkage priors we considered in the sensitivity analysis. Are there big differences? Do the selected variables differ greatly from those selected based on the 95% credible intervals?</p>
 </section>
 <section id="going-beyond-variable-selection-evaluating-the-model" class="level2">
 <h2 class="anchored" data-anchor-id="going-beyond-variable-selection-evaluating-the-model">Going beyond variable selection: Evaluating the model</h2>
 <p>So far, we have focused solely on determining the number of variables to select and assessing whether this number varies when using different shrinkage priors or different selection criteria. Before performing variable selection, we can also consider how well our model fits the data, for example by considering a posterior predictive check.</p>
-<p>Perform a visual posterior predictive check for the model after regularization with the normal prior.</p>
+<p>Perform a visual posterior predictive check for the scaled model after regularization with the horseshoe prior.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>ppc <span class="ot">&lt;-</span> <span class="fu">pp_check</span>(fit_ridge_scaled, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ppc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>ppc <span class="ot">&lt;-</span> <span class="fu">pp_check</span>(fit_hs_scaled, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ppc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>You could also assess the final model, after variable selection. To do so, rerun the analysis using only the selected variables (based on the projection predictive method). Make sure you do not use shrinkage priors this time; we have already used the shrinkage to select the variables, now we simply want to estimate the effects of the selected variables without shrinkage. Perform a posterior predictive check. Do we still get sensible results?</p>
+<p>You could also assess the final model, after variable selection. To do so, rerun the analysis using only the variables <code>Shell_weight</code>, <code>Shucked_weight</code>, <code>Height</code>, and <code>Sex</code>. Make sure you do not use shrinkage priors this time; we have already used the shrinkage to select the variables, now we simply want to estimate the effects of the selected variables without shrinkage. Perform a posterior predictive check. Do we still get sensible results?</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fit_sel <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Diameter <span class="sc">+</span> Shell_weight <span class="sc">+</span> Height <span class="sc">+</span> Sex, <span class="at">data =</span> train_scaled)</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>ppc_sel <span class="ot">&lt;-</span> <span class="fu">pp_check</span>(fit_sel, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ppc_sel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>fit_sel <span class="ot">&lt;-</span> <span class="fu">brm</span>(Rings <span class="sc">~</span> Shell_weight <span class="sc">+</span> Shucked_weight <span class="sc">+</span> Height <span class="sc">+</span> Sex, <span class="at">data =</span> train_scaled, <span class="at">seed =</span> <span class="dv">444</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>ppc_sel <span class="ot">&lt;-</span> <span class="fu">pp_check</span>(fit_sel, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ppc_sel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>As we have seen in yesterday’s practical, it is a good idea to not only consider how close data generated based on the posterior is to the training data, but also to new, unseen test data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample 50 test observations from the original data</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>obs.all <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(dat)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>unseen <span class="ot">&lt;-</span> obs.all[<span class="sc">!</span> obs.all <span class="sc">%in%</span> obs.train]</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>obs.test <span class="ot">&lt;-</span> <span class="fu">sample</span>(unseen, <span class="at">size =</span> <span class="dv">50</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> dat[obs.test, ]</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>test<span class="sc">$</span>V1 <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(test<span class="sc">$</span>V1)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(test) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sex"</span>, <span class="st">"Length"</span>, <span class="st">"Diameter"</span>, <span class="st">"Height"</span>,</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Whole_weight"</span>, <span class="st">"Shucked_weight"</span>, <span class="st">"Viscera_weight"</span>,</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Shell_weight"</span>, <span class="st">"Rings"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Perform a posterior predictive check on the unseen test data with only the selected predictors. What can you conclude?</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make sure you first scale the test data too, otherwise you are using a model fit</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="co"># on scaled data to predict unscaled data which will lead to very bad predictions</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>test_scaled <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">scale</span>(test[, <span class="sc">-</span><span class="dv">1</span>], <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>test_scaled<span class="sc">$</span>Sex <span class="ot">&lt;-</span> test<span class="sc">$</span>Sex</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(fit_sel, <span class="at">type =</span> <span class="st">"dens_overlay"</span>, <span class="at">prefix =</span> <span class="st">"ppc"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>,</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">newdata =</span> test_scaled)</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="co"># This quick check looks quite good; we seem to predict ok even with just these 4 predictors</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
-<section id="recap" class="level2">
-<h2 class="anchored" data-anchor-id="recap">Recap</h2>
+<section id="recap-1" class="level2">
+<h2 class="anchored" data-anchor-id="recap-1">Recap</h2>
 <p>In these exercise, you have seen the effects of different shrinkage priors in a Bayesian regularized linear regression analysis and compared different ways of selecting variables. Ultimately, the goal of the analysis is to decide which variables are important in predicting a certain outcome but also to be confident that the results are robust. The prior sensitivity analysis can help in this regard although it is important to note that in some cases, results will differ across different shrinkage priors. This illustrates the importance of understanding your prior and the influence it has on the results. So make sure you think carefully about your (shrinkage) prior distribution; make sure you understand it and its influence on the results; and report your results in a transparent manner.</p>
 </section>
 <section id="further-exercises" class="level2">
@@ -623,119 +685,118 @@ attr(,"class")
 <section id="original-computing-environment" class="level2">
 <h2 class="anchored" data-anchor-id="original-computing-environment">Original computing environment</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>─ Session info ───────────────────────────────────────────────────────────────
  setting  value
- version  R version 4.4.0 (2024-04-24)
- os       macOS Sonoma 14.5
+ version  R version 4.5.1 (2025-06-13)
+ os       macOS Sequoia 15.5
  system   aarch64, darwin20
  ui       X11
  language (EN)
  collate  en_US.UTF-8
  ctype    en_US.UTF-8
  tz       Europe/Amsterdam
- date     2024-08-09
- pandoc   3.1.11 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
+ date     2025-07-16
+ pandoc   3.2 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
+ quarto   1.5.57 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
 ─ Packages ───────────────────────────────────────────────────────────────────
  package        * version  date (UTC) lib source
- abind            1.4-5    2016-07-21 [2] CRAN (R 4.4.0)
- backports        1.5.0    2024-05-23 [1] CRAN (R 4.4.0)
- bayesplot      * 1.11.1   2024-02-15 [2] CRAN (R 4.4.0)
- bridgesampling   1.1-2    2021-04-16 [2] CRAN (R 4.4.0)
- brms           * 2.21.0   2024-03-20 [2] CRAN (R 4.4.0)
- Brobdingnag      1.2-9    2022-10-19 [2] CRAN (R 4.4.0)
- cachem           1.0.8    2023-05-01 [2] CRAN (R 4.4.0)
- callr            3.7.6    2024-03-25 [2] CRAN (R 4.4.0)
- checkmate        2.3.1    2023-12-04 [2] CRAN (R 4.4.0)
- cli              3.6.2    2023-12-11 [2] CRAN (R 4.4.0)
- coda             0.19-4.1 2024-01-31 [2] CRAN (R 4.4.0)
- codetools        0.2-20   2024-03-31 [2] CRAN (R 4.4.0)
- colorspace       2.1-0    2023-01-23 [2] CRAN (R 4.4.0)
- devtools         2.4.5    2022-10-11 [1] CRAN (R 4.4.0)
- digest           0.6.35   2024-03-11 [2] CRAN (R 4.4.0)
- distributional   0.4.0    2024-02-07 [2] CRAN (R 4.4.0)
- dplyr            1.1.4    2023-11-17 [2] CRAN (R 4.4.0)
- ellipsis         0.3.2    2021-04-29 [1] CRAN (R 4.4.0)
- evaluate         0.23     2023-11-01 [2] CRAN (R 4.4.0)
- fansi            1.0.6    2023-12-08 [2] CRAN (R 4.4.0)
- farver           2.1.2    2024-05-13 [1] CRAN (R 4.4.0)
- fastmap          1.1.1    2023-02-24 [2] CRAN (R 4.4.0)
- fs               1.6.4    2024-04-25 [2] CRAN (R 4.4.0)
- generics         0.1.3    2022-07-05 [2] CRAN (R 4.4.0)
- GGally         * 2.2.1    2024-02-14 [1] CRAN (R 4.4.0)
- ggplot2        * 3.5.1    2024-04-23 [2] CRAN (R 4.4.0)
- ggridges         0.5.6    2024-01-23 [2] CRAN (R 4.4.0)
- ggstats          0.6.0    2024-04-05 [1] CRAN (R 4.4.0)
- glue             1.7.0    2024-01-09 [2] CRAN (R 4.4.0)
- gridExtra        2.3      2017-09-09 [2] CRAN (R 4.4.0)
- gtable           0.3.5    2024-04-22 [2] CRAN (R 4.4.0)
- htmltools        0.5.8.1  2024-04-04 [2] CRAN (R 4.4.0)
- htmlwidgets      1.6.4    2023-12-06 [1] CRAN (R 4.4.0)
- httpuv           1.6.15   2024-03-26 [2] CRAN (R 4.4.0)
- inline           0.3.19   2021-05-31 [2] CRAN (R 4.4.0)
- jsonlite         1.8.8    2023-12-04 [2] CRAN (R 4.4.0)
- knitr            1.46     2024-04-06 [1] CRAN (R 4.4.0)
- labeling         0.4.3    2023-08-29 [2] CRAN (R 4.4.0)
- later            1.3.2    2023-12-06 [2] CRAN (R 4.4.0)
- lattice          0.22-6   2024-03-20 [2] CRAN (R 4.4.0)
- lifecycle        1.0.4    2023-11-07 [2] CRAN (R 4.4.0)
- loo              2.7.0    2024-02-24 [2] CRAN (R 4.4.0)
- magrittr         2.0.3    2022-03-30 [2] CRAN (R 4.4.0)
- Matrix           1.7-0    2024-03-22 [2] CRAN (R 4.4.0)
- matrixStats      1.3.0    2024-04-11 [2] CRAN (R 4.4.0)
- memoise          2.0.1    2021-11-26 [2] CRAN (R 4.4.0)
- mime             0.12     2021-09-28 [2] CRAN (R 4.4.0)
- miniUI           0.1.1.1  2018-05-18 [1] CRAN (R 4.4.0)
- munsell          0.5.1    2024-04-01 [2] CRAN (R 4.4.0)
- mvtnorm          1.2-5    2024-05-21 [1] CRAN (R 4.4.0)
- nlme             3.1-164  2023-11-27 [2] CRAN (R 4.4.0)
- pillar           1.9.0    2023-03-22 [2] CRAN (R 4.4.0)
- pkgbuild         1.4.4    2024-03-17 [2] CRAN (R 4.4.0)
- pkgconfig        2.0.3    2019-09-22 [2] CRAN (R 4.4.0)
- pkgload          1.3.4    2024-01-16 [2] CRAN (R 4.4.0)
- plyr             1.8.9    2023-10-02 [2] CRAN (R 4.4.0)
- posterior        1.5.0    2023-10-31 [1] CRAN (R 4.4.0)
- processx         3.8.4    2024-03-16 [2] CRAN (R 4.4.0)
- profvis          0.3.8    2023-05-02 [1] CRAN (R 4.4.0)
- projpred       * 2.8.0    2023-12-15 [2] CRAN (R 4.4.0)
- promises         1.3.0    2024-04-05 [2] CRAN (R 4.4.0)
- ps               1.7.6    2024-01-18 [2] CRAN (R 4.4.0)
- purrr          * 1.0.2    2023-08-10 [1] CRAN (R 4.4.0)
- QuickJSR         1.1.3    2024-01-31 [2] CRAN (R 4.4.0)
- R6               2.5.1    2021-08-19 [2] CRAN (R 4.4.0)
- RColorBrewer     1.1-3    2022-04-03 [2] CRAN (R 4.4.0)
- Rcpp           * 1.0.12   2024-01-09 [2] CRAN (R 4.4.0)
- RcppParallel     5.1.7    2023-02-27 [2] CRAN (R 4.4.0)
- remotes          2.5.0    2024-03-17 [1] CRAN (R 4.4.0)
- reshape2         1.4.4    2020-04-09 [2] CRAN (R 4.4.0)
- rlang            1.1.3    2024-01-10 [2] CRAN (R 4.4.0)
- rmarkdown        2.27     2024-05-17 [1] CRAN (R 4.4.0)
- rstan            2.32.6   2024-03-05 [2] CRAN (R 4.4.0)
- rstantools       2.4.0    2024-01-31 [2] CRAN (R 4.4.0)
- rstudioapi       0.16.0   2024-03-24 [2] CRAN (R 4.4.0)
- scales           1.3.0    2023-11-28 [2] CRAN (R 4.4.0)
- sessioninfo      1.2.2    2021-12-06 [1] CRAN (R 4.4.0)
- shiny            1.8.1.1  2024-04-02 [2] CRAN (R 4.4.0)
- StanHeaders      2.32.8   2024-05-21 [1] CRAN (R 4.4.0)
- stringi          1.8.4    2024-05-06 [1] CRAN (R 4.4.0)
- stringr          1.5.1    2023-11-14 [2] CRAN (R 4.4.0)
- tensorA          0.36.2.1 2023-12-13 [2] CRAN (R 4.4.0)
- tibble           3.2.1    2023-03-20 [2] CRAN (R 4.4.0)
- tidyr          * 1.3.1    2024-01-24 [1] CRAN (R 4.4.0)
- tidyselect       1.2.1    2024-03-11 [2] CRAN (R 4.4.0)
- urlchecker       1.0.1    2021-11-30 [1] CRAN (R 4.4.0)
- usethis          2.2.3    2024-02-19 [1] CRAN (R 4.4.0)
- utf8             1.2.4    2023-10-22 [2] CRAN (R 4.4.0)
- vctrs            0.6.5    2023-12-01 [2] CRAN (R 4.4.0)
- withr            3.0.0    2024-01-16 [2] CRAN (R 4.4.0)
- xfun             0.44     2024-05-15 [1] CRAN (R 4.4.0)
- xtable           1.8-4    2019-04-21 [2] CRAN (R 4.4.0)
- yaml             2.3.8    2023-12-11 [2] CRAN (R 4.4.0)
+ abind            1.4-8    2024-09-12 [1] CRAN (R 4.5.0)
+ backports        1.5.0    2024-05-23 [1] CRAN (R 4.5.0)
+ bayesplot      * 1.13.0   2025-06-18 [1] CRAN (R 4.5.0)
+ bridgesampling   1.1-2    2021-04-16 [1] CRAN (R 4.5.0)
+ brms           * 2.22.0   2024-09-23 [1] CRAN (R 4.5.0)
+ Brobdingnag      1.2-9    2022-10-19 [1] CRAN (R 4.5.0)
+ cachem           1.1.0    2024-05-16 [1] CRAN (R 4.5.0)
+ callr            3.7.6    2024-03-25 [1] CRAN (R 4.5.0)
+ checkmate        2.3.2    2024-07-29 [1] CRAN (R 4.5.0)
+ cli              3.6.5    2025-04-23 [1] CRAN (R 4.5.0)
+ coda             0.19-4.1 2024-01-31 [1] CRAN (R 4.5.0)
+ codetools        0.2-20   2024-03-31 [2] CRAN (R 4.5.1)
+ colorspace       2.1-1    2024-07-26 [1] CRAN (R 4.5.0)
+ devtools         2.4.5    2022-10-11 [1] CRAN (R 4.5.0)
+ digest           0.6.37   2024-08-19 [1] CRAN (R 4.5.0)
+ distributional   0.5.0    2024-09-17 [1] CRAN (R 4.5.0)
+ dplyr          * 1.1.4    2023-11-17 [1] CRAN (R 4.5.0)
+ ellipsis         0.3.2    2021-04-29 [1] CRAN (R 4.5.0)
+ evaluate         1.0.4    2025-06-18 [1] CRAN (R 4.5.0)
+ farver           2.1.2    2024-05-13 [1] CRAN (R 4.5.0)
+ fastmap          1.2.0    2024-05-15 [1] CRAN (R 4.5.0)
+ fs               1.6.6    2025-04-12 [1] CRAN (R 4.5.0)
+ generics         0.1.4    2025-05-09 [1] CRAN (R 4.5.0)
+ GGally         * 2.2.1    2024-02-14 [1] CRAN (R 4.5.0)
+ ggplot2        * 3.5.2    2025-04-09 [1] CRAN (R 4.5.0)
+ ggridges         0.5.6    2024-01-23 [1] CRAN (R 4.5.0)
+ ggstats          0.10.0   2025-07-02 [1] CRAN (R 4.5.0)
+ glue             1.8.0    2024-09-30 [1] CRAN (R 4.5.0)
+ gridExtra        2.3      2017-09-09 [1] CRAN (R 4.5.0)
+ gtable           0.3.6    2024-10-25 [1] CRAN (R 4.5.0)
+ htmltools        0.5.8.1  2024-04-04 [1] CRAN (R 4.5.0)
+ htmlwidgets      1.6.4    2023-12-06 [1] CRAN (R 4.5.0)
+ httpuv           1.6.16   2025-04-16 [1] CRAN (R 4.5.0)
+ inline           0.3.21   2025-01-09 [1] CRAN (R 4.5.0)
+ jsonlite         2.0.0    2025-03-27 [1] CRAN (R 4.5.0)
+ knitr            1.50     2025-03-16 [1] CRAN (R 4.5.0)
+ labeling         0.4.3    2023-08-29 [1] CRAN (R 4.5.0)
+ later            1.4.2    2025-04-08 [1] CRAN (R 4.5.0)
+ lattice          0.22-7   2025-04-02 [2] CRAN (R 4.5.1)
+ lifecycle        1.0.4    2023-11-07 [1] CRAN (R 4.5.0)
+ loo              2.8.0    2024-07-03 [1] CRAN (R 4.5.0)
+ magrittr         2.0.3    2022-03-30 [1] CRAN (R 4.5.0)
+ Matrix           1.7-3    2025-03-11 [2] CRAN (R 4.5.1)
+ matrixStats      1.5.0    2025-01-07 [1] CRAN (R 4.5.0)
+ memoise          2.0.1    2021-11-26 [1] CRAN (R 4.5.0)
+ mime             0.13     2025-03-17 [1] CRAN (R 4.5.0)
+ miniUI           0.1.2    2025-04-17 [1] CRAN (R 4.5.0)
+ mvtnorm          1.3-3    2025-01-10 [1] CRAN (R 4.5.0)
+ nlme             3.1-168  2025-03-31 [2] CRAN (R 4.5.1)
+ pillar           1.11.0   2025-07-04 [1] CRAN (R 4.5.0)
+ pkgbuild         1.4.8    2025-05-26 [1] CRAN (R 4.5.0)
+ pkgconfig        2.0.3    2019-09-22 [1] CRAN (R 4.5.0)
+ pkgload          1.4.0    2024-06-28 [1] CRAN (R 4.5.0)
+ plyr             1.8.9    2023-10-02 [1] CRAN (R 4.5.0)
+ posterior        1.6.1    2025-02-27 [1] CRAN (R 4.5.0)
+ processx         3.8.6    2025-02-21 [1] CRAN (R 4.5.0)
+ profvis          0.4.0    2024-09-20 [1] CRAN (R 4.5.0)
+ projpred       * 2.9.0    2025-07-08 [1] CRAN (R 4.5.0)
+ promises         1.3.3    2025-05-29 [1] CRAN (R 4.5.0)
+ ps               1.9.1    2025-04-12 [1] CRAN (R 4.5.0)
+ purrr          * 1.1.0    2025-07-10 [1] CRAN (R 4.5.0)
+ QuickJSR         1.8.0    2025-06-09 [1] CRAN (R 4.5.0)
+ R6               2.6.1    2025-02-15 [1] CRAN (R 4.5.0)
+ RColorBrewer     1.1-3    2022-04-03 [1] CRAN (R 4.5.0)
+ Rcpp           * 1.1.0    2025-07-02 [1] CRAN (R 4.5.0)
+ RcppParallel     5.1.10   2025-01-24 [1] CRAN (R 4.5.0)
+ remotes          2.5.0    2024-03-17 [1] CRAN (R 4.5.0)
+ reshape2         1.4.4    2020-04-09 [1] CRAN (R 4.5.0)
+ rlang            1.1.6    2025-04-11 [1] CRAN (R 4.5.0)
+ rmarkdown        2.29     2024-11-04 [1] CRAN (R 4.5.0)
+ rstan            2.32.7   2025-03-10 [1] CRAN (R 4.5.0)
+ rstantools       2.4.0    2024-01-31 [1] CRAN (R 4.5.0)
+ rstudioapi       0.17.1   2024-10-22 [1] CRAN (R 4.5.0)
+ scales           1.4.0    2025-04-24 [1] CRAN (R 4.5.0)
+ sessioninfo      1.2.3    2025-02-05 [1] CRAN (R 4.5.0)
+ shiny            1.11.1   2025-07-03 [1] CRAN (R 4.5.0)
+ StanHeaders      2.32.10  2024-07-15 [1] CRAN (R 4.5.0)
+ stringi          1.8.7    2025-03-27 [1] CRAN (R 4.5.0)
+ stringr          1.5.1    2023-11-14 [1] CRAN (R 4.5.0)
+ tensorA          0.36.2.1 2023-12-13 [1] CRAN (R 4.5.0)
+ tibble           3.3.0    2025-06-08 [1] CRAN (R 4.5.0)
+ tidyr          * 1.3.1    2024-01-24 [1] CRAN (R 4.5.0)
+ tidyselect       1.2.1    2024-03-11 [1] CRAN (R 4.5.0)
+ urlchecker       1.0.1    2021-11-30 [1] CRAN (R 4.5.0)
+ usethis          3.1.0    2024-11-26 [1] CRAN (R 4.5.0)
+ vctrs            0.6.5    2023-12-01 [1] CRAN (R 4.5.0)
+ withr            3.0.2    2024-10-28 [1] CRAN (R 4.5.0)
+ xfun             0.52     2025-04-02 [1] CRAN (R 4.5.0)
+ xtable           1.8-4    2019-04-21 [1] CRAN (R 4.5.0)
+ yaml             2.3.10   2024-07-26 [1] CRAN (R 4.5.0)
 
- [1] /Users/Erp00018/Library/R/arm64/4.4/library
- [2] /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library
+ [1] /Users/Erp00018/Library/R/arm64/4.5/library
+ [2] /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library
+ * ── Packages attached to the search path.
 
 ──────────────────────────────────────────────────────────────────────────────</code></pre>
 </div>
@@ -744,7 +805,7 @@ attr(,"class")
 </section>
 
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-vanErpOberskiMulder2019" class="csl-entry" role="listitem">
 Erp, Sara van, Daniel L. Oberski, and Joris Mulder. 2019. <span>“Shrinkage Priors for <span>B</span>ayesian Penalized Regression.”</span> <em>Journal of Mathematical Psychology</em> 89: 31–50. <a href="https://doi.org/10.1016/j.jmp.2018.12.004">https://doi.org/10.1016/j.jmp.2018.12.004</a>.
 </div>
@@ -805,18 +866,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -848,11 +898,50 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -862,8 +951,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -875,7 +973,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -919,6 +1140,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -944,6 +1166,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1004,6 +1252,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 
