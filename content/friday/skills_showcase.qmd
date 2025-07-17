@@ -9,4 +9,4 @@ If you do not have a suitable data set available, you can use openly available d
 
 In the Markdown document, analyse your data using either shrinkage or (weakly) informative priors. If you use shrinkage priors, include a prior sensitivity analysis in which you consider alternative shrinkage prior specifications. If you use (weakly) informative priors, include a prior sensitivity analysis in which you vary the degree of informativeness. Go through the WAMBS checklist and include prior and posterior predictive checks. Please describe your findings, the robustness of your results, and your conclusions.
 
-*Important:* If you are participating in this course via IOPS, please email your Markdown document before August 25, 2025 to obtain your credits. This assignment equals 0.5EC so it should take you about 14 hours to complete.
+*Important:* If you are participating in this course via IOPS, please email your Markdown document before August 25, 2025 to obtain your credits. 
