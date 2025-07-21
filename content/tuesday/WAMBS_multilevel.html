@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.555">
+<meta name="generator" content="quarto-1.4.551">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen">
+<meta name="author" content="By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen and Suzanne Hoogeveen">
 
 <title>WAMBS BRMS Tutorial: Popularity Data</title>
 <style>
@@ -112,7 +112,7 @@ window.Quarto = {
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#wambs-checklist" id="toc-wambs-checklist" class="nav-link" data-scroll-target="#wambs-checklist"><strong>WAMBS checklist</strong></a>
   <ul class="collapse">
-  <li><a href="#when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics" id="toc-when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics" class="nav-link" data-scroll-target="#when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics"><em>When to worry, and how to Avoid the Misuse of Bayesian Statistics</em></a></li>
+  <li><a href="#when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics" id="toc-when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics" class="nav-link" data-scroll-target="#when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics"><em>When to Worry, and how to Avoid the Misuse of Bayesian Statistics</em></a></li>
   </ul></li>
   <li><a href="#packages-and-data" id="toc-packages-and-data" class="nav-link" data-scroll-target="#packages-and-data">Packages and Data</a></li>
   <li><a href="#the-model" id="toc-the-model" class="nav-link" data-scroll-target="#the-model">The model</a>
@@ -122,7 +122,7 @@ window.Quarto = {
   <li><a href="#does-convergence-remain-after-doubling-the-number-of-iterations" id="toc-does-convergence-remain-after-doubling-the-number-of-iterations" class="nav-link" data-scroll-target="#does-convergence-remain-after-doubling-the-number-of-iterations">3. Does convergence remain after doubling the number of iterations?</a></li>
   <li><a href="#does-the-posterior-distribution-histogram-have-enough-information" id="toc-does-the-posterior-distribution-histogram-have-enough-information" class="nav-link" data-scroll-target="#does-the-posterior-distribution-histogram-have-enough-information">4. Does the posterior distribution histogram have enough information?</a></li>
   <li><a href="#do-the-chains-exhibit-a-strong-degree-of-autocorrelation" id="toc-do-the-chains-exhibit-a-strong-degree-of-autocorrelation" class="nav-link" data-scroll-target="#do-the-chains-exhibit-a-strong-degree-of-autocorrelation">5. Do the chains exhibit a strong degree of autocorrelation?</a></li>
-  <li><a href="#do-the-posterior-distributions-make-substantive-sense" id="toc-do-the-posterior-distributions-make-substantive-sense" class="nav-link" data-scroll-target="#do-the-posterior-distributions-make-substantive-sense">6. Do the posterior distributions make substantive sense?</a></li>
+  <li><a href="#do-the-posterior-distributions-and-posterior-predictions-make-substantive-sense" id="toc-do-the-posterior-distributions-and-posterior-predictions-make-substantive-sense" class="nav-link" data-scroll-target="#do-the-posterior-distributions-and-posterior-predictions-make-substantive-sense">6. Do the posterior distributions and posterior predictions make substantive sense?</a></li>
   <li><a href="#do-different-specification-of-the-multivariate-variance-priors-influence-the-results" id="toc-do-different-specification-of-the-multivariate-variance-priors-influence-the-results" class="nav-link" data-scroll-target="#do-different-specification-of-the-multivariate-variance-priors-influence-the-results">7. Do different specification of the multivariate variance priors influence the results?</a></li>
   <li><a href="#is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors" id="toc-is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors" class="nav-link" data-scroll-target="#is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors">8. Is there a notable effect of the prior when compared with non-informative priors?</a></li>
   <li><a href="#are-the-results-stable-from-a-sensitivity-analysis" id="toc-are-the-results-stable-from-a-sensitivity-analysis" class="nav-link" data-scroll-target="#are-the-results-stable-from-a-sensitivity-analysis">9. Are the results stable from a sensitivity analysis?</a></li>
@@ -146,7 +146,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen </p>
+             <p>By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen and Suzanne Hoogeveen </p>
           </div>
   </div>
     
@@ -166,7 +166,7 @@ window.Quarto = {
 <section id="wambs-checklist" class="level2">
 <h2 class="anchored" data-anchor-id="wambs-checklist"><strong>WAMBS checklist</strong></h2>
 <section id="when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics" class="level3">
-<h3 class="anchored" data-anchor-id="when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics"><em>When to worry, and how to Avoid the Misuse of Bayesian Statistics</em></h3>
+<h3 class="anchored" data-anchor-id="when-to-worry-and-how-to-avoid-the-misuse-of-bayesian-statistics"><em>When to Worry, and how to Avoid the Misuse of Bayesian Statistics</em></h3>
 <p><strong>To be checked before estimating the model</strong></p>
 <ol type="1">
 <li>Do you understand the priors?</li>
@@ -177,7 +177,7 @@ window.Quarto = {
 <li>Does convergence remain after doubling the number of iterations?</li>
 <li>Does the posterior distribution histogram have enough information?</li>
 <li>Do the chains exhibit a strong degree of autocorrelation?</li>
-<li>Do the posterior distributions make substantive sense?</li>
+<li>Do the posterior distributions and posterior predictions make substantive sense?</li>
 </ol>
 <p><strong>Understanding the exact influence of the priors</strong></p>
 <ol start="7" type="1">
@@ -209,7 +209,7 @@ window.Quarto = {
 <p>To download the popularity data go to https://multilevel-analysis.sites.uu.nl/datasets/ and follow the links to https://github.com/MultiLevelAnalysis/Datasets-third-edition-Multilevel-book/blob/master/chapter%202/popularity/SPSS/popular2.sav. We will use the .sav file which can be found in the SPSS folder. After downloading the data to your working directory you can open it with the read_sav() command.</p>
 <p>Alternatively, you can directly download them from GitHub into your R work space using the following command:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>popular2data <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="at">file  =</span> <span class="st">"https://github.com/MultiLevelAnalysis/Datasets-third-edition-Multilevel-book/blob/master/chapter%202/popularity/SPSS/popular2.sav?raw=true"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>popular2data <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="at">file  =</span> <span class="st">"https://github.com/MirjamMoerbeek/Data_Sets_ML_book/raw/main/popular2.sav"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>There are some variables in the dataset that we do not use, so we can select the variables we will use and have a look at the first few observations.</p>
 <div class="cell">
@@ -306,7 +306,7 @@ window.Quarto = {
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>modeltranformed <span class="ot">&lt;-</span> <span class="fu">ggs</span>(model) <span class="co"># the ggs function transforms the BRMS output into a longformat tibble, that we can use to make different types of plots.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning in custom.sort(D$Parameter): NAs durch Umwandlung erzeugt</code></pre>
+<pre><code>Warning in custom.sort(D$Parameter): NAs introduced by coercion</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">filter</span>(modeltranformed, Parameter <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"b_Intercept"</span>, <span class="st">"b_extrav"</span>, <span class="st">"b_sex"</span>, <span class="st">"b_extrav:texp"</span>, <span class="st">"b_texp"</span>, <span class="st">"sigma"</span>),</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>              Iteration <span class="sc">&gt;</span> <span class="dv">1000</span>),</span>
@@ -386,7 +386,7 @@ Fraction in 1st window = 0.1
 Fraction in 2nd window = 0.5 
 
   b_Intercept         b_sex      b_extrav        b_texp b_extrav:texp 
-      0.01378      -0.10584      -0.40998      -0.21854       0.60451 
+      -1.3031        0.9404        1.4927        1.0602       -1.0713 
 
 
 [[2]]
@@ -395,7 +395,7 @@ Fraction in 1st window = 0.1
 Fraction in 2nd window = 0.5 
 
   b_Intercept         b_sex      b_extrav        b_texp b_extrav:texp 
-     -0.02166      -1.59939       0.70661       0.67892      -1.13404 
+      -0.7195       -1.0268        1.0723        0.9286       -1.1613 
 
 
 [[3]]
@@ -404,7 +404,7 @@ Fraction in 1st window = 0.1
 Fraction in 2nd window = 0.5 
 
   b_Intercept         b_sex      b_extrav        b_texp b_extrav:texp 
-        1.337         1.957        -2.054        -1.353         1.546 </code></pre>
+      0.09126       0.66809      -0.29347      -0.44682       0.71303 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geweke.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -480,7 +480,7 @@ Multivariate psrf
 </div>
 </div>
 </div>
-<p>You should again have a look at the above-mentioned convergence statistics, but we can also compute the relative bias to inspect if doubling the number of iterations influences the posterior parameter estimates (<span class="math inline">\(bias= 100*\frac{(model \; with \; double \; iteration \; - \; initial \; converged \; model )}{initial \; converged \; model}\)</span>). In order to preserve clarity we just calculate the bias of the two regression coefficients.</p>
+<p>You should again have a look at the above-mentioned convergence statistics, but we can also compute the relative bias to inspect if doubling the number of iterations influences the posterior parameter estimates (<span class="math inline">\(bias= 100*\frac{(model \; with \; double \; iteration \; - \; initial \; converged \; model )}{initial \; converged \; model}\)</span>). For the sake of brevity, we just calculate the bias of the two regression coefficients.</p>
 <p>You should combine the relative bias in combination with substantive knowledge about the metric of the parameter of interest to determine when levels of relative deviation are negligible or problematic. For example, with a regression coefficient of 0.001, a 5% relative deviation level might not be substantively relevant. However, with an intercept parameter of 50, a 10% relative deviation level might be quite meaningful. The specific level of relative deviation should be interpreted in the substantive context of the model. Some examples of interpretations are:</p>
 <ul>
 <li>if relative deviation is &lt; |5|%, then do not worry;</li>
@@ -489,7 +489,7 @@ Multivariate psrf
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">summary</span>(modeldoubleniter)<span class="sc">$</span>fixed <span class="sc">-</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed) <span class="sc">/</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed), <span class="dv">3</span>)[,<span class="st">"Estimate"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1]  0.554 -0.056  0.083  0.133  0.132</code></pre>
+<pre><code>[1] -0.228 -0.054 -0.156 -0.087 -0.300</code></pre>
 </div>
 </div>
 <p>The relative bias is small enough (&lt;5%) not worry about it</p>
@@ -518,21 +518,21 @@ Multivariate psrf
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autocorr.diag</span>(modelposterior[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="at">lags =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">50</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>       b_Intercept        b_sex     b_extrav     b_texp b_extrav:texp
-Lag 0  1.000000000  1.000000000  1.000000000 1.00000000  1.000000e+00
-Lag 1  0.167989471 -0.307919654 -0.030895560 0.17512766 -2.761649e-02
-Lag 2  0.114671654  0.121800004  0.091973519 0.11014970  8.206052e-02
-Lag 3  0.045672372 -0.055929577 -0.001364741 0.03567261 -1.047041e-02
-Lag 4  0.022242213  0.026133181  0.020269000 0.02026061  2.509601e-02
-Lag 5  0.003498326 -0.003574342 -0.009366395 0.01111373  5.353239e-03
-Lag 10 0.005413098  0.011637828 -0.007900929 0.01188491 -1.168704e-03
-Lag 50 0.005976203 -0.008370249 -0.002798792 0.01973958  2.772833e-05</code></pre>
+<pre><code>       b_Intercept        b_sex    b_extrav     b_texp b_extrav:texp
+Lag 0  1.000000000  1.000000000 1.000000000 1.00000000   1.000000000
+Lag 1  0.224965450 -0.288865179 0.050702605 0.22705531   0.034964496
+Lag 2  0.114061061  0.099568019 0.073660394 0.11094987   0.066253235
+Lag 3  0.040890253 -0.032847808 0.020108894 0.04268206   0.022620495
+Lag 4  0.027322551  0.012675353 0.003616268 0.03469903   0.012941753
+Lag 5  0.020329724 -0.008306002 0.001061359 0.01552611  -0.005782263
+Lag 10 0.033297122  0.003764337 0.019396775 0.01738453  -0.001425113
+Lag 50 0.009973241  0.017492629 0.010204462 0.02843027   0.017004376</code></pre>
 </div>
 </div>
-<p>These results show that autocorrelation is quite stong after a few lags. This means it is important to make sure we ran the analysis with a lot of samples, because with a high autocorrelation it will take longer until the whole parameter space has been identified. For more informtation on autocorrelation check this <a href="https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210X.2011.00131.x">paper</a>.</p>
+<p>These results show that autocorrelation is quite strong after a few lags. This means it is important to make sure we ran the analysis with a lot of samples, because with a high autocorrelation it will take longer until the whole parameter space has been identified. For more informtation on autocorrelation check this <a href="https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210X.2011.00131.x">paper</a>.</p>
 </section>
-<section id="do-the-posterior-distributions-make-substantive-sense" class="level3">
-<h3 class="anchored" data-anchor-id="do-the-posterior-distributions-make-substantive-sense">6. Do the posterior distributions make substantive sense?</h3>
+<section id="do-the-posterior-distributions-and-posterior-predictions-make-substantive-sense" class="level3">
+<h3 class="anchored" data-anchor-id="do-the-posterior-distributions-and-posterior-predictions-make-substantive-sense">6. Do the posterior distributions and posterior predictions make substantive sense?</h3>
 <p>Looking at the posterior distributions we do not see any abnormalities. All posterior distributions are within reasonable bounds.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">filter</span>(modeltranformed, Parameter <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"b_Intercept"</span>, <span class="st">"b_extrav"</span>,<span class="st">"b_sex"</span>), </span>
@@ -597,6 +597,17 @@ Lag 50 0.005976203 -0.008370249 -0.002798792 0.01973958  2.772833e-05</code></pr
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"dens"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>In addition, do the posterior predictive distributions make sense substantively and in light of the observed data? For this, we want to look at predictions on the response scale the model makes based on the posterior parameter estimates.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">pp_check</span>(model, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Posterior predictive"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WAMBS_multilevel_files/figure-html/pp-check-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="do-different-specification-of-the-multivariate-variance-priors-influence-the-results" class="level3">
 <h3 class="anchored" data-anchor-id="do-different-specification-of-the-multivariate-variance-priors-influence-the-results">7. Do different specification of the multivariate variance priors influence the results?</h3>
@@ -608,30 +619,30 @@ Lag 50 0.005976203 -0.008370249 -0.002798792 0.01973958  2.772833e-05</code></pr
 </ol>
 <p>We can re-specify these priors a bit to see if doing so strongly influences the results.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>PRIORS2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">set_prior</span>(<span class="st">"normal(0,5)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav"</span>),</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(-1,.3)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav:texp"</span>),</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(2,.2)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"sex"</span>),</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,5)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"texp"</span>),</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"cauchy(0,10)"</span>,  <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Intercept"</span> ),</span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"cauchy(0,2)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>),          <span class="co"># a half cauchy distribution (truncuated at 0) for the sd</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"lkj(2)"</span>, <span class="at">class =</span> <span class="st">"cor"</span>),              <span class="co"># a Cholesky of 2 for the correlation  </span></span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"inv_gamma(.5,.5)"</span>, <span class="at">class =</span> <span class="st">"sigma"</span>)) <span class="co"># an uniformative inverse gamma for the sigma. </span></span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>modeldifferentMVpriors <span class="ot">&lt;-</span> <span class="fu">brm</span>(popular <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> sex <span class="sc">+</span> extrav <span class="sc">+</span> texp <span class="sc">+</span> extrav<span class="sc">:</span>texp <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> extrav<span class="sc">|</span>class), </span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">data          =</span> popular2data,</span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">warmup        =</span> <span class="dv">1000</span>, </span>
-<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">iter          =</span> <span class="dv">3000</span>,</span>
-<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">chains        =</span> <span class="dv">3</span>, </span>
-<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">control       =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.96</span>), </span>
-<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior         =</span> PRIORS2,</span>
-<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">save_pars =</span> <span class="fu">save_pars</span>(<span class="at">all =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">sample_prior  =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">cores         =</span> <span class="dv">3</span>, <span class="co"># the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.</span></span>
-<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">seed          =</span> <span class="dv">123</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>PRIORS2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">set_prior</span>(<span class="st">"normal(0,5)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav"</span>),</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(-1,.3)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav:texp"</span>),</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(2,.2)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"sex"</span>),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,5)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"texp"</span>),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"cauchy(0,10)"</span>,  <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Intercept"</span> ),</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"cauchy(0,2)"</span>, <span class="at">class =</span> <span class="st">"sd"</span>),          <span class="co"># a half cauchy distribution (truncuated at 0) for the sd</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"lkj(2)"</span>, <span class="at">class =</span> <span class="st">"cor"</span>),              <span class="co"># a Cholesky of 2 for the correlation  </span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"inv_gamma(.5,.5)"</span>, <span class="at">class =</span> <span class="st">"sigma"</span>)) <span class="co"># an uniformative inverse gamma for the sigma. </span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>modeldifferentMVpriors <span class="ot">&lt;-</span> <span class="fu">brm</span>(popular <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> sex <span class="sc">+</span> extrav <span class="sc">+</span> texp <span class="sc">+</span> extrav<span class="sc">:</span>texp <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> extrav<span class="sc">|</span>class), </span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">data          =</span> popular2data,</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">warmup        =</span> <span class="dv">1000</span>, </span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">iter          =</span> <span class="dv">3000</span>,</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">chains        =</span> <span class="dv">3</span>, </span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">control       =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.96</span>), </span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior         =</span> PRIORS2,</span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">save_pars =</span> <span class="fu">save_pars</span>(<span class="at">all =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">sample_prior  =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">cores         =</span> <span class="dv">3</span>, <span class="co"># the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.</span></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">seed          =</span> <span class="dv">123</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modeldifferentMVpriors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modeldifferentMVpriors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -643,25 +654,25 @@ Formula: popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extr
 Multilevel Hyperparameters:
 ~class (Number of levels: 100) 
                       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-sd(Intercept)             0.60      0.10     0.44     0.84 1.00      888
-sd(extrav)                0.04      0.03     0.00     0.11 1.01      231
-cor(Intercept,extrav)    -0.33      0.37    -0.82     0.60 1.00     1042
+sd(Intercept)             0.60      0.10     0.44     0.82 1.01      836
+sd(extrav)                0.04      0.03     0.00     0.10 1.02      187
+cor(Intercept,extrav)    -0.32      0.37    -0.81     0.58 1.00     1180
                       Tail_ESS
-sd(Intercept)             1684
-sd(extrav)                1088
-cor(Intercept,extrav)     1809
+sd(Intercept)             2478
+sd(extrav)                 801
+cor(Intercept,extrav)     2012
 
 Regression Coefficients:
             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept      -1.21      0.26    -1.72    -0.71 1.00     3149     3521
-sex             1.26      0.04     1.19     1.34 1.00    11168     4097
-extrav          0.80      0.04     0.73     0.88 1.00     4069     4043
-texp            0.23      0.02     0.19     0.26 1.00     2981     3738
-extrav:texp    -0.02      0.00    -0.03    -0.02 1.00     4205     4285
+Intercept      -1.20      0.26    -1.72    -0.69 1.00     2691     2928
+sex             1.26      0.03     1.20     1.33 1.00     8254     4437
+extrav          0.80      0.04     0.73     0.88 1.00     4293     4080
+texp            0.23      0.02     0.19     0.26 1.00     2775     3912
+extrav:texp    -0.02      0.00    -0.03    -0.02 1.00     4565     4452
 
 Further Distributional Parameters:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     0.75      0.01     0.72     0.77 1.00     4696     4048
+sigma     0.75      0.01     0.72     0.77 1.00     6152     4140
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -670,9 +681,9 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <p>We see that these new priors had little influence on the estimation of the regression coefficients, but we do see that the sds got smaller. This is because the half cauchy prior we used is weakly informative towards 0 compared to the default priors. Also, because we set the correlation prior quite a bit higher we get a lower estimated correlation between the random effects. To quantify these differences, we can also calculate the biases again.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">summary</span>(modeldifferentMVpriors)<span class="sc">$</span>fixed <span class="sc">-</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed) <span class="sc">/</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed), <span class="dv">3</span>)[,<span class="st">"Estimate"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">summary</span>(modeldifferentMVpriors)<span class="sc">$</span>fixed <span class="sc">-</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed) <span class="sc">/</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed), <span class="dv">3</span>)[,<span class="st">"Estimate"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1]  0.817 -0.036  0.162  0.303  0.330</code></pre>
+<pre><code>[1] -0.690 -0.062 -0.132 -0.312 -0.376</code></pre>
 </div>
 </div>
 </section>
@@ -680,26 +691,26 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <h3 class="anchored" data-anchor-id="is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors">8. Is there a notable effect of the prior when compared with non-informative priors?</h3>
 <p>One might be interested in re-runinng the analysis, but with uninformartive priors simply to check if these priors had a large influence on the estimates. A large influence of informative prior is not per se problematic (even one of the strengths of a Bayesian analysis), but unlikely in a large dataset such as this one. We can specify priors as we did before, using the prior command in the <code>brm()</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>PRIORSUNIFORMATIVE <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav"</span>),</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav:texp"</span>),</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"sex"</span>),</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"texp"</span>),</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"cauchy(0,10)"</span>,  <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Intercept"</span>))</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>modeluninformativepriors<span class="ot">&lt;-</span> <span class="fu">brm</span>(popular <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> sex <span class="sc">+</span> extrav <span class="sc">+</span> texp <span class="sc">+</span> extrav<span class="sc">:</span>texp <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> extrav<span class="sc">|</span>class), </span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">data          =</span> popular2data,</span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">warmup        =</span> <span class="dv">1000</span>, </span>
-<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">iter          =</span> <span class="dv">3000</span>,</span>
-<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">chains        =</span> <span class="dv">3</span>, </span>
-<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">control       =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.96</span>), </span>
-<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior         =</span> PRIORSUNIFORMATIVE,</span>
-<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">save_pars =</span> <span class="fu">save_pars</span>(<span class="at">all =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">sample_prior  =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">cores         =</span> <span class="dv">3</span>, <span class="co"># the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.</span></span>
-<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">seed          =</span> <span class="dv">123</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>PRIORSUNIFORMATIVE <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav"</span>),</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"extrav:texp"</span>),</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"sex"</span>),</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"normal(0,100)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span> <span class="st">"texp"</span>),</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">set_prior</span>(<span class="st">"cauchy(0,10)"</span>,  <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"Intercept"</span>))</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>modeluninformativepriors<span class="ot">&lt;-</span> <span class="fu">brm</span>(popular <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> sex <span class="sc">+</span> extrav <span class="sc">+</span> texp <span class="sc">+</span> extrav<span class="sc">:</span>texp <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> extrav<span class="sc">|</span>class), </span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">data          =</span> popular2data,</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">warmup        =</span> <span class="dv">1000</span>, </span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">iter          =</span> <span class="dv">3000</span>,</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">chains        =</span> <span class="dv">3</span>, </span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">control       =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.96</span>), </span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">prior         =</span> PRIORSUNIFORMATIVE,</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">save_pars =</span> <span class="fu">save_pars</span>(<span class="at">all =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">sample_prior  =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">cores         =</span> <span class="dv">3</span>, <span class="co"># the cores function tells STAN to make use of 3 CPU cores simultaneously instead of just 1.</span></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">seed          =</span> <span class="dv">123</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modeluninformativepriors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modeluninformativepriors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -711,25 +722,25 @@ Formula: popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extr
 Multilevel Hyperparameters:
 ~class (Number of levels: 100) 
                       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-sd(Intercept)             0.62      0.11     0.45     0.86 1.00      711
-sd(extrav)                0.04      0.03     0.00     0.11 1.02      186
-cor(Intercept,extrav)    -0.39      0.42    -0.91     0.74 1.00     1903
+sd(Intercept)             0.62      0.11     0.45     0.86 1.00      883
+sd(extrav)                0.04      0.03     0.00     0.11 1.02      265
+cor(Intercept,extrav)    -0.39      0.42    -0.89     0.74 1.00     2006
                       Tail_ESS
-sd(Intercept)             2827
-sd(extrav)                1114
-cor(Intercept,extrav)     1525
+sd(Intercept)             3000
+sd(extrav)                 925
+cor(Intercept,extrav)     1576
 
 Regression Coefficients:
             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept      -1.21      0.26    -1.72    -0.69 1.00     3119     4140
-sex             1.24      0.04     1.17     1.31 1.00    10854     4208
-extrav          0.80      0.04     0.73     0.88 1.00     4229     4160
-texp            0.23      0.02     0.19     0.26 1.00     3080     4307
-extrav:texp    -0.02      0.00    -0.03    -0.02 1.00     4409     4247
+Intercept      -1.21      0.26    -1.73    -0.70 1.00     3024     3886
+sex             1.24      0.04     1.17     1.31 1.00     9918     4608
+extrav          0.80      0.04     0.73     0.88 1.00     4257     4581
+texp            0.23      0.02     0.19     0.26 1.00     2989     3918
+extrav:texp    -0.02      0.00    -0.03    -0.02 1.00     4205     4011
 
 Further Distributional Parameters:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     0.75      0.01     0.72     0.77 1.00     5491     3818
+sigma     0.75      0.01     0.72     0.77 1.00     6727     2971
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -739,9 +750,9 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>We see only a small difference between the informative and uninformative priors. We see that the estimates are ‘pulled’ toward the mean of the informative priors we specified for the regression coefficients of sex and extrav:texp.</p>
 <p>We can also calculate a relative biases again. With the exception of the regression coefficient for sex, all estimated biases are less than 1%.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">summary</span>(modeluninformativepriors)<span class="sc">$</span>fixed <span class="sc">-</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed) <span class="sc">/</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed), <span class="dv">3</span>)[,<span class="st">"Estimate"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">summary</span>(modeluninformativepriors)<span class="sc">$</span>fixed <span class="sc">-</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed) <span class="sc">/</span> <span class="fu">summary</span>(model)<span class="sc">$</span>fixed), <span class="dv">3</span>)[,<span class="st">"Estimate"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1]  0.402 -1.950  0.198  0.219  0.024</code></pre>
+<pre><code>[1] -0.644 -1.998 -0.005 -0.014 -0.267</code></pre>
 </div>
 </div>
 </section>
@@ -755,9 +766,9 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </section>
 <section id="is-the-bayesian-way-of-interpreting-and-reporting-model-results-used" class="level3">
 <h3 class="anchored" data-anchor-id="is-the-bayesian-way-of-interpreting-and-reporting-model-results-used">10. Is the Bayesian way of interpreting and reporting model results used?</h3>
-<p>For a summary on how to interpret and report models, please refer to https://www.rensvandeschoot.com/bayesian-analyses-where-to-start-and-what-to-report/</p>
+<p>For a summary on how to interpret and report models, please refer to https://www.rensvandeschoot.com/bayesian-analyses-where-to-start-and-what-to-report/, or for a more elaborate example, revisit the tutorial <code>Wambs_R_using_brms</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -769,25 +780,25 @@ Formula: popular ~ 0 + Intercept + sex + extrav + texp + extrav:texp + (1 + extr
 Multilevel Hyperparameters:
 ~class (Number of levels: 100) 
                       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-sd(Intercept)             0.62      0.11     0.44     0.86 1.00      628
-sd(extrav)                0.05      0.03     0.00     0.11 1.02      221
-cor(Intercept,extrav)    -0.39      0.42    -0.90     0.74 1.00     1766
+sd(Intercept)             0.63      0.11     0.45     0.86 1.01      629
+sd(extrav)                0.05      0.03     0.00     0.11 1.01      226
+cor(Intercept,extrav)    -0.41      0.40    -0.89     0.74 1.00     1885
                       Tail_ESS
-sd(Intercept)             2553
-sd(extrav)                1163
-cor(Intercept,extrav)     1698
+sd(Intercept)             2334
+sd(extrav)                 834
+cor(Intercept,extrav)     1046
 
 Regression Coefficients:
             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept      -1.20      0.25    -1.71    -0.70 1.00     3508     3472
-sex             1.26      0.04     1.19     1.34 1.00     9891     4075
-extrav          0.80      0.04     0.73     0.88 1.00     5305     4304
-texp            0.23      0.02     0.19     0.26 1.00     3521     4046
-extrav:texp    -0.02      0.00    -0.03    -0.02 1.00     5269     4441
+Intercept      -1.21      0.26    -1.72    -0.72 1.00     3213     3732
+sex             1.26      0.04     1.19     1.34 1.00    10850     4267
+extrav          0.80      0.04     0.73     0.88 1.00     4448     4111
+texp            0.23      0.02     0.19     0.26 1.00     3100     4125
+extrav:texp    -0.02      0.00    -0.03    -0.02 1.00     4698     4030
 
 Further Distributional Parameters:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     0.75      0.01     0.72     0.77 1.00     5204     4129
+sigma     0.75      0.01     0.72     0.77 1.00     5473     4058
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -796,7 +807,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <p>In the current model we see that:</p>
 <ul>
-<li>The estimate for the fixed intercept is <span class="math inline">\(-1.2 \; [-1.71; -0.7]\)</span></li>
+<li>The estimate for the fixed intercept is <span class="math inline">\(-1.21 \; [-1.72; -0.72]\)</span></li>
 <li>The estimate for the fixed effect of sex is <span class="math inline">\(1.26 \; [1.19; 1.34]\)</span></li>
 <li>The estimate for the effect of teacher experience is <span class="math inline">\(0.23 \; [0.19; 0.26]\)</span></li>
 <li>The estimate for the mean (random) effect of extraversion is <span class="math inline">\(0.8  \; [0.73; 0.88]\)</span></li>
@@ -813,130 +824,132 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="original-computing-environment" class="level2">
 <h2 class="anchored" data-anchor-id="original-computing-environment">Original Computing Environment</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>─ Session info ───────────────────────────────────────────────────────────────
  setting  value
- version  R version 4.4.1 (2024-06-14 ucrt)
- os       Windows 10 x64 (build 19045)
- system   x86_64, mingw32
- ui       RTerm
+ version  R version 4.3.3 (2024-02-29)
+ os       macOS 15.5
+ system   aarch64, darwin20
+ ui       X11
  language (EN)
- collate  German_Germany.utf8
- ctype    German_Germany.utf8
- tz       Europe/Berlin
- date     2024-07-07
- pandoc   3.1.11 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)
+ collate  en_US.UTF-8
+ ctype    en_US.UTF-8
+ tz       Europe/Amsterdam
+ date     2025-07-20
+ pandoc   3.1.1 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────
- ! package        * version     date (UTC) lib source
-   abind            1.4-5       2016-07-21 [1] CRAN (R 4.4.0)
-   backports        1.5.0       2024-05-23 [1] CRAN (R 4.4.0)
-   bayesplot        1.11.1      2024-02-15 [1] CRAN (R 4.4.1)
-   bridgesampling   1.1-2       2021-04-16 [1] CRAN (R 4.4.1)
-   brms           * 2.21.0      2024-03-20 [1] CRAN (R 4.4.1)
-   Brobdingnag      1.2-9       2022-10-19 [1] CRAN (R 4.4.1)
-   cachem           1.1.0       2024-05-16 [1] CRAN (R 4.4.1)
-   checkmate        2.3.1       2023-12-04 [1] CRAN (R 4.4.1)
-   cli              3.6.3       2024-06-21 [1] CRAN (R 4.4.1)
-   coda           * 0.19-4.1    2024-01-31 [1] CRAN (R 4.4.1)
-   codetools        0.2-20      2024-03-31 [2] CRAN (R 4.4.1)
-   colorspace       2.1-0       2023-01-23 [1] CRAN (R 4.4.1)
-   crayon           1.5.3       2024-06-20 [1] CRAN (R 4.4.1)
-   curl             5.2.1       2024-03-01 [1] CRAN (R 4.4.1)
-   denstrip         1.5.4       2018-03-18 [1] CRAN (R 4.4.1)
-   devtools         2.4.5       2022-10-11 [1] CRAN (R 4.4.1)
-   digest           0.6.36      2024-06-23 [1] CRAN (R 4.4.1)
-   distributional   0.4.0       2024-02-07 [1] CRAN (R 4.4.1)
-   dplyr          * 1.1.4       2023-11-17 [1] CRAN (R 4.4.1)
-   ellipsis         0.3.2       2021-04-29 [1] CRAN (R 4.4.1)
-   evaluate         0.24.0      2024-06-10 [1] CRAN (R 4.4.1)
-   fansi            1.0.6       2023-12-08 [1] CRAN (R 4.4.1)
-   farver           2.1.2       2024-05-13 [1] CRAN (R 4.4.1)
-   fastmap          1.2.0       2024-05-15 [1] CRAN (R 4.4.1)
-   forcats        * 1.0.0       2023-01-29 [1] CRAN (R 4.4.1)
-   fs               1.6.4       2024-04-25 [1] CRAN (R 4.4.1)
-   generics         0.1.3       2022-07-05 [1] CRAN (R 4.4.1)
-   GGally           2.2.1       2024-02-14 [1] CRAN (R 4.4.1)
-   ggmcmc         * 1.5.1.1     2021-02-10 [1] CRAN (R 4.4.1)
-   ggplot2        * 3.5.1       2024-04-23 [1] CRAN (R 4.4.1)
-   ggstats          0.6.0       2024-04-05 [1] CRAN (R 4.4.1)
-   glue             1.7.0       2024-01-09 [1] CRAN (R 4.4.1)
-   gridExtra        2.3         2017-09-09 [1] CRAN (R 4.4.1)
-   gtable           0.3.5       2024-04-22 [1] CRAN (R 4.4.1)
-   haven          * 2.5.4       2023-11-30 [1] CRAN (R 4.4.1)
-   hms              1.1.3       2023-03-21 [1] CRAN (R 4.4.1)
-   htmltools        0.5.8.1     2024-04-04 [1] CRAN (R 4.4.1)
-   htmlwidgets      1.6.4       2023-12-06 [1] CRAN (R 4.4.1)
-   httpuv           1.6.15      2024-03-26 [1] CRAN (R 4.4.1)
-   inline           0.3.19      2021-05-31 [1] CRAN (R 4.4.1)
-   jsonlite         1.8.8       2023-12-04 [1] CRAN (R 4.4.1)
-   knitr            1.47        2024-05-29 [1] CRAN (R 4.4.1)
-   labeling         0.4.3       2023-08-29 [1] CRAN (R 4.4.0)
-   later            1.3.2       2023-12-06 [1] CRAN (R 4.4.1)
-   lattice          0.22-6      2024-03-20 [2] CRAN (R 4.4.1)
-   lifecycle        1.0.4       2023-11-07 [1] CRAN (R 4.4.1)
-   loo              2.7.0       2024-02-24 [1] CRAN (R 4.4.1)
-   lubridate      * 1.9.3       2023-09-27 [1] CRAN (R 4.4.1)
-   magrittr         2.0.3       2022-03-30 [1] CRAN (R 4.4.1)
-   Matrix           1.7-0       2024-04-26 [2] CRAN (R 4.4.1)
-   matrixStats      1.3.0       2024-04-11 [1] CRAN (R 4.4.1)
-   mcmcplots      * 0.4.3       2018-06-22 [1] CRAN (R 4.4.1)
-   memoise          2.0.1       2021-11-26 [1] CRAN (R 4.4.1)
-   mime             0.12        2021-09-28 [1] CRAN (R 4.4.0)
-   miniUI           0.1.1.1     2018-05-18 [1] CRAN (R 4.4.1)
-   munsell          0.5.1       2024-04-01 [1] CRAN (R 4.4.1)
-   mvtnorm          1.2-5       2024-05-21 [1] CRAN (R 4.4.1)
-   nlme             3.1-164     2023-11-27 [2] CRAN (R 4.4.1)
-   pillar           1.9.0       2023-03-22 [1] CRAN (R 4.4.1)
-   pkgbuild         1.4.4       2024-03-17 [1] CRAN (R 4.4.1)
-   pkgconfig        2.0.3       2019-09-22 [1] CRAN (R 4.4.1)
-   pkgload          1.3.4       2024-01-16 [1] CRAN (R 4.4.1)
-   plyr             1.8.9       2023-10-02 [1] CRAN (R 4.4.1)
-   posterior        1.5.0       2023-10-31 [1] CRAN (R 4.4.1)
-   profvis          0.3.8       2023-05-02 [1] CRAN (R 4.4.1)
-   promises         1.3.0       2024-04-05 [1] CRAN (R 4.4.1)
-   purrr          * 1.0.2       2023-08-10 [1] CRAN (R 4.4.1)
-   QuickJSR         1.2.2       2024-06-07 [1] CRAN (R 4.4.1)
-   R6               2.5.1       2021-08-19 [1] CRAN (R 4.4.1)
-   RColorBrewer   * 1.1-3       2022-04-03 [1] CRAN (R 4.4.0)
-   Rcpp           * 1.0.12      2024-01-09 [1] CRAN (R 4.4.1)
- D RcppParallel     5.1.7       2023-02-27 [1] CRAN (R 4.4.1)
-   readr          * 2.1.5       2024-01-10 [1] CRAN (R 4.4.1)
-   remotes          2.5.0       2024-03-17 [1] CRAN (R 4.4.1)
-   reshape2         1.4.4       2020-04-09 [1] CRAN (R 4.4.1)
-   rlang            1.1.4       2024-06-04 [1] CRAN (R 4.4.1)
-   rmarkdown        2.27        2024-05-17 [1] CRAN (R 4.4.1)
-   rstan            2.35.0.9000 2024-06-22 [1] https://stan-dev.r-universe.dev (R 4.4.0)
-   rstantools       2.4.0       2024-01-31 [1] CRAN (R 4.4.1)
-   rstudioapi       0.16.0      2024-03-24 [1] CRAN (R 4.4.1)
-   scales           1.3.0       2023-11-28 [1] CRAN (R 4.4.1)
-   sessioninfo      1.2.2       2021-12-06 [1] CRAN (R 4.4.1)
-   sfsmisc          1.1-18      2024-04-25 [1] CRAN (R 4.4.1)
-   shiny            1.8.1.1     2024-04-02 [1] CRAN (R 4.4.1)
-   StanHeaders      2.35.0.9000 2024-06-22 [1] https://stan-dev.r-universe.dev (R 4.4.0)
-   stringi          1.8.4       2024-05-06 [1] CRAN (R 4.4.0)
-   stringr        * 1.5.1       2023-11-14 [1] CRAN (R 4.4.1)
-   tensorA          0.36.2.1    2023-12-13 [1] CRAN (R 4.4.0)
-   tibble         * 3.2.1       2023-03-20 [1] CRAN (R 4.4.1)
-   tidyr          * 1.3.1       2024-01-24 [1] CRAN (R 4.4.1)
-   tidyselect       1.2.1       2024-03-11 [1] CRAN (R 4.4.1)
-   tidyverse      * 2.0.0       2023-02-22 [1] CRAN (R 4.4.1)
-   timechange       0.3.0       2024-01-18 [1] CRAN (R 4.4.1)
-   tzdb             0.4.0       2023-05-12 [1] CRAN (R 4.4.1)
-   urlchecker       1.0.1       2021-11-30 [1] CRAN (R 4.4.1)
-   usethis          2.2.3       2024-02-19 [1] CRAN (R 4.4.1)
-   utf8             1.2.4       2023-10-22 [1] CRAN (R 4.4.1)
-   vctrs            0.6.5       2023-12-01 [1] CRAN (R 4.4.1)
-   withr            3.0.0       2024-01-16 [1] CRAN (R 4.4.1)
-   xfun             0.45        2024-06-16 [1] CRAN (R 4.4.1)
-   xtable           1.8-4       2019-04-21 [1] CRAN (R 4.4.1)
-   yaml             2.3.8       2023-12-11 [1] CRAN (R 4.4.0)
+ package        * version  date (UTC) lib source
+ abind            1.4-8    2024-09-12 [1] CRAN (R 4.3.3)
+ backports        1.5.0    2024-05-23 [1] CRAN (R 4.3.3)
+ bayesplot        1.10.0   2022-11-16 [2] CRAN (R 4.3.0)
+ bridgesampling   1.1-2    2021-04-16 [2] CRAN (R 4.3.0)
+ brms           * 2.22.0   2024-09-23 [1] CRAN (R 4.3.3)
+ Brobdingnag      1.2-9    2022-10-19 [2] CRAN (R 4.3.0)
+ cachem           1.1.0    2024-05-16 [1] CRAN (R 4.3.3)
+ callr            3.7.6    2024-03-25 [1] CRAN (R 4.3.1)
+ checkmate        2.3.2    2024-07-29 [1] CRAN (R 4.3.3)
+ cli              3.6.5    2025-04-23 [1] CRAN (R 4.3.3)
+ coda           * 0.19-4.1 2024-01-31 [1] CRAN (R 4.3.1)
+ codetools        0.2-19   2023-02-01 [2] CRAN (R 4.3.3)
+ colorspace       2.1-1    2024-07-26 [1] CRAN (R 4.3.3)
+ crayon           1.5.3    2024-06-20 [1] CRAN (R 4.3.3)
+ curl             6.2.2    2025-03-24 [1] CRAN (R 4.3.3)
+ denstrip         1.5.5    2025-03-25 [1] CRAN (R 4.3.3)
+ devtools         2.4.5    2022-10-11 [2] CRAN (R 4.3.0)
+ digest           0.6.37   2024-08-19 [1] CRAN (R 4.3.3)
+ distributional   0.5.0    2024-09-17 [1] CRAN (R 4.3.3)
+ dplyr          * 1.1.4    2023-11-17 [1] CRAN (R 4.3.1)
+ ellipsis         0.3.2    2021-04-29 [2] CRAN (R 4.3.0)
+ emmeans          1.11.0   2025-03-20 [1] CRAN (R 4.3.3)
+ estimability     1.5.1    2024-05-12 [1] CRAN (R 4.3.3)
+ evaluate         1.0.3    2025-01-10 [1] CRAN (R 4.3.3)
+ farver           2.1.2    2024-05-13 [1] CRAN (R 4.3.3)
+ fastmap          1.2.0    2024-05-15 [1] CRAN (R 4.3.3)
+ forcats        * 1.0.0    2023-01-29 [2] CRAN (R 4.3.0)
+ fs               1.6.6    2025-04-12 [1] CRAN (R 4.3.3)
+ generics         0.1.4    2025-05-09 [1] CRAN (R 4.3.3)
+ GGally           2.2.1    2024-02-14 [1] CRAN (R 4.3.1)
+ ggmcmc         * 1.5.1.1  2021-02-10 [1] CRAN (R 4.3.0)
+ ggplot2        * 3.5.2    2025-04-09 [1] CRAN (R 4.3.3)
+ ggstats          0.7.0    2024-09-22 [1] CRAN (R 4.3.3)
+ glue             1.8.0    2024-09-30 [1] CRAN (R 4.3.3)
+ gridExtra        2.3      2017-09-09 [2] CRAN (R 4.3.0)
+ gtable           0.3.6    2024-10-25 [1] CRAN (R 4.3.3)
+ haven          * 2.5.3    2023-06-30 [2] CRAN (R 4.3.0)
+ hms              1.1.3    2023-03-21 [2] CRAN (R 4.3.0)
+ htmltools        0.5.8.1  2024-04-04 [1] CRAN (R 4.3.1)
+ htmlwidgets      1.6.4    2023-12-06 [1] CRAN (R 4.3.1)
+ httpuv           1.6.15   2024-03-26 [1] CRAN (R 4.3.1)
+ inline           0.3.19   2021-05-31 [2] CRAN (R 4.3.0)
+ jsonlite         2.0.0    2025-03-27 [1] CRAN (R 4.3.3)
+ knitr            1.49     2024-11-08 [1] CRAN (R 4.3.3)
+ labeling         0.4.3    2023-08-29 [1] CRAN (R 4.3.0)
+ later            1.4.1    2024-11-27 [1] CRAN (R 4.3.3)
+ lattice          0.22-5   2023-10-24 [2] CRAN (R 4.3.3)
+ lifecycle        1.0.4    2023-11-07 [1] CRAN (R 4.3.1)
+ loo              2.8.0    2024-07-03 [1] CRAN (R 4.3.3)
+ lubridate      * 1.9.2    2023-02-10 [2] CRAN (R 4.3.0)
+ magrittr         2.0.3    2022-03-30 [2] CRAN (R 4.3.0)
+ Matrix           1.6-5    2024-01-11 [2] CRAN (R 4.3.3)
+ matrixStats      1.5.0    2025-01-07 [1] CRAN (R 4.3.3)
+ mcmcplots      * 0.4.3    2018-06-22 [1] CRAN (R 4.3.3)
+ memoise          2.0.1    2021-11-26 [2] CRAN (R 4.3.0)
+ mime             0.13     2025-03-17 [1] CRAN (R 4.3.3)
+ miniUI           0.1.1.1  2018-05-18 [2] CRAN (R 4.3.0)
+ mvtnorm          1.3-3    2025-01-10 [1] CRAN (R 4.3.3)
+ nlme             3.1-164  2023-11-27 [2] CRAN (R 4.3.3)
+ pillar           1.11.0   2025-07-04 [1] CRAN (R 4.3.3)
+ pkgbuild         1.4.7    2025-03-24 [1] CRAN (R 4.3.3)
+ pkgconfig        2.0.3    2019-09-22 [2] CRAN (R 4.3.0)
+ pkgload          1.4.0    2024-06-28 [1] CRAN (R 4.3.3)
+ plyr             1.8.9    2023-10-02 [1] CRAN (R 4.3.1)
+ posterior        1.6.1    2025-02-27 [1] CRAN (R 4.3.3)
+ processx         3.8.6    2025-02-21 [1] CRAN (R 4.3.3)
+ profvis          0.3.8    2023-05-02 [2] CRAN (R 4.3.0)
+ promises         1.3.2    2024-11-28 [1] CRAN (R 4.3.3)
+ ps               1.9.1    2025-04-12 [1] CRAN (R 4.3.3)
+ purrr          * 1.0.4    2025-02-05 [1] CRAN (R 4.3.3)
+ QuickJSR         1.3.1    2024-07-14 [2] CRAN (R 4.3.3)
+ R6               2.6.1    2025-02-15 [1] CRAN (R 4.3.3)
+ RColorBrewer   * 1.1-3    2022-04-03 [2] CRAN (R 4.3.0)
+ Rcpp           * 1.0.14   2025-01-12 [1] CRAN (R 4.3.3)
+ RcppParallel     5.1.7    2023-02-27 [2] CRAN (R 4.3.0)
+ readr          * 2.1.4    2023-02-10 [2] CRAN (R 4.3.0)
+ remotes          2.5.0    2024-03-17 [1] CRAN (R 4.3.1)
+ reshape2         1.4.4    2020-04-09 [2] CRAN (R 4.3.0)
+ rlang            1.1.6    2025-04-11 [1] CRAN (R 4.3.3)
+ rmarkdown        2.29     2024-11-04 [1] CRAN (R 4.3.3)
+ rstan            2.32.6   2024-03-05 [2] CRAN (R 4.3.1)
+ rstantools       2.3.1.1  2023-07-18 [2] CRAN (R 4.3.0)
+ rstudioapi       0.17.1   2024-10-22 [1] CRAN (R 4.3.3)
+ scales           1.4.0    2025-04-24 [1] CRAN (R 4.3.3)
+ sessioninfo      1.2.2    2021-12-06 [2] CRAN (R 4.3.0)
+ sfsmisc          1.1-16   2023-08-10 [2] CRAN (R 4.3.0)
+ shiny            1.9.1    2024-08-01 [1] CRAN (R 4.3.3)
+ StanHeaders      2.32.10  2024-07-15 [1] CRAN (R 4.3.3)
+ stringi          1.8.7    2025-03-27 [1] CRAN (R 4.3.3)
+ stringr        * 1.5.1    2023-11-14 [1] CRAN (R 4.3.1)
+ tensorA          0.36.2.1 2023-12-13 [1] CRAN (R 4.3.1)
+ tibble         * 3.3.0    2025-06-08 [1] CRAN (R 4.3.3)
+ tidyr          * 1.3.1    2024-01-24 [1] CRAN (R 4.3.1)
+ tidyselect       1.2.1    2024-03-11 [1] CRAN (R 4.3.1)
+ tidyverse      * 2.0.0    2023-02-22 [1] CRAN (R 4.3.0)
+ timechange       0.2.0    2023-01-11 [2] CRAN (R 4.3.0)
+ tzdb             0.4.0    2023-05-12 [2] CRAN (R 4.3.0)
+ urlchecker       1.0.1    2021-11-30 [2] CRAN (R 4.3.0)
+ usethis          2.2.2    2023-07-06 [2] CRAN (R 4.3.0)
+ utf8             1.2.6    2025-06-08 [1] CRAN (R 4.3.3)
+ V8               6.0.0    2024-10-12 [1] CRAN (R 4.3.3)
+ vctrs            0.6.5    2023-12-01 [1] CRAN (R 4.3.1)
+ withr            3.0.2    2024-10-28 [1] CRAN (R 4.3.3)
+ xfun             0.49     2024-10-31 [1] CRAN (R 4.3.3)
+ xtable           1.8-4    2019-04-21 [2] CRAN (R 4.3.0)
+ yaml             2.3.10   2024-07-26 [1] CRAN (R 4.3.3)
 
- [1] C:/Users/Florian/AppData/Local/R/win-library/4.4
- [2] C:/Program Files/R/R-4.4.1/library
-
- D ── DLL MD5 mismatch, broken installation.
+ [1] /Users/3659690/Library/R/arm64/4.3/library
+ [2] /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library
 
 ──────────────────────────────────────────────────────────────────────────────</code></pre>
 </div>

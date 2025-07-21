@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.555">
+<meta name="generator" content="quarto-1.4.551">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen">
+<meta name="author" content="By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen and Suzanne Hoogeveen">
 
 <title>WAMBS R Tutorial (using brms)</title>
 <style>
@@ -124,8 +124,8 @@ window.Quarto = {
   <li><a href="#does-the-trace-plot-exhibit-convergence" id="toc-does-the-trace-plot-exhibit-convergence" class="nav-link" data-scroll-target="#does-the-trace-plot-exhibit-convergence">2. Does the trace-plot exhibit convergence?</a></li>
   <li><a href="#does-convergence-remain-after-doubling-the-number-of-iterations" id="toc-does-convergence-remain-after-doubling-the-number-of-iterations" class="nav-link" data-scroll-target="#does-convergence-remain-after-doubling-the-number-of-iterations">3. Does convergence remain after doubling the number of iterations?</a></li>
   <li><a href="#does-the-posterior-distribution-histogram-have-enough-information" id="toc-does-the-posterior-distribution-histogram-have-enough-information" class="nav-link" data-scroll-target="#does-the-posterior-distribution-histogram-have-enough-information">4. Does the posterior distribution histogram have enough information?</a></li>
-  <li><a href="#do-the-chains-exhibit-a-strong-degree-of-autocorrelation" id="toc-do-the-chains-exhibit-a-strong-degree-of-autocorrelation" class="nav-link" data-scroll-target="#do-the-chains-exhibit-a-strong-degree-of-autocorrelation">5. Do the chains exhibit a strong degree of autocorrelation?</a></li>
-  <li><a href="#do-the-posterior-distributions-make-substantive-sense" id="toc-do-the-posterior-distributions-make-substantive-sense" class="nav-link" data-scroll-target="#do-the-posterior-distributions-make-substantive-sense">6. Do the posterior distributions make substantive sense?</a></li>
+  <li><a href="#is-the-effective-sample-size-sufficient-or-do-the-chains-exhibit-a-strong-degree-of-autocorrelation" id="toc-is-the-effective-sample-size-sufficient-or-do-the-chains-exhibit-a-strong-degree-of-autocorrelation" class="nav-link" data-scroll-target="#is-the-effective-sample-size-sufficient-or-do-the-chains-exhibit-a-strong-degree-of-autocorrelation">5. Is the effective sample size sufficient or do the chains exhibit a strong degree of autocorrelation?</a></li>
+  <li><a href="#do-the-posterior-distributions-and-posterior-predictions-make-substantive-sense" id="toc-do-the-posterior-distributions-and-posterior-predictions-make-substantive-sense" class="nav-link" data-scroll-target="#do-the-posterior-distributions-and-posterior-predictions-make-substantive-sense">6. Do the posterior distributions and posterior predictions make substantive sense?</a></li>
   </ul></li>
   <li><a href="#step-3-understanding-the-exact-influence-of-the-priors" id="toc-step-3-understanding-the-exact-influence-of-the-priors" class="nav-link" data-scroll-target="#step-3-understanding-the-exact-influence-of-the-priors"><strong>Step 3: Understanding the exact influence of the priors</strong></a>
   <ul class="collapse">
@@ -152,7 +152,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen </p>
+             <p>By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen and Suzanne Hoogeveen </p>
           </div>
   </div>
     
@@ -180,7 +180,7 @@ window.Quarto = {
 <li>Does convergence remain after doubling the number of iterations?</li>
 <li>Does the posterior distribution histogram have enough information?</li>
 <li>Do the chains exhibit a strong degree of autocorrelation?</li>
-<li>Do the posterior distributions make substantive sense?</li>
+<li>Do the posterior distributions and posterior predictions make substantive sense?</li>
 </ol>
 <p><strong>Understanding the exact influence of the priors</strong></p>
 <ol start="7" type="1">
@@ -221,7 +221,8 @@ Click to show result
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot) <span class="co">#  needed for plotting </span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggmcmc)</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mcmcplots) </span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidybayes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidybayes)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(invgamma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <blockquote class="blockquote">
 <p>note. If you are getting the error: <em>Error: .onLoad failed in loadNamespace() for ‘dbplyr’, details: call: setClass(cl, contains = c(prevClass, “VIRTUAL”), where = where) error: error in contained classes (“character”) for class “ident”; class definition removed from ‘dbplyr’</em> the brms package is loaded before the tidyverse package. Please restart R and load them in the order, tidyverse first brms second.</p>
@@ -230,12 +231,12 @@ Click to show result
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#read in data</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dataPHD <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(<span class="at">file=</span><span class="st">"phd-delays.csv"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(dataPHD) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"diff"</span>, <span class="st">"child"</span>, <span class="st">"sex"</span>,<span class="st">"age"</span>,<span class="st">"age2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(dataPHD) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"diff"</span>, <span class="st">"child"</span>, <span class="st">"gender"</span>,<span class="st">"age"</span>,<span class="st">"age2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Alternatively, you can directly download them from GitHub into your R work space using the following command:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dataPHD <span class="ot">&lt;-</span> <span class="fu">read.csv2</span>(<span class="at">file=</span><span class="st">"https://raw.githubusercontent.com/UtrechtUniversity/BayesianEstimation/main/content/tuesday/phd-delays.csv"</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(dataPHD) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"diff"</span>, <span class="st">"child"</span>, <span class="st">"sex"</span>,<span class="st">"age"</span>,<span class="st">"age2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(dataPHD) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"diff"</span>, <span class="st">"child"</span>, <span class="st">"gender"</span>,<span class="st">"age"</span>,<span class="st">"age2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>GitHub is a platform that allows researchers and developers to share code, software and research and to collaborate on projects (see https://github.com/)</p>
 <p>Once you loaded in your data, it is advisable to check whether your data import worked well. Therefore, first have a look at the summary statistics of your data. you can do this by using the <code>describe()</code> function.</p>
@@ -244,18 +245,18 @@ Click to show result
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(dataPHD)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      vars   n    mean     sd median trimmed    mad min  max range  skew
-diff     1 333    9.97  14.43      5    6.91   7.41 -31   91   122  2.21
-child    2 333    0.18   0.38      0    0.10   0.00   0    1     1  1.66
-sex      3 333    0.52   0.50      1    0.52   0.00   0    1     1 -0.08
-age      4 333   31.68   6.86     30   30.39   2.97  26   80    54  4.45
-age2     5 333 1050.22 656.39    900  928.29 171.98 676 6400  5724  6.03
-      kurtosis    se
-diff      5.92  0.79
-child     0.75  0.02
-sex      -2.00  0.03
-age      24.99  0.38
-age2     42.21 35.97</code></pre>
+<pre><code>       vars   n    mean     sd median trimmed    mad min  max range  skew
+diff      1 333    9.97  14.43      5    6.91   7.41 -31   91   122  2.21
+child     2 333    0.18   0.38      0    0.10   0.00   0    1     1  1.66
+gender    3 333    0.52   0.50      1    0.52   0.00   0    1     1 -0.08
+age       4 333   31.68   6.86     30   30.39   2.97  26   80    54  4.45
+age2      5 333 1050.22 656.39    900  928.29 171.98 676 6400  5724  6.03
+       kurtosis    se
+diff       5.92  0.79
+child      0.75  0.02
+gender    -2.00  0.03
+age       24.99  0.38
+age2      42.21 35.97</code></pre>
 </div>
 </div>
 <p><em>The descriptive statistics make sense:</em></p>
@@ -295,15 +296,11 @@ age2     42.21 35.97</code></pre>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">100000</span>, <span class="at">mean =</span> XX, <span class="at">sd =</span> <span class="fu">sqrt</span>(XX))), <span class="at">main =</span> <span class="st">"effect Age"</span>)</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">100000</span>, <span class="at">mean =</span> XX, <span class="at">sd =</span> <span class="fu">sqrt</span>(XX))), <span class="at">main =</span> <span class="st">"effect Age^2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<details>
-<summary>
-Click to show result
-</summary>
 <div class="cell">
 <details class="code-fold">
 <summary>Click to show result</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">100000</span>, <span class="at">mean =</span> <span class="sc">-</span><span class="dv">35</span>, <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="dv">20</span>))), <span class="at">main =</span> <span class="st">"prior intercept"</span>) <span class="co"># the rnorm function uses the standard devation instead of variance, that is why we use the sqrt</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">100000</span>, <span class="at">mean =</span> <span class="sc">-</span><span class="dv">35</span>, <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="dv">20</span>))), <span class="at">main =</span> <span class="st">"prior intercept"</span>) <span class="co"># the rnorm function uses the standard deviation instead of variance, that is why we use the sqrt</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">100000</span>, <span class="at">mean =</span> .<span class="dv">8</span>,  <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="dv">5</span>))),   <span class="at">main =</span> <span class="st">"effect Age"</span>)</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">100000</span>, <span class="at">mean =</span> <span class="dv">0</span>,   <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="dv">10</span>))),  <span class="at">main =</span> <span class="st">"effect Age^2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -315,7 +312,6 @@ Click to show result
 </div>
 </div>
 </div>
-</details>
 <p>We can also plot what the expected delay would be (like we did in the brms regression assignment) given these priors. With these priors the regression formula would be: <span class="math inline">\(delay=-35+ .8*age + 0*age^2\)</span>. These are just the means of the priors and do not yet qualify the different levels of uncertainty. Replace the ‘XX’ in the following code with the prior means.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="dv">20</span><span class="sc">:</span><span class="dv">80</span></span>
@@ -341,7 +337,7 @@ Click to show result
 </section>
 <section id="step-2-run-the-model-and-check-for-convergence" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-run-the-model-and-check-for-convergence"><strong>Step 2: Run the model and check for convergence</strong></h2>
-<p>To run a multiple regression with brms, you first specify the model, then fit the model and finally acquire the summary (similar to the frequentist model using <code>lm()</code>). The model is specified as follows:</p>
+<p>To run a multiple regression with <code>brms</code>, you first specify the model, then fit the model and finally acquire the summary (similar to the frequentist model using <code>lm()</code>). The model is specified as follows:</p>
 <ol type="1">
 <li>A dependent variable we want to predict.</li>
 <li>A “~”, that we use to indicate that we now give the other variables of interest. (comparable to the ‘=’ of the regression equation).</li>
@@ -353,10 +349,10 @@ Click to show result
 <li>To place a prior on the fixed intercept, one needs to include <code>0 + Intercept</code>. See <a href="https://rdrr.io/cran/brms/man/set_prior.html">here</a> for an explanation.</li>
 </ol>
 <p>There are many other options we can select, such as the number of chains how many iterations we want and how long of a warm-up phase we want, but we will just use the defaults for now.</p>
-<p>For more information on the basics of brms, see the <a href="https://cran.r-project.org/web/packages/brms/index.html">website and vignettes</a></p>
+<p>For more information on the basics of <code>brms</code>, see the <a href="https://cran.r-project.org/web/packages/brms/index.html">website and vignettes</a></p>
 <section id="does-the-trace-plot-exhibit-convergence" class="level3">
 <h3 class="anchored" data-anchor-id="does-the-trace-plot-exhibit-convergence">2. Does the trace-plot exhibit convergence?</h3>
-<p>First we run the anlysis with only a short burnin period of 250 samples and then take another 500 samples.</p>
+<p>First we run the analysis with only a short burnin period of 250 samples and then take another 250 samples (<code>iter</code> includes the <code>warmup</code> samples).</p>
 <p>The following code is how to specify the regression model:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) set the priors</span></span>
@@ -375,8 +371,8 @@ Click to show result
 </div>
 <p>Now we can plot the trace plots.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>modeltranformed <span class="ot">&lt;-</span> <span class="fu">ggs</span>(model_few_samples) <span class="co"># the ggs function transforms the BRMS output into a longformat tibble, that we can use to make different types of plots.</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">filter</span>(modeltranformed, Parameter <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"b_Intercept"</span>, <span class="st">"b_age"</span>, <span class="st">"b_age2"</span>, <span class="st">"sigma"</span>)),</span>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>modeltransformed <span class="ot">&lt;-</span> <span class="fu">ggs</span>(model_few_samples) <span class="co"># the ggs function transforms the BRMS output into a longformat tibble, that we can use to make different types of plots.</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">filter</span>(modeltransformed, Parameter <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"b_Intercept"</span>, <span class="st">"b_age"</span>, <span class="st">"b_age2"</span>, <span class="st">"sigma"</span>)),</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x   =</span> Iteration,</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">y   =</span> value, </span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">col =</span> <span class="fu">as.factor</span>(Chain)))<span class="sc">+</span></span>
@@ -409,33 +405,31 @@ Click to show result
 </div>
 </div>
 </div>
-<p>It seems like the trace (caterpillar) plots are not neatly converged into one each other (we ideally want one fat caterpillar, like the one for sigma). This indicates we need more samples.</p>
-<p>We can check if the chains convergenced by having a look at the convergence diagnostics. Two of these diagnostics of interest include the Gelman and Rubin diagnostic and the Geweke diagnostic.</p>
+<p>Note that the first option using <code>gss</code> and <code>ggplot</code> displays all iterations, including warmup (i.e., burnin), whereas the built-in <code>mcmc_plot</code> function removes the warmup iterations by default.</p>
+<p>The trace (caterpillar) plots suggest that the chains are not neatly converged (we ideally want one “big, fat caterpillar”, like the one for sigma). This indicates we need more samples.</p>
+<p>We can check if the chains converged by having a look at the convergence diagnostics. Two of these diagnostics of interest include the Gelman and Rubin diagnostic and the Geweke diagnostic.</p>
 <ul>
-<li>The Gelman-Rubin Diagnostic shows the PSRF values (using the within and between chain variability). You should look at the Upper CI/Upper limit, which are all should be close to 1. If they aren’t close to 1, you should use more iterations. Note: The Gelman and Rubin diagnostic is also automatically given in the summary of brms under the column Rhat</li>
-<li>The Geweke Diagnostic shows the z-scores for a test of equality of means between the first and last parts of each chain, which should be &lt;1.96. A separate statistic is calculated for each variable in each chain. In this way it check whether a chain has stabalized. If this is not the case, you should increase the number of iterations. In the plots you should check how often values exceed the boundary lines of the z-scores. Scores above 1.96 or below -1.96 mean that the two portions of the chain significantly differ and full chain convergence was not obtained.</li>
+<li>The Gelman-Rubin Diagnostic shows the PSRF values (using the within and between chain variability). You should look at the Upper CI/Upper limit, which are all should be close to 1. If they aren’t close to 1, you should use more iterations. Note: The Gelman and Rubin diagnostic is also automatically given in the summary of <code>brms</code> under the column Rhat</li>
+<li>The Geweke Diagnostic shows the z-scores for a test of equality of means between the first and last parts of each chain, which should be &lt;1.96. A separate statistic is calculated for each variable in each chain. In this way it check whether a chain has stabilized. If this is not the case, you should increase the number of iterations. In the plots you should check how often values exceed the boundary lines of the z-scores. Scores above 1.96 or below -1.96 mean that the two portions of the chain significantly differ and full chain convergence was not obtained.</li>
 </ul>
 <p>To obtain the Gelman and Rubin diagnostic use:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>modelposterior <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(model_few_samples) <span class="co"># with the as.mcmc() command we can use all the CODA package convergence statistics and plotting options</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: as.mcmc.brmsfit is deprecated and will eventually be removed.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.diag</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>modelposterior <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(model_few_samples) <span class="co"># with the as.mcmc() command we can use all the CODA package convergence statistics and plotting options</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.diag</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Potential scale reduction factors:
 
             Point est. Upper C.I.
-b_Intercept       3.94       6.99
-b_age             3.74       6.52
-b_age2            3.03       5.12
+b_Intercept       3.06       5.34
+b_age             2.95       5.12
+b_age2            2.42       4.00
 sigma             1.02       1.07
 
 Multivariate psrf
 
-3.29</code></pre>
+2.58</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -446,7 +440,7 @@ Multivariate psrf
 </div>
 <p>To obtain the Geweke diagnostic use:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geweke.diag</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geweke.diag</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 
@@ -454,7 +448,7 @@ Fraction in 1st window = 0.1
 Fraction in 2nd window = 0.5 
 
 b_Intercept       b_age      b_age2       sigma 
-     2.3802     -2.8093      7.6995     -0.3148 
+      5.648      -6.064       5.868       2.308 
 
 
 [[2]]
@@ -463,7 +457,7 @@ Fraction in 1st window = 0.1
 Fraction in 2nd window = 0.5 
 
 b_Intercept       b_age      b_age2       sigma 
-  -1.625222    1.613001   -1.490978   -0.005325 
+     0.5428     -0.6873      1.1920     -2.0887 
 
 
 [[3]]
@@ -472,7 +466,7 @@ Fraction in 1st window = 0.1
 Fraction in 2nd window = 0.5 
 
 b_Intercept       b_age      b_age2       sigma 
-     2.1347     -2.4902      2.2617     -0.4404 
+     1.5111     -1.4408      2.0360     -0.9567 
 
 
 [[4]]
@@ -481,9 +475,9 @@ Fraction in 1st window = 0.1
 Fraction in 2nd window = 0.5 
 
 b_Intercept       b_age      b_age2       sigma 
-   -0.05375    -0.27887     0.70578    -3.97354 </code></pre>
+   -1.72162     1.76916    -2.49830     0.05041 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geweke.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geweke.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -513,18 +507,18 @@ b_Intercept       b_age      b_age2       sigma
 </div>
 </div>
 </div>
-<p>These statistics confirm that the chains have not converged. Therefore, we run the same analysis with more samples.</p>
+<p>These statistics confirm that the chains have not converged. Therefore, we run the same analysis with more samples (and more burnin samples).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">brm</span>(<span class="at">formula =</span> diff <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> age <span class="sc">+</span> age2, </span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">data    =</span> dataPHD,</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior   =</span> priors_inf,</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">warmup  =</span> <span class="dv">2000</span>,</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">iter    =</span> <span class="dv">4000</span>,</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">seed    =</span> <span class="dv">12345</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">brm</span>(<span class="at">formula =</span> diff <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> age <span class="sc">+</span> age2, </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">data    =</span> dataPHD,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">prior   =</span> priors_inf,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">warmup  =</span> <span class="dv">2000</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">iter    =</span> <span class="dv">4000</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">seed    =</span> <span class="dv">12345</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Obtain the trace plots again.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"trace"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"trace"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>No divergences to plot.</code></pre>
 </div>
@@ -538,25 +532,22 @@ b_Intercept       b_age      b_age2       sigma
 </div>
 <p>Obtain the Gelman and Rubin diagnostic again.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>modelposterior <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(model) <span class="co"># with the as.mcmc() command we can use all the CODA package convergence statistics and plotting options</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: as.mcmc.brmsfit is deprecated and will eventually be removed.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.diag</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>modelposterior <span class="ot">&lt;-</span> <span class="fu">as.mcmc</span>(model) <span class="co"># with the as.mcmc() command we can use all the CODA package convergence statistics and plotting options</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.diag</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Potential scale reduction factors:
 
             Point est. Upper C.I.
-b_Intercept          1          1
-b_age                1          1
-b_age2               1          1
-sigma                1          1
+b_Intercept          1       1.00
+b_age                1       1.00
+b_age2               1       1.00
+sigma                1       1.01
 
 Multivariate psrf
 
 1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gelman.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -567,7 +558,8 @@ Multivariate psrf
 </div>
 <p>Obtain Geweke diagnostic again.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geweke.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">geweke.diag</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">geweke.plot</span>(modelposterior[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -597,45 +589,47 @@ Multivariate psrf
 </div>
 </div>
 </div>
-<p>Now we see that the Gelman and Rubin diagnostic (PRSF) is close to 1 for all parameters and the the Geweke diagnostic is not &gt; 1.96.</p>
+<p>Now we see that the Gelman and Rubin diagnostic (PRSF) is close to 1 for all parameters and the Geweke diagnostic is not &gt; 1.96.</p>
 </section>
 <section id="does-convergence-remain-after-doubling-the-number-of-iterations" class="level3">
 <h3 class="anchored" data-anchor-id="does-convergence-remain-after-doubling-the-number-of-iterations">3. Does convergence remain after doubling the number of iterations?</h3>
 <p>As is recommended in the WAMBS checklist, we double the amount of iterations to check for local convergence.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>model_doubleiter <span class="ot">&lt;-</span> <span class="fu">brm</span>(<span class="at">formula =</span> diff <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> age <span class="sc">+</span> age2, </span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data    =</span> dataPHD,</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">prior   =</span> priors_inf,</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">warmup  =</span> <span class="dv">4000</span>,</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">iter    =</span> <span class="dv">8000</span>,</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">seed    =</span> <span class="dv">12345</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>model_doubleiter <span class="ot">&lt;-</span> <span class="fu">brm</span>(<span class="at">formula =</span> diff <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> age <span class="sc">+</span> age2, </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data    =</span> dataPHD,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">prior   =</span> priors_inf,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">warmup  =</span> <span class="dv">4000</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">iter    =</span> <span class="dv">8000</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">seed    =</span> <span class="dv">12345</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>You should again have a look at the above-mentioned convergence statistics, but we can also compute the relative bias to inspect if doubling the number of iterations influences the posterior parameter estimates (<span class="math inline">\(bias= 100*\frac{(model \; with \; double \; iteration \; - \; initial \; converged \; model )}{initial \; converged \; model}\)</span>). In order to preserve clarity we just calculate the bias of the two regression coefficients.</p>
-<p>You should combine the relative bias in combination with substantive knowledge about the metric of the parameter of interest to determine when levels of relative deviation are negligible or problematic. For example, with a regression coefficient of 0.001, a 5% relative deviation level might not be substantively relevant. However, with an intercept parameter of 50, a 10% relative deviation level might be quite meaningful. The specific level of relative deviation should be interpreted in the substantive context of the model. Some examples of interpretations are:</p>
+<p>You should again have a look at the above-mentioned convergence statistics, but we can also compute the relative bias to inspect if doubling the number of iterations influences the posterior parameter estimates (<span class="math inline">\(bias= 100*\frac{(model \; with \; double \; iteration \; - \; initial \; converged \; model )}{initial \; converged \; model}\)</span>).</p>
+<p>You should evaluate the relative bias in combination with substantive knowledge about the metric of the parameter of interest to determine when levels of relative deviation are negligible or problematic. For example, with a regression coefficient of 0.001, a 5% relative deviation level might not be substantively relevant. However, with an intercept parameter of 50, a 10% relative deviation level might be quite meaningful. The specific level of relative deviation should be interpreted in the substantive context of the model. Some examples of interpretations are:</p>
 <ul>
 <li>if relative deviation is &lt; |5|%, then do not worry;</li>
 <li>if relative deviation &gt; |5|%, then rerun with 4x nr of iterations.</li>
 </ul>
 <p><em><strong>Question:</strong> calculate the relative bias. Are you satisfied with number of iterations, or do you want to re-run the model with even more iterations?</em></p>
-<p>To get the relative bias simply save the means of the regression coefficients and other parameters (ignore <code>lp__</code> for now) for the two different analyses and compute the bias.</p>
+<p>To get the relative bias simply extract the means of the regression coefficients and other parameters (ignore <code>lp__</code> for now) using <code>posterior_summary</code> for the two different analyses and compute the bias.</p>
+<details>
+<summary>
+Click to show result
+</summary>
 <div class="cell">
-<details class="code-fold">
-<summary>Click to show result</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">posterior_summary</span>(model_doubleiter)[,<span class="st">"Estimate"</span>] <span class="sc">-</span> <span class="fu">posterior_summary</span>(model)[,<span class="st">"Estimate"</span>]) <span class="sc">/</span> <span class="fu">posterior_summary</span>(model)[,<span class="st">"Estimate"</span>]), <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>((<span class="fu">posterior_summary</span>(model_doubleiter)[,<span class="st">"Estimate"</span>] <span class="sc">-</span> <span class="fu">posterior_summary</span>(model)[,<span class="st">"Estimate"</span>]) <span class="sc">/</span> <span class="fu">posterior_summary</span>(model)[,<span class="st">"Estimate"</span>]), <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>b_Intercept       b_age      b_age2       sigma      lprior        lp__ 
-    -0.5170     -0.4129     -0.4755      0.0021     -0.0463      0.0021 </code></pre>
+     0.0075     -0.0133     -0.0959     -0.0823     -0.0683      0.0001 </code></pre>
 </div>
 </div>
-<p><em>The relative bias is small enough (&lt;5%), do not worry about it.</em></p>
+<em>The relative bias is small enough (&lt;5%, in fact &lt;0.1%), do not worry about it.</em>
+</details>
 </section>
 <section id="does-the-posterior-distribution-histogram-have-enough-information" class="level3">
 <h3 class="anchored" data-anchor-id="does-the-posterior-distribution-histogram-have-enough-information">4. Does the posterior distribution histogram have enough information?</h3>
 <p>By having a look at the posterior distribution histogram <code>mcmc_plot(model, type = "hist")</code>, we can check if it has enough information.</p>
 <p><em><strong>Question:</strong> What can you conclude about distribution histograms?</em></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"hist"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"hist"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 </div>
@@ -651,11 +645,11 @@ Multivariate psrf
 <summary>
 Click to show interpretation
 </summary>
-<em>The histograms look smooth and have no gaps or other abnormalities. Based on this, adding more iterations is not necessary. However, if you are not satisfied, you can improve the number of iterations again. Posterior distributions do not have to be symmetrical, but in this example they seem to be.</em>
+<em>The histograms look smooth and have no gaps or other abnormalities. Based on this, adding more iterations is not necessary. However, if you are not satisfied, you can increase the number of iterations again. Posterior distributions do not have to be symmetrical, but in this example they seem to be.</em>
 </details>
 <p>If we compare this with histograms based on the first analysis (with very few iterations), this difference becomes clear:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model_few_samples, <span class="at">type =</span> <span class="st">"hist"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model_few_samples, <span class="at">type =</span> <span class="st">"hist"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 </div>
@@ -668,15 +662,36 @@ Click to show interpretation
 </div>
 </div>
 </section>
-<section id="do-the-chains-exhibit-a-strong-degree-of-autocorrelation" class="level3">
-<h3 class="anchored" data-anchor-id="do-the-chains-exhibit-a-strong-degree-of-autocorrelation">5. Do the chains exhibit a strong degree of autocorrelation?</h3>
+<section id="is-the-effective-sample-size-sufficient-or-do-the-chains-exhibit-a-strong-degree-of-autocorrelation" class="level3">
+<h3 class="anchored" data-anchor-id="is-the-effective-sample-size-sufficient-or-do-the-chains-exhibit-a-strong-degree-of-autocorrelation">5. Is the effective sample size sufficient or do the chains exhibit a strong degree of autocorrelation?</h3>
+<p>The effective sample size (ESS) is a measure of the number of independent samples in a Markov Chain Monte Carlo (MCMC) chain and reflects the efficiency of the algorithm. It accounts for the autocorrelation in the chains, which can reduce the effective number of samples. A higher ESS indicates that the MCMC chain is more efficient and provides more reliable estimates. <code>brms</code> / Stan gives a warning if the number of ESS is too small.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># number of effective samples</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">effectiveSize</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>b_Intercept       b_age      b_age2       sigma      lprior        lp__ 
+   2069.628    1976.339    2324.616    3403.014    2364.802    3102.669 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ratio of effective samples / number of iterations</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">neff_ratio</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>b_Intercept       b_age      b_age2       sigma      lprior        lp__ 
+  0.2700703   0.2544073   0.2918451   0.4471365   0.3279454   0.3748168 </code></pre>
+</div>
+</div>
 <p>To obtain information about autocorrelation the following syntax can be used:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"acf"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The `facets` argument of `facet_grid()` is deprecated as of ggplot2 2.2.0.
+ℹ Please use the `rows` argument instead.
+ℹ The deprecated feature was likely used in the bayesplot package.
+  Please report the issue at &lt;https://github.com/stan-dev/bayesplot/issues/&gt;.</code></pre>
+</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Wambs_R_using_brms_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Wambs_R_using_brms_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -686,18 +701,18 @@ Click to show interpretation
 <summary>
 Click to show interpretation
 </summary>
-<em>These results show that autocorrelation is quite stong after a few lags. This means it is important to make sure we ran the analysis with a lot of samples, because with a high autocorrelation it will take longer until the whole parameter space has been identified. For more informtation on autocorrelation check this <a href="https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210X.2011.00131.x">paper</a>.</em>
+<em>These results show that autocorrelation is quite strong after a few lags (up to 10). This means it is important to make sure we ran the analysis with a lot of samples, because with a high autocorrelation it will take longer until the whole parameter space has been identified. Historically, thinning has been used to reduce autocorrelation in MCMC chains, but this is no longer recommended. Instead, it is better to increase the number of iterations and warmup samples to ensure that the chains are well-mixed and that the effective sample size is sufficient. For more information on autocorrelation check this <a href="https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210X.2011.00131.x">paper</a>.</em>
 </details>
 </section>
-<section id="do-the-posterior-distributions-make-substantive-sense" class="level3">
-<h3 class="anchored" data-anchor-id="do-the-posterior-distributions-make-substantive-sense">6. Do the posterior distributions make substantive sense?</h3>
+<section id="do-the-posterior-distributions-and-posterior-predictions-make-substantive-sense" class="level3">
+<h3 class="anchored" data-anchor-id="do-the-posterior-distributions-and-posterior-predictions-make-substantive-sense">6. Do the posterior distributions and posterior predictions make substantive sense?</h3>
 <p>We plot the posterior distributions and see if they are unimodel (one peak), if they are clearly centered around one value, if they give a realistic estimate and if they make substantive sense compared to our prior believes (priors). Here we plot the posteriors of the regression coefficients. If you want you can also plot the mean and the 95% Posterior HPD Intervals.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"dens"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(model, <span class="at">type =</span> <span class="st">"dens"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Wambs_R_using_brms_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Wambs_R_using_brms_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -709,13 +724,31 @@ Click to show interpretation
 </summary>
 <em>Yes, we see a clear negative intercept, which makes sense since a value of age = 0 for Ph.D is impossible. We also have have plausible ranges of values for the regression coefficients and a positive variance.</em>
 </details>
+<p>In addition, do the posterior predictive distributions make sense substantively and in light of the observed data? For this, we want to look at predictions on the response scale the model makes based on the posterior parameter estimates.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">pp_check</span>(model, <span class="at">ndraws =</span> <span class="dv">100</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"Posterior predictive"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Wambs_R_using_brms_files/figure-html/pp-check-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><em><strong>Question:</strong> Do the posterior predictive distributions make sense substantively and in light of the observed data?</em></p>
+<details>
+<summary>
+Click to show interpretation
+</summary>
+<em>This is often the tricky part. Clearly, we see that the model does not perfectly capture the shape of the observed data, which is not symmetrical. Although we could argue that the fit is good enough for our purposes, we could also investigate how to improve the fit by considering alternative likelihood functions, such as a shifted lognormal distribution, or setting a lower bound based on the minimum possible delay (e.g., 2 years, so 12 months). Do note that while these changes will most likely improve the posterior fit, because they better suit the data-generating process, they will also make interpretation more complex.</em>
+</details>
 </section>
 </section>
 <section id="step-3-understanding-the-exact-influence-of-the-priors" class="level2">
 <h2 class="anchored" data-anchor-id="step-3-understanding-the-exact-influence-of-the-priors"><strong>Step 3: Understanding the exact influence of the priors</strong></h2>
 <p>First we check the results of the analysis with the priors we used so far.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -726,13 +759,13 @@ Formula: diff ~ 0 + Intercept + age + age2
 
 Regression Coefficients:
           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept   -36.34      4.18   -44.48   -28.01 1.00     2172     3112
-age           2.15      0.21     1.73     2.56 1.00     2109     2875
-age2         -0.02      0.00    -0.03    -0.02 1.00     2554     3593
+Intercept   -36.20      4.20   -44.32   -28.03 1.00     2161     2729
+age           2.14      0.21     1.73     2.56 1.00     2035     2645
+age2         -0.02      0.00    -0.03    -0.02 1.00     2335     3072
 
 Further Distributional Parameters:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma    14.02      0.55    13.00    15.17 1.00     3657     3591
+sigma    14.04      0.55    12.99    15.17 1.00     3577     3741
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -742,8 +775,35 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="do-different-specification-of-the-variance-priors-influence-the-results" class="level3">
 <h3 class="anchored" data-anchor-id="do-different-specification-of-the-variance-priors-influence-the-results">7. Do different specification of the variance priors influence the results?</h3>
 <p>So far we have used the -<span class="math inline">\(\in \sim IG(.5, .5)\)</span> prior, but we can also use the -<span class="math inline">\(\in \sim IG(.01, .01)\)</span> prior and see if doing so makes a difference. To quantify this difference we again calculate a relative bias.</p>
+<p>Let’s first plot the priors to get an idea of what expectation of the variance they reflect.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># inverse gamma prior </span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a sequence of x values</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">0.01</span>, <span class="dv">1000</span>, <span class="at">length.out =</span> <span class="dv">500</span>)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the density</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> <span class="fu">dinvgamma</span>(x, <span class="at">shape =</span> <span class="fl">0.5</span>, <span class="at">scale =</span> <span class="fl">0.5</span>)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> <span class="fu">dinvgamma</span>(x, <span class="at">shape =</span> <span class="fl">0.01</span>, <span class="at">scale =</span> <span class="fl">0.01</span>)</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the Inverse Gamma prior</span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y1, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"blue"</span>,</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"IG(0.5, 0.5)"</span>,</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"x"</span>, <span class="at">ylab =</span> <span class="st">"Density"</span>)</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y2, <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"red"</span>,</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"IG(0.01, 0.01)"</span>,</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"x"</span>, <span class="at">ylab =</span> <span class="st">"Density"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Wambs_R_using_brms_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 <p><em><strong>Question:</strong> Are the results robust for different specifications of the prior on the residual variance?</em></p>
-<table class="caption-top table">
+<table class="table">
 <colgroup>
 <col style="width: 25%">
 <col style="width: 25%">
@@ -786,37 +846,37 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </tbody>
 </table>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) set the priors</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>priors_inf2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">set_prior</span>(<span class="st">"normal(.8, 2.24)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"age"</span>),</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>               <span class="fu">set_prior</span>(<span class="st">"normal(0, 3.16)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"age2"</span>),</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>               <span class="fu">set_prior</span>(<span class="st">"normal(-35, 4.47)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span>  <span class="st">"Intercept"</span>),</span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>               <span class="fu">set_prior</span>(<span class="st">"inv_gamma(.01,.01)"</span>, <span class="at">class=</span><span class="st">"sigma"</span>))</span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) specify the model</span></span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>model.difIG <span class="ot">&lt;-</span> <span class="fu">brm</span>(<span class="at">formula =</span> diff <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> age <span class="sc">+</span> age2, </span>
-<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data    =</span> dataPHD,</span>
-<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">prior   =</span> priors_inf2,</span>
-<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">warmup  =</span> <span class="dv">2000</span>,</span>
-<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>                   <span class="at">iter    =</span> <span class="dv">4000</span>,</span>
-<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">seed    =</span> <span class="dv">12345</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) set the priors</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>priors_inf2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">set_prior</span>(<span class="st">"normal(.8, 2.24)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"age"</span>),</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>               <span class="fu">set_prior</span>(<span class="st">"normal(0, 3.16)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef =</span> <span class="st">"age2"</span>),</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>               <span class="fu">set_prior</span>(<span class="st">"normal(-35, 4.47)"</span>, <span class="at">class =</span> <span class="st">"b"</span>, <span class="at">coef=</span>  <span class="st">"Intercept"</span>),</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>               <span class="fu">set_prior</span>(<span class="st">"inv_gamma(.01,.01)"</span>, <span class="at">class=</span><span class="st">"sigma"</span>))</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) specify the model</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>model.difIG <span class="ot">&lt;-</span> <span class="fu">brm</span>(<span class="at">formula =</span> diff <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> age <span class="sc">+</span> age2, </span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data    =</span> dataPHD,</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">prior   =</span> priors_inf2,</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">warmup  =</span> <span class="dv">2000</span>,</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>                   <span class="at">iter    =</span> <span class="dv">4000</span>,</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">seed    =</span> <span class="dv">12345</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_summary</span>(model.difIG)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_summary</span>(model.difIG)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                 Estimate  Est.Error          Q2.5         Q97.5
-b_Intercept -3.623364e+01 4.15507407 -4.445097e+01 -2.794857e+01
-b_age        2.144554e+00 0.20791837  1.728384e+00  2.553733e+00
-b_age2      -2.064181e-02 0.00268753 -2.591153e-02 -1.533662e-02
-sigma        1.406051e+01 0.54893392  1.304147e+01  1.520078e+01
-lprior      -1.418107e+01 0.70171005 -1.616086e+01 -1.364877e+01
-lp__        -1.363662e+03 1.42879371 -1.367270e+03 -1.361902e+03</code></pre>
+<pre><code>                 Estimate   Est.Error          Q2.5         Q97.5
+b_Intercept   -36.1755709 4.209273730 -4.448700e+01   -27.9577409
+b_age           2.1409849 0.209197245  1.739788e+00     2.5633501
+b_age2         -0.0206032 0.002673978 -2.598165e-02    -0.0154425
+sigma          14.0467961 0.551600771  1.302136e+01    15.1759260
+lprior        -14.1870134 0.699843400 -1.621224e+01   -13.6473609
+lp__        -1363.6609612 1.420586992 -1.367189e+03 -1361.8808379</code></pre>
 </div>
 </div>
 <details>
 <summary>
-Click to show interpretation
+Click to show result
 </summary>
-<table class="caption-top table">
+<table class="table">
 <colgroup>
 <col style="width: 25%">
 <col style="width: 25%">
@@ -834,38 +894,39 @@ Click to show interpretation
 <tbody>
 <tr class="odd">
 <td>Intercept</td>
-<td>-36.234</td>
-<td>-36.335</td>
-<td><span class="math inline">\(100\cdot \frac{-36.234--36.335 }{-36.335} = -0.28\%\)</span></td>
+<td>-36.176</td>
+<td>-36.201</td>
+<td><span class="math inline">\(100\cdot \frac{-36.176--36.201 }{-36.201} = -0.07\%\)</span></td>
 </tr>
 <tr class="even">
 <td>Age</td>
-<td>2.145</td>
-<td>2.149</td>
-<td><span class="math inline">\(100\cdot \frac{2.145-2.149 }{2.149} = -0.19\%\)</span></td>
+<td>2.141</td>
+<td>2.143</td>
+<td><span class="math inline">\(100\cdot \frac{2.141-2.143 }{2.143} = -0.09\%\)</span></td>
 </tr>
 <tr class="odd">
 <td>Age2</td>
 <td>-0.021</td>
 <td>-0.021</td>
-<td><span class="math inline">\(100\cdot \frac{-0.021--0.021 }{-0.021} = -0.27\%\)</span></td>
+<td><span class="math inline">\(100\cdot \frac{-0.021--0.021 }{-0.021} = -0.19\%\)</span></td>
 </tr>
 <tr class="even">
 <td>Residual variance</td>
-<td>14.061</td>
-<td>14.02</td>
-<td><span class="math inline">\(100\cdot \frac{14.061-14.02 }{14.02} = 0.29\%\)</span></td>
+<td>14.047</td>
+<td>14.038</td>
+<td><span class="math inline">\(100\cdot \frac{14.047-14.038 }{14.038} = 0.07\%\)</span></td>
 </tr>
 </tbody>
 </table>
 <em>Yes, the results are robust, because there is only a really small amount of relative bias for the residual variance.</em>
 </details>
+<p><em><strong>Extra question</strong>: Which of the two settings for the inverse gamma prior on the residual variance do you think is more appropriate here?</em></p>
 </section>
 <section id="is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors" class="level3">
 <h3 class="anchored" data-anchor-id="is-there-a-notable-effect-of-the-prior-when-compared-with-non-informative-priors">8. Is there a notable effect of the prior when compared with non-informative priors?</h3>
-<p>The default brms priors are non-informative, so we can run the analysis without any specified priors and compare them to the model we have run thus far, using the relative bias, to see if there is a large influence of the priors.</p>
+<p>The default <code>brms</code> priors are non-informative, so we can run the analysis without any specified priors and compare them to the model we have run so far, using the relative bias, to see if there is a large influence of the priors.</p>
 <p><em><strong>Question</strong>: What is your conclusion about the influence of the priors on the posterior results?</em></p>
-<table class="caption-top table">
+<table class="table">
 <colgroup>
 <col style="width: 25%">
 <col style="width: 25%">
@@ -907,26 +968,39 @@ Click to show interpretation
 </tr>
 </tbody>
 </table>
-<p>From the brms manual we learn that:</p>
+<p>From the <code>brms</code> manual we learn that:</p>
 <ol type="1">
 <li><em>The default prior for population-level effects (including monotonic and category specific effects) is an improper flat prior over the reals.”</em></li>
 <li><em>“By default, sigma has a half student-t prior that scales in the same way as the group-level standard deviations.”</em></li>
 </ol>
 <p>We can run the model without our priors and check if doing so strongly influences the results.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>model.default <span class="ot">&lt;-</span> <span class="fu">brm</span>(<span class="at">formula =</span> diff <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> age <span class="sc">+</span> age2, </span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">data    =</span> dataPHD,</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">warmup  =</span> <span class="dv">1000</span>,</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">iter    =</span> <span class="dv">2000</span>,</span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">seed    =</span> <span class="dv">123</span>)</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_summary</span>(model.default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>model.default <span class="ot">&lt;-</span> <span class="fu">brm</span>(<span class="at">formula =</span> diff <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> Intercept <span class="sc">+</span> age <span class="sc">+</span> age2, </span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">data    =</span> dataPHD,</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">warmup  =</span> <span class="dv">1000</span>,</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">iter    =</span> <span class="dv">2000</span>,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">seed    =</span> <span class="dv">123</span>)</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_summary</span>(model.default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>You can always check the priors in a given model using the function <code>get_prior()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_prior</span>(model.default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                prior class      coef group resp dpar nlpar lb ub       source
+               (flat)     b                                            default
+               (flat)     b       age                             (vectorized)
+               (flat)     b      age2                             (vectorized)
+               (flat)     b Intercept                             (vectorized)
+ student_t(3, 0, 7.4) sigma                                  0         default</code></pre>
+</div>
+</div>
+<p>Here we see that the default prior for sigma –based on these data– is a half student-t prior with scale 7.4.</p>
 <details>
 <summary>
-Click to show interpretation
+Click to show result
 </summary>
-<table class="caption-top table">
+<table class="table">
 <colgroup>
 <col style="width: 25%">
 <col style="width: 25%">
@@ -944,33 +1018,33 @@ Click to show interpretation
 <tbody>
 <tr class="odd">
 <td>Intercept</td>
-<td>-46.87</td>
-<td>-36.34</td>
-<td><span class="math inline">\(100\cdot \frac{-46.868--36.335 }{-36.335} = 28.99\%\)</span></td>
+<td>-47.58</td>
+<td>-36.2</td>
+<td><span class="math inline">\(100\cdot \frac{-47.579--36.201 }{-36.201} = 31.43\%\)</span></td>
 </tr>
 <tr class="even">
 <td>Age</td>
-<td>2.646</td>
-<td>2.149</td>
-<td><span class="math inline">\(100\cdot \frac{2.646-2.149 }{2.149} = 23.15\%\)</span></td>
+<td>2.68</td>
+<td>2.143</td>
+<td><span class="math inline">\(100\cdot \frac{2.68-2.143 }{2.143} = 25.09\%\)</span></td>
 </tr>
 <tr class="odd">
 <td>Age2</td>
 <td>-0.026</td>
 <td>-0.021</td>
-<td><span class="math inline">\(100\cdot \frac{-0.026--0.021 }{-0.021} = 24.21\%\)</span></td>
+<td><span class="math inline">\(100\cdot \frac{-0.026--0.021 }{-0.021} = 26.22\%\)</span></td>
 </tr>
 <tr class="even">
 <td>Residual variance</td>
-<td>14.03</td>
-<td>14.02</td>
-<td><span class="math inline">\(100\cdot \frac{14.03-14.02 }{14.02} = 0.07\%\)</span></td>
+<td>14.019</td>
+<td>14.038</td>
+<td><span class="math inline">\(100\cdot \frac{14.019-14.038 }{14.038} = -0.13\%\)</span></td>
 </tr>
 </tbody>
 </table>
 <em>The informative priors have quite some influence (up to 25%) on the posterior results of the regression coefficients. This is not a bad thing, just important to keep in mind.</em>
 </details>
-<p><em><strong>Question</strong>: Which results do you use to draw conclusion on?</em></p>
+<p><em><strong>Question</strong>: Which results do you use to draw conclusions?</em></p>
 <details>
 <summary>
 Click to show interpretation
@@ -986,12 +1060,13 @@ Click to show interpretation
 <p>“If informative or weakly-informative priors are used, then we suggest running a sensitivity analysis of these priors. When subjective priors are in place, then there might be a discrepancy between results using different subjective prior settings. A sensitivity analysis for priors would entail adjusting the entire prior distribution (i.e., using a completely different prior distribution than before) or adjusting hyperparameters upward and downward and re-estimating the model with these varied priors. Several different hyperparameter specifications can be made in a sensitivity analysis, and results obtained will point toward the impact of small fluctuations in hyperparameter values. […] The purpose of this sensitivity analysis is to assess how much of an impact the location of the mean hyperparameter for the prior has on the posterior. […] Upon receiving results from the sensitivity analysis, assess the impact that fluctuations in the hyperparameter values have on the substantive conclusions. Results may be stable across the sensitivity analysis, or they may be highly instable based on substantive conclusions. Whatever the finding, this information is important to report in the results and discussion sections of a paper. We should also reiterate here that original priors should not be modified, despite the results obtained.”</p>
 </blockquote>
 <p>For more information on this topic, please also refer to this <a href="http://psycnet.apa.org/record/2017-52406-001">paper</a>.</p>
+<p>In addition to sensitivity analyses based on prior settings, you may also include sensitivity checks based on the model structure, such as using a different likelihood function (e.g., the shifted log-normal distribution) or the inclusion of additional predictors or interactions.</p>
 </section>
 <section id="is-the-bayesian-way-of-interpreting-and-reporting-model-results-used" class="level3">
 <h3 class="anchored" data-anchor-id="is-the-bayesian-way-of-interpreting-and-reporting-model-results-used">10. Is the Bayesian way of interpreting and reporting model results used?</h3>
 <p>For a summary on how to interpret and report models, please refer to https://www.rensvandeschoot.com/bayesian-analyses-where-to-start-and-what-to-report/</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1002,35 +1077,74 @@ Formula: diff ~ 0 + Intercept + age + age2
 
 Regression Coefficients:
           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept   -36.34      4.18   -44.48   -28.01 1.00     2172     3112
-age           2.15      0.21     1.73     2.56 1.00     2109     2875
-age2         -0.02      0.00    -0.03    -0.02 1.00     2554     3593
+Intercept   -36.20      4.20   -44.32   -28.03 1.00     2161     2729
+age           2.14      0.21     1.73     2.56 1.00     2035     2645
+age2         -0.02      0.00    -0.03    -0.02 1.00     2335     3072
 
 Further Distributional Parameters:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma    14.02      0.55    13.00    15.17 1.00     3657     3591
+sigma    14.04      0.55    12.99    15.17 1.00     3577     3741
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summary of sampling diagnostics </span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>rhats <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">rhat</span>(model)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>rhat_max <span class="ot">&lt;-</span> <span class="fu">sort</span>(rhats, <span class="at">decreasing =</span> T)[<span class="dv">1</span>] <span class="co">#sigma </span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>ratios <span class="ot">&lt;-</span> <span class="fu">neff_ratio</span>(model)</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>ess <span class="ot">&lt;-</span> bayestestR<span class="sc">::</span><span class="fu">effective_sample</span>(model, <span class="at">effects =</span> <span class="st">"all"</span>)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>ess_min <span class="ot">&lt;-</span> <span class="fu">min</span>(ess<span class="sc">$</span>ESS) <span class="co">#b_age </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>In the current model we see that:</p>
+<p>Aspects to report:</p>
+<ol type="1">
+<li>estimates + credible intervals: make use of the fact that you have actual indication of uncertainty of the model parameters (not just hypothetical). Also add plots to ease interpretability!</li>
+<li>program and packages used</li>
+<li>discussion of priors (justify choices, and report sensitivity)</li>
+<li>discussion of settings (number of chains, number of interaction, warmup, seeds etc.)</li>
+<li>discussion of sampling diagnostics (e.g., <span class="math inline">\(\hat{R}\)</span>, effective sample size)</li>
+<li>perhaps: model fit or model comparison metrics (e.g., loo, Bayes factors)</li>
+</ol>
+<p>Example:</p>
 <ul>
-<li>The estimate for the intercept is -36.34 [-44.48 ; -28.01]</li>
-<li>The estimate for the effect of <span class="math inline">\(age\)</span> is 2.15 [1.73 ; 2.56]</li>
+<li>The estimate for the intercept is -36.2 [-44.32 ; -28.03]</li>
+<li>The estimate for the effect of <span class="math inline">\(age\)</span> is 2.14 [1.73 ; 2.56]</li>
 <li>The estimate for the effect of <span class="math inline">\(age^2\)</span> is -0.02 [-0.03 ; -0.02]</li>
 </ul>
-<p>We can see that none of 95% Posterior HPD Intervals for these effects include zero, which means we are can be quite certain that all of the effects are different from 0.</p>
+<p>We used the <code>brms</code> package (Bürkner, 2017) to fit Bayesian multilevel models, which relies on the Stan language (Carpenter et al., 2017). The model was run with 4 chains, each with 4000 iterations and a warmup of 2000 iterations (total post-warmup <span class="math inline">\(N=8000\)</span>). The model diagnostics indicated good convergence (largest <span class="math inline">\(\hat{R}=\)</span> 1.0027 for the residual variance and sufficient effective sample sizes for all parameters (median <span class="math inline">\(\hat{N}_{\text{eff}}\)</span> = 2161). The smallest <span class="math inline">\(\hat{N}_{\text{eff}}\)</span> = 2035 for the regression coefficient of age (ratio= 0.25), indicating that there is some autocorrelation in the chains.</p>
+<p>We used an linear regression model with a Gaussian likelihood and informative priors derived from (fictitious) previous studies on the intercept <span class="math inline">\(\sim \mathcal{N}(-35, 20)\)</span>, the coefficient of age in years <span class="math inline">\(\beta_1 \sim \mathcal{N}(.8, 5)\)</span>, the coefficient of squared age <span class="math inline">\(\beta_2 \sim \mathcal{N}(0, 10)\)</span>, as we expected a non-linear effect of age, and the residual variance <span class="math inline">\(\sigma \sim IG(.5, .5)\)</span>. This is an uninformative prior for the residual variance, which has been found to perform well in simulation studies. Sensitivity checks on the priors and model specification indicated that the conclusions are robust to different prior settings for the variance (i.e., <span class="math inline">\(\sigma \sim IG(.01, .01)\)</span>. However, result do differ when using diffuse default priors, which results in a lower intercept and stronger effects of age, though the pattern remains the same.</p>
 <p>Remember how we plotted the relation between delay and years based on the prior information? Now, do the same with the posterior estimates.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="dv">20</span><span class="sc">:</span><span class="dv">80</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>delay <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">35</span> <span class="sc">+</span> <span class="fl">2.13</span><span class="sc">*</span>years <span class="sc">-</span> <span class="fl">0.02</span><span class="sc">*</span>years<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(years, delay, <span class="at">type=</span> <span class="st">"l"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="dv">20</span><span class="sc">:</span><span class="dv">80</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>delay <span class="ot">&lt;-</span> summ1[<span class="dv">1</span>,<span class="dv">1</span>] <span class="sc">+</span> summ1[<span class="dv">2</span>,<span class="dv">1</span>]<span class="sc">*</span>years <span class="sc">+</span>(summ1[<span class="dv">3</span>,<span class="dv">1</span>])<span class="sc">*</span>years<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(years, delay, <span class="at">type=</span> <span class="st">"l"</span>, <span class="at">xlim=</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">80</span>),</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Age (years)"</span>, <span class="at">ylab =</span> <span class="st">"Delay (months)"</span>, <span class="at">main =</span> <span class="st">"Estimated delay of PhD degree by age"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Wambs_R_using_brms_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Wambs_R_using_brms_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># or, more elegantly, using the posterior samples</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidybayes)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>newdata <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">age =</span> years, <span class="at">age2 =</span> years<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>model <span class="sc">%&gt;%</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_predicted_draws</span>(<span class="at">newdata =</span> newdata) <span class="sc">%&gt;%</span></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> .prediction)) <span class="sc">+</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_lineribbon</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Predicted delay of PhD degree by age"</span>,</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Predicted Delay (months)"</span>,</span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Age (years)"</span>) <span class="sc">+</span> </span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Wambs_R_using_brms_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1040,138 +1154,146 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>Link, W. A., &amp; Eaton, M. J. (2012). On thinning of chains in MCMC. <em>Methods in ecology and evolution</em>, <em>3</em>(1), 112-115.</p>
 <p>van Erp, S., Mulder, J., &amp; Oberski, D. L. (2017). Prior sensitivity analysis in default Bayesian structural equation modeling.</p>
 <p>Van de Schoot, R., &amp; Depaoli, S. (2014). Bayesian analyses: Where to start and what to report. <em>European Health Psychologist</em>, <em>16</em>(2), 75-84.</p>
+<p>Bürkner, P-C. (2017). Brms: An R Package for Bayesian Multilevel Models Using Stan. <em>Journal of Statistical Software 80</em>(1), 1–28. https://doi.org/10.18637/jss.v080.i01.</p>
+<p>Carpenter, B., Gelman, A., Hoffman, M., Lee, D., Goodrich, B., Betancourt, M., Brubaker, M. A., Guo, J., Li, P., &amp; Riddell, A. (2017). Stan: A probabilistic programming language. <em>Journal of Statistical Software, 76</em>. https://doi.org/10.18637/jss.v076.i01</p>
 </section>
 </section>
 <section id="original-computing-environment" class="level2">
 <h2 class="anchored" data-anchor-id="original-computing-environment">Original Computing Environment</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>─ Session info ───────────────────────────────────────────────────────────────
  setting  value
- version  R version 4.4.1 (2024-06-14 ucrt)
- os       Windows 10 x64 (build 19045)
- system   x86_64, mingw32
- ui       RTerm
+ version  R version 4.3.3 (2024-02-29)
+ os       macOS 15.5
+ system   aarch64, darwin20
+ ui       X11
  language (EN)
- collate  German_Germany.utf8
- ctype    German_Germany.utf8
- tz       Europe/Berlin
- date     2024-07-07
- pandoc   3.1.11 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)
+ collate  en_US.UTF-8
+ ctype    en_US.UTF-8
+ tz       Europe/Amsterdam
+ date     2025-07-20
+ pandoc   3.1.1 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────
- ! package        * version     date (UTC) lib source
-   abind            1.4-5       2016-07-21 [1] CRAN (R 4.4.0)
-   arrayhelpers     1.1-0       2020-02-04 [1] CRAN (R 4.4.1)
-   backports        1.5.0       2024-05-23 [1] CRAN (R 4.4.0)
-   bayesplot      * 1.11.1      2024-02-15 [1] CRAN (R 4.4.1)
-   bridgesampling   1.1-2       2021-04-16 [1] CRAN (R 4.4.1)
-   brms           * 2.21.0      2024-03-20 [1] CRAN (R 4.4.1)
-   Brobdingnag      1.2-9       2022-10-19 [1] CRAN (R 4.4.1)
-   cachem           1.1.0       2024-05-16 [1] CRAN (R 4.4.1)
-   checkmate        2.3.1       2023-12-04 [1] CRAN (R 4.4.1)
-   cli              3.6.3       2024-06-21 [1] CRAN (R 4.4.1)
-   coda           * 0.19-4.1    2024-01-31 [1] CRAN (R 4.4.1)
-   codetools        0.2-20      2024-03-31 [2] CRAN (R 4.4.1)
-   colorspace       2.1-0       2023-01-23 [1] CRAN (R 4.4.1)
-   denstrip         1.5.4       2018-03-18 [1] CRAN (R 4.4.1)
-   devtools         2.4.5       2022-10-11 [1] CRAN (R 4.4.1)
-   digest           0.6.36      2024-06-23 [1] CRAN (R 4.4.1)
-   distributional   0.4.0       2024-02-07 [1] CRAN (R 4.4.1)
-   dplyr          * 1.1.4       2023-11-17 [1] CRAN (R 4.4.1)
-   ellipsis         0.3.2       2021-04-29 [1] CRAN (R 4.4.1)
-   evaluate         0.24.0      2024-06-10 [1] CRAN (R 4.4.1)
-   fansi            1.0.6       2023-12-08 [1] CRAN (R 4.4.1)
-   farver           2.1.2       2024-05-13 [1] CRAN (R 4.4.1)
-   fastmap          1.2.0       2024-05-15 [1] CRAN (R 4.4.1)
-   forcats        * 1.0.0       2023-01-29 [1] CRAN (R 4.4.1)
-   fs               1.6.4       2024-04-25 [1] CRAN (R 4.4.1)
-   generics         0.1.3       2022-07-05 [1] CRAN (R 4.4.1)
-   GGally           2.2.1       2024-02-14 [1] CRAN (R 4.4.1)
-   ggdist           3.3.2       2024-03-05 [1] CRAN (R 4.4.1)
-   ggmcmc         * 1.5.1.1     2021-02-10 [1] CRAN (R 4.4.1)
-   ggplot2        * 3.5.1       2024-04-23 [1] CRAN (R 4.4.1)
-   ggstats          0.6.0       2024-04-05 [1] CRAN (R 4.4.1)
-   glue             1.7.0       2024-01-09 [1] CRAN (R 4.4.1)
-   gridExtra        2.3         2017-09-09 [1] CRAN (R 4.4.1)
-   gtable           0.3.5       2024-04-22 [1] CRAN (R 4.4.1)
-   hms              1.1.3       2023-03-21 [1] CRAN (R 4.4.1)
-   htmltools        0.5.8.1     2024-04-04 [1] CRAN (R 4.4.1)
-   htmlwidgets      1.6.4       2023-12-06 [1] CRAN (R 4.4.1)
-   httpuv           1.6.15      2024-03-26 [1] CRAN (R 4.4.1)
-   inline           0.3.19      2021-05-31 [1] CRAN (R 4.4.1)
-   jsonlite         1.8.8       2023-12-04 [1] CRAN (R 4.4.1)
-   knitr            1.47        2024-05-29 [1] CRAN (R 4.4.1)
-   labeling         0.4.3       2023-08-29 [1] CRAN (R 4.4.0)
-   later            1.3.2       2023-12-06 [1] CRAN (R 4.4.1)
-   lattice          0.22-6      2024-03-20 [2] CRAN (R 4.4.1)
-   lifecycle        1.0.4       2023-11-07 [1] CRAN (R 4.4.1)
-   loo              2.7.0       2024-02-24 [1] CRAN (R 4.4.1)
-   lubridate      * 1.9.3       2023-09-27 [1] CRAN (R 4.4.1)
-   magrittr         2.0.3       2022-03-30 [1] CRAN (R 4.4.1)
-   Matrix           1.7-0       2024-04-26 [2] CRAN (R 4.4.1)
-   matrixStats      1.3.0       2024-04-11 [1] CRAN (R 4.4.1)
-   mcmcplots      * 0.4.3       2018-06-22 [1] CRAN (R 4.4.1)
-   memoise          2.0.1       2021-11-26 [1] CRAN (R 4.4.1)
-   mime             0.12        2021-09-28 [1] CRAN (R 4.4.0)
-   miniUI           0.1.1.1     2018-05-18 [1] CRAN (R 4.4.1)
-   mnormt           2.1.1       2022-09-26 [1] CRAN (R 4.4.0)
-   munsell          0.5.1       2024-04-01 [1] CRAN (R 4.4.1)
-   mvtnorm          1.2-5       2024-05-21 [1] CRAN (R 4.4.1)
-   nlme             3.1-164     2023-11-27 [2] CRAN (R 4.4.1)
-   pillar           1.9.0       2023-03-22 [1] CRAN (R 4.4.1)
-   pkgbuild         1.4.4       2024-03-17 [1] CRAN (R 4.4.1)
-   pkgconfig        2.0.3       2019-09-22 [1] CRAN (R 4.4.1)
-   pkgload          1.3.4       2024-01-16 [1] CRAN (R 4.4.1)
-   plyr             1.8.9       2023-10-02 [1] CRAN (R 4.4.1)
-   posterior        1.5.0       2023-10-31 [1] CRAN (R 4.4.1)
-   profvis          0.3.8       2023-05-02 [1] CRAN (R 4.4.1)
-   promises         1.3.0       2024-04-05 [1] CRAN (R 4.4.1)
-   psych          * 2.4.3       2024-03-18 [1] CRAN (R 4.4.1)
-   purrr          * 1.0.2       2023-08-10 [1] CRAN (R 4.4.1)
-   QuickJSR         1.2.2       2024-06-07 [1] CRAN (R 4.4.1)
-   R6               2.5.1       2021-08-19 [1] CRAN (R 4.4.1)
-   RColorBrewer     1.1-3       2022-04-03 [1] CRAN (R 4.4.0)
-   Rcpp           * 1.0.12      2024-01-09 [1] CRAN (R 4.4.1)
- D RcppParallel     5.1.7       2023-02-27 [1] CRAN (R 4.4.1)
-   readr          * 2.1.5       2024-01-10 [1] CRAN (R 4.4.1)
-   remotes          2.5.0       2024-03-17 [1] CRAN (R 4.4.1)
-   reshape2         1.4.4       2020-04-09 [1] CRAN (R 4.4.1)
-   rlang            1.1.4       2024-06-04 [1] CRAN (R 4.4.1)
-   rmarkdown        2.27        2024-05-17 [1] CRAN (R 4.4.1)
-   rstan          * 2.35.0.9000 2024-06-22 [1] https://stan-dev.r-universe.dev (R 4.4.0)
-   rstantools       2.4.0       2024-01-31 [1] CRAN (R 4.4.1)
-   rstudioapi       0.16.0      2024-03-24 [1] CRAN (R 4.4.1)
-   scales           1.3.0       2023-11-28 [1] CRAN (R 4.4.1)
-   sessioninfo      1.2.2       2021-12-06 [1] CRAN (R 4.4.1)
-   sfsmisc          1.1-18      2024-04-25 [1] CRAN (R 4.4.1)
-   shiny            1.8.1.1     2024-04-02 [1] CRAN (R 4.4.1)
-   StanHeaders    * 2.35.0.9000 2024-06-22 [1] https://stan-dev.r-universe.dev (R 4.4.0)
-   stringi          1.8.4       2024-05-06 [1] CRAN (R 4.4.0)
-   stringr        * 1.5.1       2023-11-14 [1] CRAN (R 4.4.1)
-   svUnit           1.0.6       2021-04-19 [1] CRAN (R 4.4.1)
-   tensorA          0.36.2.1    2023-12-13 [1] CRAN (R 4.4.0)
-   tibble         * 3.2.1       2023-03-20 [1] CRAN (R 4.4.1)
-   tidybayes      * 3.0.6       2023-08-12 [1] CRAN (R 4.4.1)
-   tidyr          * 1.3.1       2024-01-24 [1] CRAN (R 4.4.1)
-   tidyselect       1.2.1       2024-03-11 [1] CRAN (R 4.4.1)
-   tidyverse      * 2.0.0       2023-02-22 [1] CRAN (R 4.4.1)
-   timechange       0.3.0       2024-01-18 [1] CRAN (R 4.4.1)
-   tzdb             0.4.0       2023-05-12 [1] CRAN (R 4.4.1)
-   urlchecker       1.0.1       2021-11-30 [1] CRAN (R 4.4.1)
-   usethis          2.2.3       2024-02-19 [1] CRAN (R 4.4.1)
-   utf8             1.2.4       2023-10-22 [1] CRAN (R 4.4.1)
-   vctrs            0.6.5       2023-12-01 [1] CRAN (R 4.4.1)
-   withr            3.0.0       2024-01-16 [1] CRAN (R 4.4.1)
-   xfun             0.45        2024-06-16 [1] CRAN (R 4.4.1)
-   xtable           1.8-4       2019-04-21 [1] CRAN (R 4.4.1)
-   yaml             2.3.8       2023-12-11 [1] CRAN (R 4.4.0)
+ package        * version  date (UTC) lib source
+ abind            1.4-8    2024-09-12 [1] CRAN (R 4.3.3)
+ arrayhelpers     1.1-0    2020-02-04 [2] CRAN (R 4.3.0)
+ backports        1.5.0    2024-05-23 [1] CRAN (R 4.3.3)
+ bayesplot      * 1.10.0   2022-11-16 [2] CRAN (R 4.3.0)
+ bayestestR       0.16.0   2025-05-20 [1] CRAN (R 4.3.3)
+ bridgesampling   1.1-2    2021-04-16 [2] CRAN (R 4.3.0)
+ brms           * 2.22.0   2024-09-23 [1] CRAN (R 4.3.3)
+ Brobdingnag      1.2-9    2022-10-19 [2] CRAN (R 4.3.0)
+ cachem           1.1.0    2024-05-16 [1] CRAN (R 4.3.3)
+ callr            3.7.6    2024-03-25 [1] CRAN (R 4.3.1)
+ checkmate        2.3.2    2024-07-29 [1] CRAN (R 4.3.3)
+ cli              3.6.5    2025-04-23 [1] CRAN (R 4.3.3)
+ coda           * 0.19-4.1 2024-01-31 [1] CRAN (R 4.3.1)
+ codetools        0.2-19   2023-02-01 [2] CRAN (R 4.3.3)
+ colorspace       2.1-1    2024-07-26 [1] CRAN (R 4.3.3)
+ curl             6.2.2    2025-03-24 [1] CRAN (R 4.3.3)
+ denstrip         1.5.5    2025-03-25 [1] CRAN (R 4.3.3)
+ devtools         2.4.5    2022-10-11 [2] CRAN (R 4.3.0)
+ digest           0.6.37   2024-08-19 [1] CRAN (R 4.3.3)
+ distributional   0.5.0    2024-09-17 [1] CRAN (R 4.3.3)
+ dplyr          * 1.1.4    2023-11-17 [1] CRAN (R 4.3.1)
+ ellipsis         0.3.2    2021-04-29 [2] CRAN (R 4.3.0)
+ emmeans          1.11.0   2025-03-20 [1] CRAN (R 4.3.3)
+ estimability     1.5.1    2024-05-12 [1] CRAN (R 4.3.3)
+ evaluate         1.0.3    2025-01-10 [1] CRAN (R 4.3.3)
+ farver           2.1.2    2024-05-13 [1] CRAN (R 4.3.3)
+ fastmap          1.2.0    2024-05-15 [1] CRAN (R 4.3.3)
+ forcats        * 1.0.0    2023-01-29 [2] CRAN (R 4.3.0)
+ fs               1.6.6    2025-04-12 [1] CRAN (R 4.3.3)
+ generics         0.1.4    2025-05-09 [1] CRAN (R 4.3.3)
+ GGally           2.2.1    2024-02-14 [1] CRAN (R 4.3.1)
+ ggdist           3.3.0    2023-05-13 [2] CRAN (R 4.3.0)
+ ggmcmc         * 1.5.1.1  2021-02-10 [1] CRAN (R 4.3.0)
+ ggplot2        * 3.5.2    2025-04-09 [1] CRAN (R 4.3.3)
+ ggstats          0.7.0    2024-09-22 [1] CRAN (R 4.3.3)
+ glue             1.8.0    2024-09-30 [1] CRAN (R 4.3.3)
+ gridExtra        2.3      2017-09-09 [2] CRAN (R 4.3.0)
+ gtable           0.3.6    2024-10-25 [1] CRAN (R 4.3.3)
+ hms              1.1.3    2023-03-21 [2] CRAN (R 4.3.0)
+ htmltools        0.5.8.1  2024-04-04 [1] CRAN (R 4.3.1)
+ htmlwidgets      1.6.4    2023-12-06 [1] CRAN (R 4.3.1)
+ httpuv           1.6.15   2024-03-26 [1] CRAN (R 4.3.1)
+ inline           0.3.19   2021-05-31 [2] CRAN (R 4.3.0)
+ insight          1.3.0    2025-05-20 [1] CRAN (R 4.3.3)
+ invgamma       * 1.1      2017-05-07 [2] CRAN (R 4.3.0)
+ jsonlite         2.0.0    2025-03-27 [1] CRAN (R 4.3.3)
+ knitr            1.49     2024-11-08 [1] CRAN (R 4.3.3)
+ labeling         0.4.3    2023-08-29 [1] CRAN (R 4.3.0)
+ later            1.4.1    2024-11-27 [1] CRAN (R 4.3.3)
+ lattice          0.22-5   2023-10-24 [2] CRAN (R 4.3.3)
+ lifecycle        1.0.4    2023-11-07 [1] CRAN (R 4.3.1)
+ loo              2.8.0    2024-07-03 [1] CRAN (R 4.3.3)
+ lubridate      * 1.9.2    2023-02-10 [2] CRAN (R 4.3.0)
+ magrittr         2.0.3    2022-03-30 [2] CRAN (R 4.3.0)
+ Matrix           1.6-5    2024-01-11 [2] CRAN (R 4.3.3)
+ matrixStats      1.5.0    2025-01-07 [1] CRAN (R 4.3.3)
+ mcmcplots      * 0.4.3    2018-06-22 [1] CRAN (R 4.3.3)
+ memoise          2.0.1    2021-11-26 [2] CRAN (R 4.3.0)
+ mime             0.13     2025-03-17 [1] CRAN (R 4.3.3)
+ miniUI           0.1.1.1  2018-05-18 [2] CRAN (R 4.3.0)
+ mnormt           2.1.1    2022-09-26 [2] CRAN (R 4.3.0)
+ mvtnorm          1.3-3    2025-01-10 [1] CRAN (R 4.3.3)
+ nlme             3.1-164  2023-11-27 [2] CRAN (R 4.3.3)
+ pillar           1.11.0   2025-07-04 [1] CRAN (R 4.3.3)
+ pkgbuild         1.4.7    2025-03-24 [1] CRAN (R 4.3.3)
+ pkgconfig        2.0.3    2019-09-22 [2] CRAN (R 4.3.0)
+ pkgload          1.4.0    2024-06-28 [1] CRAN (R 4.3.3)
+ plyr             1.8.9    2023-10-02 [1] CRAN (R 4.3.1)
+ posterior        1.6.1    2025-02-27 [1] CRAN (R 4.3.3)
+ processx         3.8.6    2025-02-21 [1] CRAN (R 4.3.3)
+ profvis          0.3.8    2023-05-02 [2] CRAN (R 4.3.0)
+ promises         1.3.2    2024-11-28 [1] CRAN (R 4.3.3)
+ ps               1.9.1    2025-04-12 [1] CRAN (R 4.3.3)
+ psych          * 2.4.12   2024-12-23 [1] CRAN (R 4.3.3)
+ purrr          * 1.0.4    2025-02-05 [1] CRAN (R 4.3.3)
+ QuickJSR         1.3.1    2024-07-14 [2] CRAN (R 4.3.3)
+ R6               2.6.1    2025-02-15 [1] CRAN (R 4.3.3)
+ RColorBrewer     1.1-3    2022-04-03 [2] CRAN (R 4.3.0)
+ Rcpp           * 1.0.14   2025-01-12 [1] CRAN (R 4.3.3)
+ RcppParallel     5.1.7    2023-02-27 [2] CRAN (R 4.3.0)
+ readr          * 2.1.4    2023-02-10 [2] CRAN (R 4.3.0)
+ remotes          2.5.0    2024-03-17 [1] CRAN (R 4.3.1)
+ reshape2         1.4.4    2020-04-09 [2] CRAN (R 4.3.0)
+ rlang            1.1.6    2025-04-11 [1] CRAN (R 4.3.3)
+ rmarkdown        2.29     2024-11-04 [1] CRAN (R 4.3.3)
+ rstan          * 2.32.6   2024-03-05 [2] CRAN (R 4.3.1)
+ rstantools       2.3.1.1  2023-07-18 [2] CRAN (R 4.3.0)
+ rstudioapi       0.17.1   2024-10-22 [1] CRAN (R 4.3.3)
+ scales           1.4.0    2025-04-24 [1] CRAN (R 4.3.3)
+ sessioninfo      1.2.2    2021-12-06 [2] CRAN (R 4.3.0)
+ sfsmisc          1.1-16   2023-08-10 [2] CRAN (R 4.3.0)
+ shiny            1.9.1    2024-08-01 [1] CRAN (R 4.3.3)
+ StanHeaders    * 2.32.10  2024-07-15 [1] CRAN (R 4.3.3)
+ stringi          1.8.7    2025-03-27 [1] CRAN (R 4.3.3)
+ stringr        * 1.5.1    2023-11-14 [1] CRAN (R 4.3.1)
+ svUnit           1.0.6    2021-04-19 [2] CRAN (R 4.3.0)
+ tensorA          0.36.2.1 2023-12-13 [1] CRAN (R 4.3.1)
+ tibble         * 3.3.0    2025-06-08 [1] CRAN (R 4.3.3)
+ tidybayes      * 3.0.6    2023-08-12 [2] CRAN (R 4.3.0)
+ tidyr          * 1.3.1    2024-01-24 [1] CRAN (R 4.3.1)
+ tidyselect       1.2.1    2024-03-11 [1] CRAN (R 4.3.1)
+ tidyverse      * 2.0.0    2023-02-22 [1] CRAN (R 4.3.0)
+ timechange       0.2.0    2023-01-11 [2] CRAN (R 4.3.0)
+ tzdb             0.4.0    2023-05-12 [2] CRAN (R 4.3.0)
+ urlchecker       1.0.1    2021-11-30 [2] CRAN (R 4.3.0)
+ usethis          2.2.2    2023-07-06 [2] CRAN (R 4.3.0)
+ V8               6.0.0    2024-10-12 [1] CRAN (R 4.3.3)
+ vctrs            0.6.5    2023-12-01 [1] CRAN (R 4.3.1)
+ viridisLite      0.4.2    2023-05-02 [2] CRAN (R 4.3.0)
+ withr            3.0.2    2024-10-28 [1] CRAN (R 4.3.3)
+ xfun             0.49     2024-10-31 [1] CRAN (R 4.3.3)
+ xtable           1.8-4    2019-04-21 [2] CRAN (R 4.3.0)
+ yaml             2.3.10   2024-07-26 [1] CRAN (R 4.3.3)
 
- [1] C:/Users/Florian/AppData/Local/R/win-library/4.4
- [2] C:/Program Files/R/R-4.4.1/library
-
- D ── DLL MD5 mismatch, broken installation.
+ [1] /Users/3659690/Library/R/arm64/4.3/library
+ [2] /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library
 
 ──────────────────────────────────────────────────────────────────────────────</code></pre>
 </div>
