@@ -196,6 +196,8 @@ This exercise leverages the power of the `brms` package in R or the `bambi` pack
 
 For the exercise in R, click <a href="content/tuesday/Wambs_R_using_brms.html" target="_blank">here</a>.
 
+For the practical in Python, please download <a href="content/tuesday/WAMBS_Python_full.ipynb" download>this Jupyter notebook</a>
+
 - [data file phd-delays](content/tuesday/phd-delays.csv)
 
 
@@ -251,7 +253,7 @@ This practical goes through the steps to perform prior and posterior predictive 
 
 For the practical in R, click <a href="content/wednesday/prior_posterior_predictive_practical.html" target="_blank">here</a>.
 
-For the practical in Python, please download <a href="content/wednesday/prior_posterior_predictive_practical_python.ipynb" target="_blank">this Jupyter notebook</a>.
+For the practical in Python, please download <a href="content/wednesday/prior_posterior_predictive_practical_python.ipynb" download>this Jupyter notebook</a>.
 
 - [data file time_data](content/wednesday/time_data.csv)
 
