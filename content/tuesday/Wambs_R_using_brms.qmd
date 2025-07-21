@@ -1,6 +1,6 @@
 ---
 title: "WAMBS R Tutorial (using brms)"
-author: "By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen"
+author: "By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen and Suzanne Hoogeveen"
 format: 
   html:
     toc: true
@@ -28,10 +28,10 @@ In this tutorial you follow the steps of the When-to-Worry-and-How-to-Avoid-the-
 **To be checked after estimation but before inspecting model results**
 
 2.    Does the trace-plot exhibit convergence?
-3.  Does convergence remain after doubling the number of iterations?
+3.    Does convergence remain after doubling the number of iterations?
 4.   Does the posterior distribution histogram have enough information?
 5.   Do the chains exhibit a strong degree of autocorrelation?
-6.   Do the posterior distributions make substantive sense?
+6.   Do the posterior distributions and posterior predictions make substantive sense?
 
 **Understanding the exact influence of the priors**
 
@@ -82,6 +82,7 @@ library(bayesplot) #  needed for plotting
 library(ggmcmc)
 library(mcmcplots) 
 library(tidybayes)
+library(invgamma)
 ```
 
 > note. If you are getting the error: *Error: .onLoad failed in loadNamespace() for 'dbplyr', details: call: setClass(cl, contains = c(prevClass, "VIRTUAL"), where = where) error: error in contained classes ("character") for class "ident"; class definition removed from 'dbplyr'* the brms package is loaded before the tidyverse package. Please restart R and load them in the order, tidyverse first brms second.
@@ -90,14 +91,14 @@ You can find the data in the file <span style="color:red"> ` phd-delays.csv` </s
 ```{r, results='hide', message=FALSE, warning=FALSE, eval=FALSE}
 #read in data
 dataPHD <- read.csv2(file="phd-delays.csv")
-colnames(dataPHD) <- c("diff", "child", "sex","age","age2")
+colnames(dataPHD) <- c("diff", "child", "gender","age","age2")
 ```
 
 
 Alternatively, you can directly download them from GitHub into your R work space using the following command:
 ```{r, eval=TRUE}
 dataPHD <- read.csv2(file="https://raw.githubusercontent.com/UtrechtUniversity/BayesianEstimation/main/content/tuesday/phd-delays.csv")
-colnames(dataPHD) <- c("diff", "child", "sex","age","age2")
+colnames(dataPHD) <- c("diff", "child", "gender","age","age2")
 ```
 
 GitHub is a platform that allows researchers and developers to share code, software and research and to collaborate on projects (see https://github.com/)
@@ -167,7 +168,7 @@ plot(density(rnorm(n = 100000, mean = XX, sd = sqrt(XX))), main = "effect Age^2"
 #| code-fold: true
 #| code-summary: "Click to show result"
 par(mfrow = c(2,2))
-plot(density(rnorm(n = 100000, mean = -35, sd = sqrt(20))), main = "prior intercept") # the rnorm function uses the standard devation instead of variance, that is why we use the sqrt
+plot(density(rnorm(n = 100000, mean = -35, sd = sqrt(20))), main = "prior intercept") # the rnorm function uses the standard deviation instead of variance, that is why we use the sqrt
 plot(density(rnorm(n = 100000, mean = .8,  sd = sqrt(5))),   main = "effect Age")
 plot(density(rnorm(n = 100000, mean = 0,   sd = sqrt(10))),  main = "effect Age^2")
 ```
@@ -196,7 +197,7 @@ plot(years, delay, type= "l")
 ## **Step 2: Run the model and check for convergence**
 
 
-To run a multiple regression with brms, you first specify the model, then fit the model and finally acquire the summary (similar to the frequentist model using  `lm()`). The model is specified as follows:
+To run a multiple regression with `brms`, you first specify the model, then fit the model and finally acquire the summary (similar to the frequentist model using  `lm()`). The model is specified as follows:
 
 
 1.  A dependent variable we want to predict.
@@ -212,12 +213,12 @@ To run a multiple regression with brms, you first specify the model, then fit th
 
 There are many other options we can select, such as the number of chains how many iterations we want and how long of a warm-up phase we want, but we will just use the defaults for now.
 
-For more information on the basics of brms, see the [website and vignettes](https://cran.r-project.org/web/packages/brms/index.html) 
+For more information on the basics of `brms`, see the [website and vignettes](https://cran.r-project.org/web/packages/brms/index.html) 
 
 
 ### 2. Does the trace-plot exhibit convergence?
 
-First we run the anlysis with only a short burnin period of 250 samples and then take another 500 samples.
+First we run the analysis with only a short burnin period of 250 samples and then take another 250 samples (`iter` includes the `warmup` samples).
 
 The following code is how to specify the regression model:
 
@@ -241,8 +242,8 @@ model_few_samples <- brm(formula = diff ~ 0 + Intercept + age + age2,
 Now we can plot the trace plots.
 
 ```{r}
-modeltranformed <- ggs(model_few_samples) # the ggs function transforms the BRMS output into a longformat tibble, that we can use to make different types of plots.
-ggplot(filter(modeltranformed, Parameter %in% c("b_Intercept", "b_age", "b_age2", "sigma")),
+modeltransformed <- ggs(model_few_samples) # the ggs function transforms the BRMS output into a longformat tibble, that we can use to make different types of plots.
+ggplot(filter(modeltransformed, Parameter %in% c("b_Intercept", "b_age", "b_age2", "sigma")),
        aes(x   = Iteration,
            y   = value, 
            col = as.factor(Chain)))+
@@ -261,18 +262,18 @@ Alternatively, you can simply make use of the built-in plotting capabilities of 
 ```{r}
 mcmc_plot(model_few_samples, type = "trace")
 ```
+Note that the first option using `gss` and `ggplot` displays all iterations, including warmup (i.e., burnin), whereas the built-in `mcmc_plot` function removes the warmup iterations by default.
 
+The trace (caterpillar) plots suggest that the chains are not neatly converged (we ideally want one "big, fat caterpillar", like the one for sigma). This indicates we need more samples.
 
-It seems like the trace (caterpillar) plots are not neatly converged into one each other (we ideally want one fat caterpillar, like the one for sigma). This  indicates we need more samples.
+We can check if the chains converged by having a look at the convergence diagnostics. Two of these diagnostics of interest include the Gelman and Rubin diagnostic and the Geweke diagnostic. 
 
-We can check if the chains convergenced by having a look at the convergence diagnostics. Two of these diagnostics of interest include the Gelman and Rubin diagnostic and the Geweke diagnostic. 
-
-* The Gelman-Rubin Diagnostic shows the PSRF values (using the  within and between chain variability). You should look at the Upper CI/Upper limit, which are all should be close to 1. If they aren't close to 1, you should use more iterations. Note: The Gelman and Rubin diagnostic is also automatically given in the summary of brms under the column Rhat 
-* The Geweke Diagnostic shows the z-scores for a test of equality of means between the first and last parts of each chain, which should be <1.96. A separate statistic is calculated for each variable in each chain. In this way it check whether a chain has stabalized. If this is not the case, you should increase the number of iterations. In the plots you should check how often values exceed the boundary lines of the z-scores. Scores above 1.96  or below -1.96 mean that the two portions of the chain significantly differ and full chain convergence was not obtained.
+* The Gelman-Rubin Diagnostic shows the PSRF values (using the within and between chain variability). You should look at the Upper CI/Upper limit, which are all should be close to 1. If they aren't close to 1, you should use more iterations. Note: The Gelman and Rubin diagnostic is also automatically given in the summary of `brms` under the column Rhat 
+* The Geweke Diagnostic shows the z-scores for a test of equality of means between the first and last parts of each chain, which should be <1.96. A separate statistic is calculated for each variable in each chain. In this way it check whether a chain has stabilized. If this is not the case, you should increase the number of iterations. In the plots you should check how often values exceed the boundary lines of the z-scores. Scores above 1.96  or below -1.96 mean that the two portions of the chain significantly differ and full chain convergence was not obtained.
 
 
 To obtain the Gelman and Rubin diagnostic use:
-```{r}
+```{r, warning=FALSE}
 modelposterior <- as.mcmc(model_few_samples) # with the as.mcmc() command we can use all the CODA package convergence statistics and plotting options
 gelman.diag(modelposterior[, 1:4])
 gelman.plot(modelposterior[, 1:4])
@@ -284,7 +285,7 @@ geweke.diag(modelposterior[, 1:4])
 geweke.plot(modelposterior[, 1:4])
 ```
 
-These statistics confirm that the chains have not converged. Therefore, we run the same analysis with more samples.
+These statistics confirm that the chains have not converged. Therefore, we run the same analysis with more samples (and more burnin samples).
 
 ```{r,results='hide', message=FALSE, warning=FALSE}
 model <- brm(formula = diff ~ 0 + Intercept + age + age2, 
@@ -302,7 +303,7 @@ mcmc_plot(model, type = "trace")
 ```
 
 Obtain the Gelman and Rubin diagnostic again.
-```{r}
+```{r, warning=FALSE}
 modelposterior <- as.mcmc(model) # with the as.mcmc() command we can use all the CODA package convergence statistics and plotting options
 gelman.diag(modelposterior[, 1:4])
 gelman.plot(modelposterior[, 1:4])
@@ -310,10 +311,11 @@ gelman.plot(modelposterior[, 1:4])
 
 Obtain Geweke diagnostic again.
 ```{r,results='hide', message=FALSE, warning=FALSE}
+geweke.diag(modelposterior[, 1:4])
 geweke.plot(modelposterior[, 1:4])
 ```
 
-Now we see that the Gelman and Rubin diagnostic (PRSF) is close to 1 for all parameters and the the Geweke diagnostic is not > 1.96.
+Now we see that the Gelman and Rubin diagnostic (PRSF) is close to 1 for all parameters and the Geweke diagnostic is not > 1.96.
 
 
 
@@ -331,9 +333,9 @@ model_doubleiter <- brm(formula = diff ~ 0 + Intercept + age + age2,
                         seed    = 12345)
 ```
 
-You should again have a look at the above-mentioned convergence statistics, but we can also compute the relative bias to inspect if doubling the number of iterations influences the posterior parameter estimates ($bias= 100*\frac{(model \; with \; double \; iteration \; - \; initial \; converged \; model )}{initial \; converged \; model}$). In order to preserve clarity we  just calculate the bias of the two regression coefficients.
+You should again have a look at the above-mentioned convergence statistics, but we can also compute the relative bias to inspect if doubling the number of iterations influences the posterior parameter estimates ($bias= 100*\frac{(model \; with \; double \; iteration \; - \; initial \; converged \; model )}{initial \; converged \; model}$). 
 
-You should combine the relative bias in combination with substantive knowledge about the metric of the parameter of interest to determine when levels of relative deviation are negligible or problematic. For example, with a regression coefficient of 0.001, a 5% relative deviation level might not be substantively relevant. However, with an intercept parameter of 50, a 10% relative deviation level might be quite meaningful. The specific level of relative deviation should be interpreted in the substantive context of the model. Some examples of interpretations are:
+You should evaluate the relative bias in combination with substantive knowledge about the metric of the parameter of interest to determine when levels of relative deviation are negligible or problematic. For example, with a regression coefficient of 0.001, a 5% relative deviation level might not be substantively relevant. However, with an intercept parameter of 50, a 10% relative deviation level might be quite meaningful. The specific level of relative deviation should be interpreted in the substantive context of the model. Some examples of interpretations are:
 
 - if relative deviation is &lt; |5|%, then do not worry;
 - if relative deviation &gt; |5|%, then rerun with 4x nr of iterations.
@@ -345,7 +347,7 @@ _**Question:** calculate the relative bias. Are you satisfied with number of ite
 
 
 
-To get the relative bias simply save the means of the regression coefficients and other parameters (ignore `lp__` for now) for the two different analyses and compute the bias. 
+To get the relative bias simply extract the means of the regression coefficients and other parameters (ignore `lp__` for now) using `posterior_summary` for the two different analyses and compute the bias. 
 
 <details>
 <summary>Click to show result</summary>
@@ -353,7 +355,7 @@ To get the relative bias simply save the means of the regression coefficients an
 round(100*((posterior_summary(model_doubleiter)[,"Estimate"] - posterior_summary(model)[,"Estimate"]) / posterior_summary(model)[,"Estimate"]), 4)
 ```
 
-_The relative bias is small enough (<5%), do not worry about it._ 
+_The relative bias is small enough (<5%, in fact <0.1%), do not worry about it._ 
 </details>
 
 
@@ -372,7 +374,7 @@ mcmc_plot(model, type = "hist")
 
 <details>
 <summary>Click to show interpretation</summary>
-_The histograms look smooth and have no gaps or other abnormalities. Based on this, adding more iterations is not necessary. However, if you are not satisfied, you can improve the number of iterations again. Posterior distributions do not have to be symmetrical, but in this example they seem to be._ 
+_The histograms look smooth and have no gaps or other abnormalities. Based on this, adding more iterations is not necessary. However, if you are not satisfied, you can increase the number of iterations again. Posterior distributions do not have to be symmetrical, but in this example they seem to be._ 
 </details>
 
 
@@ -388,7 +390,16 @@ mcmc_plot(model_few_samples, type = "hist")
   
   
 
-### 5.   Do the chains exhibit a strong degree of autocorrelation?
+### 5.   Is the effective sample size sufficient or do the chains exhibit a strong degree of autocorrelation?
+
+The effective sample size (ESS) is a measure of the number of independent samples in a Markov Chain Monte Carlo (MCMC) chain and reflects the efficiency of the algorithm.  It accounts for the autocorrelation in the chains, which can reduce the effective number of samples. A higher ESS indicates that the MCMC chain is more efficient and provides more reliable estimates. `brms` / Stan gives a warning if the number of ESS is too small. 
+
+```{r, warning=FALSE}
+# number of effective samples
+effectiveSize(model)
+# ratio of effective samples / number of iterations
+neff_ratio(model)
+```
 
 
 To obtain information about autocorrelation the following syntax can be used:
@@ -400,17 +411,13 @@ mcmc_plot(model, type = "acf")
 _**Question:** What can you conclude about these autocorrelation plots?_
 
 
-
-
 <details>
 <summary>Click to show interpretation</summary>
-_These results show that autocorrelation is quite stong after a few lags. This means it is important to make sure we ran the analysis with a lot of samples, because with a high autocorrelation it will take longer until the whole parameter space has been identified. For more informtation on autocorrelation check this [paper](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210X.2011.00131.x)._
+_These results show that autocorrelation is quite strong after a few lags (up to 10). This means it is important to make sure we ran the analysis with a lot of samples, because with a high autocorrelation it will take longer until the whole parameter space has been identified. Historically, thinning has been used to reduce autocorrelation in MCMC chains, but this is no longer recommended. Instead, it is better to increase the number of iterations and warmup samples to ensure that the chains are well-mixed and that the effective sample size is sufficient. For more information on autocorrelation check this [paper](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210X.2011.00131.x)._
 </details>
 
 
-
-
-### 6.   Do the posterior distributions make substantive sense?
+### 6.   Do the posterior distributions and posterior predictions make substantive sense?
 
 We plot the posterior distributions and see if they are unimodel (one peak), if they are clearly centered around one value, if they give a realistic estimate and if they make substantive sense compared to our prior believes (priors). Here we plot the  posteriors of the regression coefficients. If you want you can also plot the mean and the 95% Posterior HPD Intervals.
 
@@ -418,6 +425,7 @@ We plot the posterior distributions and see if they are unimodel (one peak), if 
 ```{r, eval= TRUE}
 mcmc_plot(model, type = "dens")
 ```
+
 
 
 _**Question:** What is your conclusion; do the posterior distributions make sense?_
@@ -430,6 +438,19 @@ _Yes, we see a clear negative intercept, which makes sense since a value of age 
 </details>
 
 
+In addition, do the posterior predictive distributions make sense substantively and in light of the observed data? 
+For this, we want to look at predictions on the response scale the model makes based on the posterior parameter estimates. 
+
+```{r pp-check}
+bayesplot::pp_check(model, ndraws = 100) + theme_minimal() + ggtitle("Posterior predictive")
+```
+
+_**Question:** Do the posterior predictive distributions make sense substantively and in light of the observed data?_
+
+<details>
+<summary>Click to show interpretation</summary>
+_This is often the tricky part. Clearly, we see that the model does not perfectly capture the shape of the observed data, which is not symmetrical. Although we could argue that the fit is good enough for our purposes, we could also investigate how to improve the fit by considering alternative likelihood functions, such as a shifted lognormal distribution, or setting a lower bound based on the minimum possible delay (e.g., 2 years, so 12 months). Do note that while these changes will most likely improve the posterior fit, because they better suit the data-generating process, they will also make interpretation more complex._
+</details>
 
 
 ## **Step 3: Understanding the exact influence of the priors**
@@ -444,6 +465,29 @@ summary(model)
 ### 7. Do different specification of the variance priors influence the results?
 
 So far we have used the -$\in \sim IG(.5, .5)$ prior, but we can also use the -$\in \sim IG(.01, .01)$ prior and see if doing so makes a difference. To quantify this difference we again calculate a relative bias.
+
+Let's first plot the priors to get an idea of what expectation of the variance they reflect. 
+
+```{r, eval= TRUE}
+# inverse gamma prior 
+# Create a sequence of x values
+x <- seq(0.01, 1000, length.out = 500)
+
+# Compute the density
+y1 <- dinvgamma(x, shape = 0.5, scale = 0.5)
+y2 <- dinvgamma(x, shape = 0.01, scale = 0.01)
+
+
+# Plot the Inverse Gamma prior
+par(mfrow = c(1,2))
+plot(x, y1, type = "l", lwd = 2, col = "blue",
+     main = "IG(0.5, 0.5)",
+     xlab = "x", ylab = "Density")
+plot(x, y2, type = "l", lwd = 2, col = "red",
+     main = "IG(0.01, 0.01)",
+     xlab = "x", ylab = "Density")
+
+```
 
 _**Question:** Are the results robust for different specifications of the prior on the residual variance?_
 
@@ -494,6 +538,7 @@ summ2 <- posterior_summary(model.difIG)
 _Yes, the results are robust, because there is only a really small amount of relative bias for the residual variance._
 </details>
 
+_**Extra question**: Which of the two settings for the inverse gamma prior on the residual variance do you think is more appropriate here?_
 
 
   
@@ -502,7 +547,7 @@ _Yes, the results are robust, because there is only a really small amount of rel
 
 
 
-The default brms priors are non-informative, so we can run the analysis without any specified priors and compare them to the model we have run thus far, using the relative bias, to see if there is a large influence of the priors.
+The default `brms` priors are non-informative, so we can run the analysis without any specified priors and compare them to the model we have run so far, using the relative bias, to see if there is a large influence of the priors.
 
 _**Question**: What is your conclusion about the influence of the priors on the posterior results?_
 
@@ -516,7 +561,7 @@ _**Question**: What is your conclusion about the influence of the priors on the 
 
 
 
-From the brms manual we learn that:
+From the `brms` manual we learn that:
 
 1. *The default prior for population-level effects (including monotonic and category specific effects) is an improper flat prior over the reals."*
 2. *"By default, sigma has a half student-t prior that scales in the same way as the group-level standard deviations."*
@@ -533,7 +578,12 @@ model.default <- brm(formula = diff ~ 0 + Intercept + age + age2,
 posterior_summary(model.default)
 ```
 
+You can always check the priors in a given model using the function `get_prior()`. 
 
+```{r, eval= TRUE}
+get_prior(model.default)
+```
+Here we see that the default prior for sigma --based on these data-- is a half student-t prior with scale 7.4. 
 
 ```{r, include = F}
 summ3 <- posterior_summary(model.default)
@@ -552,7 +602,7 @@ _The informative priors have quite some influence (up to 25%) on the posterior r
 </details>
 
 
-_**Question**: Which results do you use to draw conclusion on?_
+_**Question**: Which results do you use to draw conclusions?_
 
 <details>
 <summary>Click to show interpretation</summary>
@@ -567,8 +617,11 @@ From the original paper:
 
 > "If informative or weakly-informative priors are used, then we suggest running a sensitivity analysis of these priors. When subjective priors are in place, then there might be a discrepancy between results using different subjective prior settings. A sensitivity analysis for priors would entail adjusting the entire prior distribution (i.e., using a completely different prior distribution than before) or adjusting hyperparameters upward and downward and re-estimating the model with these varied priors. Several different hyperparameter specifications can be made in a sensitivity analysis, and results obtained will point toward the impact of small fluctuations in hyperparameter values. [...] The purpose of this sensitivity analysis is to assess how much of an impact the location of the mean hyperparameter for the prior has on the posterior. [...] Upon receiving results from the sensitivity analysis, assess the impact that fluctuations in the hyperparameter values have on the substantive conclusions. Results may be stable across the sensitivity analysis, or they may be highly instable based on substantive conclusions. Whatever the finding, this information is important to report in the results and discussion sections of a paper. We should also reiterate here that original priors should not be modified, despite the results obtained."
 
-
 For more information on this topic, please also refer to this [paper](http://psycnet.apa.org/record/2017-52406-001). 
+
+In addition to sensitivity analyses based on prior settings, you may also include sensitivity checks based on the model structure, such as using a different likelihood function (e.g., the shifted log-normal distribution) or the inclusion of additional predictors or interactions.  
+
+
 
 ### 10.   Is the Bayesian way of interpreting and reporting model results used?
 
@@ -576,33 +629,63 @@ For a summary on how to interpret and report models, please refer to https://www
 
 ```{r,  message=FALSE, warning=FALSE, eval= TRUE}
 summary(model)
+# summary of sampling diagnostics 
+rhats <- brms::rhat(model)
+rhat_max <- sort(rhats, decreasing = T)[1] #sigma 
+
+ratios <- neff_ratio(model)
+ess <- bayestestR::effective_sample(model, effects = "all")
+ess_min <- min(ess$ESS) #b_age 
+
 ```
 
-In the current model we see that:
+Aspects to report: 
+
+1. estimates + credible intervals: make use of the fact that you have actual indication of uncertainty of the model parameters (not just hypothetical). Also add plots to ease interpretability! 
+2. program and packages used
+3. discussion of priors (justify choices, and report sensitivity)
+4. discussion of settings (number of chains, number of interaction, warmup, seeds etc.)
+5. discussion of sampling diagnostics (e.g., $\hat{R}$, effective sample size)
+6. perhaps: model fit or model comparison metrics (e.g., loo, Bayes factors) 
+
+Example: 
 
 *  The estimate for the intercept is  `r round(summ1[1,1],2)` [`r round(summ1[1,3],2)` ;  `r round(summ1[1,4],2)`]
 *  The estimate for the effect of $age$  is  `r round(summ1[2,1],2)` [`r round(summ1[2,3],2)` ; `r round(summ1[2,4],2)`]
 *  The estimate for the effect of $age^2$  is `r round(summ1[3,1],2)` [`r round(summ1[3,3],2)` ; `r round(summ1[3,4],2)`]
 
+We used the `brms` package (Bürkner, 2017) to fit Bayesian multilevel models, which relies on the Stan language (Carpenter et al., 2017). The model was run with 4 chains, each with 4000 iterations and a warmup of 2000 iterations (total post-warmup $N=8000$). The model diagnostics indicated good convergence (largest $\hat{R}=$ `r round(rhat_max,4)` for the residual variance and sufficient effective sample sizes for all parameters (median $\hat{N}_{\text{eff}}$ = `r median(ess$ESS)`). The smallest $\hat{N}_{\text{eff}}$ = `r ess_min` for the regression coefficient of age (ratio= `r round(min(ratios),2)`), indicating that there is some autocorrelation in the chains. 
 
-We can see that none of 95% Posterior HPD Intervals for these effects include zero, which means we are can be quite certain that all of the effects are different from 0.
-
+We used an linear regression model with a Gaussian likelihood and informative priors derived from (fictitious) previous studies on the intercept $\sim \mathcal{N}(-35, 20)$, the coefficient of age in years $\beta_1 \sim \mathcal{N}(.8, 5)$, the coefficient of squared age $\beta_2 \sim \mathcal{N}(0, 10)$, as we expected a non-linear effect of age, and the residual variance $\sigma \sim IG(.5, .5)$. This is an uninformative prior for the residual variance, which has been found to perform well in simulation studies.
+Sensitivity checks on the priors and model specification indicated that the conclusions are robust to different prior settings for the variance (i.e., $\sigma \sim IG(.01, .01)$. However, result do differ when using diffuse default priors, which results in a lower intercept and stronger effects of age, though the pattern remains the same. 
+  
+  
 Remember how we plotted the relation between delay and years based on the prior information? Now, do the same with the posterior estimates.
-
-
 
 
 ```{r, eval= TRUE}
 years <- 20:80
-delay <- -35 + 2.13*years - 0.02*years^2
-plot(years, delay, type= "l")
+delay <- summ1[1,1] + summ1[2,1]*years +(summ1[3,1])*years^2
+plot(years, delay, type= "l", xlim= c(20, 80),
+     xlab = "Age (years)", ylab = "Delay (months)", main = "Estimated delay of PhD degree by age")
+
 ```
 
- 
+```{r}
+# or, more elegantly, using the posterior samples
+library(tidybayes)
+newdata <- tibble(age = years, age2 = years^2)
 
+model %>%
+  add_predicted_draws(newdata = newdata) %>%
+  ggplot(aes(x = age, y = .prediction)) +
+  stat_lineribbon(alpha = 0.5) +
+  labs(title = "Predicted delay of PhD degree by age",
+       y = "Predicted Delay (months)",
+       x = "Age (years)") + 
+  theme_minimal()
 
-  
-  
+```
 
 **References**
 
@@ -615,7 +698,9 @@ van Erp, S., Mulder, J., & Oberski, D. L. (2017). Prior sensitivity analysis in 
 
 Van de Schoot, R., &amp; Depaoli, S. (2014). Bayesian analyses: Where to start and what to report. _European Health Psychologist_, _16_(2), 75-84.
 
+Bürkner, P-C. (2017). Brms: An R Package for Bayesian Multilevel Models Using Stan. _Journal of Statistical Software 80_(1), 1–28. https://doi.org/10.18637/jss.v080.i01.
 
+Carpenter, B., Gelman, A., Hoffman, M., Lee, D., Goodrich, B., Betancourt, M., Brubaker, M. A., Guo, J., Li, P., & Riddell, A. (2017). Stan: A probabilistic programming language. _Journal of Statistical Software, 76_. https://doi.org/10.18637/jss.v076.i01
 
 
 ## Original Computing Environment

@@ -1,0 +1,331 @@
+---
+title: 'Influence of Priors: Popularity Data'
+author: "By Laurent Smeets and Rens van de Schoot, with updates by Duco Veen and Suzanne Hoogeveen"
+format: 
+  html:
+    toc: true
+    
+execute: 
+  cache: true 
+---
+
+## Introduction
+
+**This is part 2 of a 3 part series on how to do multilevel models in the Bayesian framework. In part 1 we explained how to step by step build the multilevel model we will use here and in part 3 we will look at the influence of different priors.**
+
+## Preparation
+
+This tutorial expects:
+
+-   Basic knowledge of multilevel analyses (first two chapters of the book are sufficient).
+-   Basic knowledge of coding in R, specifically the [lme4 package](https://www.rensvandeschoot.com/tutorials/lme4/).
+-   Basic knowledge of Bayesian Statistics.
+-   Installation of [STAN](https://mc-stan.org/users/interfaces/rstan) and [Rtools](https://cran.r-project.org/bin/windows/Rtools). For more information please see https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
+-   Installation of R packages `rstan`, and `brms`. This tutorial was made using brms version `r packageVersion("brms")` in R version `r paste0(R.Version()[c("major","minor")], collapse = ".")`
+-   Basic knowledge of [Bayesian](https://www.rensvandeschoot.com/a-gentle-introduction-to-bayesian-analysis-applications-to-developmental-research/) inference
+
+## Priors
+
+As stated in the `brms` manual: *"Prior specifications are flexible and explicitly encourage users to apply prior distributions that actually reflect their beliefs."*
+
+We will set 4 types of extra priors here (in addition to the uninformative prior we have used thus far) 
+
+1. With an estimate far off the (frequentist) LME value we found in the data with a wide variance (diffuse/non-informative prior)
+2. With an estimate close to the LME value we found in the data with a small variance ('plausible' informative prior 1)
+3. With an estimate far off the LME value we found in the data with a small variance ('implausible' informative prior 2). 
+4. With an estimate far off the LME value we found in the data priors with a small variance ('implausible' informative prior 3).
+
+In this tutorial we will only focus on priors for the regression coefficients and not on the error and variance terms, since we are most likely to actually have information on the size and direction of a certain effect and less (but not completely) unlikely to have prior knowledge on the unexplained variances. You might have to play around a little bit with the controls of the `brm()` function and specifically the `adapt_delta` and `max_treedepth`. Thankfully brms will tell you when to do so.
+
+::: callout-note
+## Note
+
+If you just completed the previous tutorial, you can skip Step 1 (setting up packages) and Step 2 (downloading the data) and immediately move on to inspecting the priors.
+:::
+
+## Step 1: Setting up packages
+
+In order to make the [brms package](https://cran.r-project.org/web/packages/brms/index.html) function it need to call on STAN and a C++ compiler. For more information and a tutorial on how to install these please have a look at: https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started and https://cran.r-project.org/bin/windows/Rtools/.
+
+> "Because brms is based on Stan, a C++ compiler is required. The program Rtools (available on https://cran.r-project.org/bin/windows/Rtools/) comes with a C++ compiler for Windows. On Mac, you should use Xcode. For further instructions on how to get the compilers running, see the prerequisites section at the RStan-Getting-Started page." \~ quoted from the BRMS package document
+
+After you have install the aforementioned software you need to load some other R packages. If you have not yet installed all below mentioned packages, you can install them by the command `install.packages("NAMEOFPACKAGE")`
+
+```{r, results='hide', message=FALSE, warning=FALSE, cache=FALSE}
+library(haven) # to load the SPSS .sav file
+library(tidyverse) # needed for data manipulation.
+library(brms) # for the analysis
+library(RColorBrewer) # needed for some extra colours in one of the graphs
+library(psych)
+library(ggmcmc)
+library(ggthemes)
+library(lme4)
+library(modelsummary) # convenient wrappers for model summary tables 
+library(parameters)
+```
+
+> note. If you are getting the error: *Error: .onLoad failed in loadNamespace() for 'dbplyr', details: call: setClass(cl, contains = c(prevClass, "VIRTUAL"), where = where) error: error in contained classes ("character") for class "ident"; class definition removed from 'dbplyr'* the brms package is loaded before the tidyverse package. Please restart R and load them in the order, tidyverse first brms second.
+
+## Step 2: Downloading the data
+
+The popularity dataset contains characteristics of pupils in different classes. The main goal of this tutorial is to find models and test hypotheses about the relation between these characteristics and the popularity of pupils (according to their classmates). To download the popularity data go to https://multilevel-analysis.sites.uu.nl/datasets/ and follow the link to the popularity dataset. After downloading the data to your working directory you can open it with the `read_sav()` command.
+
+Alternatively, you can directly download them from GitHub into your R workspace using the following command:
+
+```{r}
+popular2data <- read_sav(file ="https://github.com/MirjamMoerbeek/Data_Sets_ML_book/raw/main/popular2.sav")
+```
+
+There are some variables in the dataset that we do not use, so we can select the variables we will use and have a look at the first few observations.
+
+```{r}
+popular2data <- select(popular2data, pupil, class, extrav, sex, texp, popular) # we select just the variables we will use
+colnames(popular2data) <- c("pupil","class","extrav","gender","texp","popular")
+head(popular2data) # we have a look at the first 6 observations
+```
+
+We can also quickly check the structure of the data to see that we have 2000 pupils in 100 classes.
+
+```{r}
+describe(popular2data)
+```
+
+## The Effect of Priors
+
+With the `get_prior()` command we can see which priors we can specify for this model.
+
+```{r}
+get_prior(popular ~ 0 + Intercept + gender + extrav + texp + extrav:texp + (1 + extrav | class), data = popular2data)
+```
+
+For the first model with non-default priors we just set normal priors for all regression coefficients, in reality many, many more prior distributions are possible, see the [brms manual](https://cran.r-project.org/web/packages/brms/brms.pdf) for an overview. To place a prior on the fixed intercept, one needs to include `0 + Intercept` in the formula syntax. See [here](https://rdrr.io/cran/brms/man/set_prior.html) for an explanation.
+
+```{r}
+prior1 <- c(set_prior("normal(-10,100)", class = "b", coef = "extrav"),
+            set_prior("normal(10,100)", class = "b", coef = "extrav:texp"),
+            set_prior("normal(-5,100)", class = "b", coef = "gender"),
+            set_prior("normal(-5,100)", class = "b", coef = "texp"),
+            set_prior("normal(10,100)", class = "b", coef = "Intercept" ))
+```
+
+If you want to visualize the prior distributions to get an idea of what expectations about the parameter values they reflect, you can use the following commands:
+
+```{r}
+priors_df <- data.frame(
+  coef = c("extrav","extrav:texp","gender","temp","Intercept"),
+  mean = c(-10, 10, -5, -5, 10),
+  sd = c(100, 100, 100, 100, 100)
+)
+
+# simulate values for each prior using rnorm (normal distribution)
+set.seed(123)
+prior_samples <- priors_df %>%
+  rowwise() %>%
+  mutate(value = list(rnorm(1000, mean, sd))) %>%
+  unnest(cols = c(value))
+
+# plot
+ggplot(prior_samples, aes(x = value, fill = coef)) +
+  geom_density(alpha = 0.6) +
+  facet_wrap(~ coef, scales = "free") +
+  theme_minimal() +
+  labs(title = "Prior Distributions for Model Coefficients",
+       x = "Value", y = "Density")
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+model6 <- brm(popular ~ 0 + Intercept + gender + extrav + texp + extrav:texp + (1 + extrav|class), 
+              data  = popular2data, warmup = 1000,
+              iter  = 3000, chains = 2, 
+              prior = prior1,
+              seed  = 123, control = list(adapt_delta = 0.97),
+              cores = 2,
+              sample_prior = TRUE) # to reach a usuable number effective samples in the posterior distribution of the interaction effect, we need many more iteration. This sampler will take quite some time and you might want to run it with a few less iterations.
+```
+
+To see which priors were inserted, use the `prior_summary()` command
+
+```{r}
+prior_summary(model6)
+```
+
+We can also check the STAN code that is being used to run this model by using the `stancode()` command, here we also see the priors being implemented. This might help you understand the model a bit more, but it is not necessary to fully understand the generated stan code.
+
+```{r}
+stancode(model6)
+```
+
+After this model with uninformative/diffuse priors, it's time to do the analysis with informative priors. Three models with different priors are tested and compared to investigate the influence of the construction of priors on the posterior distributions and therefore on the results in general. Note that for the sake of the example, we show various seemingly arbitrary prior settings here. However, remember that in actual research, it is important to make informed decisions and justify the prior settings.
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+prior2 <- c(set_prior("normal(.8,.1)", class = "b", coef = "extrav"),
+            set_prior("normal(-.025,.1)", class = "b", coef = "extrav:texp"),
+            set_prior("normal(1.25,.1)", class = "b", coef = "gender"),
+            set_prior("normal(.23,.1)", class = "b", coef = "texp"),
+            set_prior("normal(-1.21,.1)", class = "b", coef = "Intercept" ))
+
+model7 <- brm(popular ~ 0 + Intercept + gender + extrav + texp + extrav:texp + (1 + extrav|class), 
+              data  = popular2data, warmup = 1000,
+              iter  = 3000, chains = 2, 
+              prior = prior2,
+              seed  = 123, control = list(adapt_delta = 0.97),
+              cores = 2,
+              sample_prior = TRUE)
+```
+
+Let's first again visualize these priors. Notice how different the values on the x-axis are compared to the previous prior distributions.
+
+```{r}
+priors_df <- data.frame(
+  coef = c("extrav","extrav:texp","gender","temp","Intercept"),
+  mean = c(.8, -.025, 1.25, .23, -1.21),
+  sd = c(.1, .1, .1, .1, .1)
+)
+
+# simulate values for each prior using rnorm (normal distribution)
+set.seed(123)
+prior_samples <- priors_df %>%
+  rowwise() %>%
+  mutate(value = list(rnorm(1000, mean, sd))) %>%
+  unnest(cols = c(value))
+
+# plot
+ggplot(prior_samples, aes(x = value, fill = coef)) +
+  geom_density(alpha = 0.6) +
+  facet_wrap(~ coef, scales = "free") +
+  theme_minimal() +
+  labs(title = "Prior Distributions for Model Coefficients",
+       x = "Value", y = "Density")
+```
+
+```{r}
+summary(model7)
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+prior3 <- c(set_prior("normal(-1,.1)", class = "b", coef = "extrav"),
+            set_prior("normal(3, 1)", class = "b", coef = "extrav:texp"),
+            set_prior("normal(-3,1)", class = "b", coef = "gender"),
+            set_prior("normal(-3,1)", class = "b", coef = "texp"),
+            set_prior("normal(0,5)", class = "b", coef = "Intercept" ))
+
+model8 <- brm(popular ~ 0 + Intercept + gender + extrav + texp + extrav:texp + (1 + extrav|class), 
+              data  = popular2data, warmup = 1000,
+              iter  = 3000, chains = 2, 
+              prior = prior3,
+              seed  = 123, control = list(adapt_delta = 0.97),
+              cores = 2,
+              sample_prior = TRUE)
+```
+
+```{r}
+summary(model8)
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+prior4 <- c(set_prior("normal(3,.1)", class = "b", coef = "extrav"),
+            set_prior("normal(-3,1)", class = "b", coef = "extrav:texp"),
+            set_prior("normal(3,1)", class = "b", coef = "gender"),
+            set_prior("normal(3,1)", class = "b", coef = "texp"),
+            set_prior("normal(0,5)", class = "b", coef = "Intercept" ))
+
+
+model9 <- brm(popular ~ 0 + Intercept + gender + extrav + texp + extrav:texp + (1 + extrav|class), 
+              data  = popular2data, warmup = 1000,
+              iter  = 3000, chains = 2, 
+              prior = prior4,
+              seed  = 123, control = list(adapt_delta = 0.97),
+              cores = 2,
+              sample_prior = TRUE)
+```
+
+```{r}
+summary(model9)
+```
+
+Comparing the last three models we see that for the first two models the prior specification does not really have a large influence on the results. However, for the final model with the highly informative priors that are far from the observed data, the priors do influence the posterior results. Because of the fairly large dataset, the priors are unlikely to have a large influence unless they are highly informative. 
+
+```{r, warning=FALSE}
+# Combine all models into a table
+modelsummary(
+  list("Prior: diffuse" = model6, "Prior: informative (1)" = model7, 
+       "Prior: informative (2)" = model8, "Prior: informative (3)" = model9),
+  statistic = "conf.int",
+  metrics = "none",
+  fmt = 2, 
+  output = "gt", 
+  coef_omit = "^(sd_|cor_|Intercept\\[|sigma)"  # Regex to omit random effects, group-level terms, etc.
+) 
+```
+
+The table shows how strongly the estimates are affected by the informative priors: in the first two models the estimates are close to each other (and the frequentist estimates), while in the third and fourth model the estimates are pulled towards the prior values. For extraversion, for instance, the effect can become much stronger (informative 3/model 9) or even negative (though the credible interval includes zero; informative 2/model 8). Notably, the credible intervals of the posteriors don't even overlap with each other. 
+
+Because we asked to save the prior in the last model (`"sample_prior = TRUE"`), we can also plot the difference between the prior and the posterior distribution of different parameters. In all cases, we see that the prior has a large influence on the posterior compared to the posterior estimates we arrived in earlier models.
+
+```{r}
+plot(hypothesis(model8, "texp > 0"))
+plot(hypothesis(model8, "gender = 0"))
+plot(hypothesis(model8, "extrav > 0"))
+plot(hypothesis(model8, "extrav:texp > 0"))
+plot(hypothesis(model8, "Intercept > 0"))
+```
+Let's further visualize the influence of the priors on the posterior distributions of the regression coefficient for extraversion. We will plot the prior and posterior distributions of the three models with different priors.
+
+```{r, fig.width=9, fig.height=6, warning=F, message=F}
+posterior1 <- posterior_samples(model6, pars = "b_extrav")[, c(1,3)]
+posterior2 <- posterior_samples(model7, pars = "b_extrav")[, c(1,3)]
+posterior3 <- posterior_samples(model8, pars = "b_extrav")[, c(1,3)]
+posterior4 <- posterior_samples(model9, pars = "b_extrav")[, c(1,3)]
+
+posterior1.2.3.4 <- bind_rows("prior 1" = gather(posterior1),
+                            "prior 2" = gather(posterior2), 
+                            "prior 3" = gather(posterior3), 
+                            "prior 4" = gather(posterior4),
+                            .id = "id")
+modelLME <- lmer(popular ~ 1 + gender + extrav + texp + extrav:texp + (1 + extrav | class), data = popular2data)
+
+ggplot(data    = posterior1.2.3.4, 
+       mapping = aes(x        = value,
+                     fill     =  id, 
+                     linetype = key, 
+                     alpha    = key)) +
+  geom_density()+
+  geom_vline(xintercept = summary(modelLME)$coefficients["extrav", "Estimate"], # add the frequentist solution too
+             size = .8, linetype = 1, col = "black")+ 
+  scale_x_continuous(limits = c(-1.5, 3))+
+  coord_cartesian(ylim = c(0, 5))+
+  ggsci::scale_fill_npg(name   = "Densities", # use the Nature Publishing Group theme, because why not
+                    labels = c("uniformative ~ N(-10,100) prior",
+                               "informative ~ N(.8,.1) prior",
+                               "informative ~ N(-1,.1) prior",
+                               "informative ~ N(3,.1) prior") )+
+  scale_linetype_manual(name   ='Posterior/Prior', 
+                        values = c("solid","dashed"), 
+                        labels = c("posterior", "prior"))+
+  scale_alpha_discrete(name   = 'Posterior/Prior', 
+                       range  = c(.7,.3), 
+                       labels = c("posterior", "prior"))+
+  annotate(geom    = "text", 
+           x = 0.35, y = -.13,
+           label  = "LME estimate:  0.804", 
+           col    = "black", 
+           family = theme_get()$text[["family"]], 
+           size   = theme_get()$text[["size"]]/3.5, 
+           fontface="italic")+
+  labs(title    = expression("Influence of (Informative) Priors on" ~ gamma[Extraversion]),
+       subtitle = "3 different densities of priors and posteriors and the LME estimate")+
+  ylab("Density") +
+  theme_minimal()
+```
+
+In this plot we can clearly see how the informative priors pull the posteriors towards them, while the uninformarive prior yields a posterior that is centered around what would be the frequentist (LME4) estimate. The informative prior that centers around the plausible value of 0.8 yields a posterior that is very similar to the one we found with the uninformative prior (and the frequentist estimate), yet slightly more peaked (i.e., more precise). The informative priors yield posteriors that are substantially pulled toward the prior (implausible) values. Note that the y-axis is clipped to enhance visibility of the uninformative prior. 
+
+#### Brms Reference
+
+[Burkner, P. C. (2017). brms: An R package for Bayesian multilevel models using Stan. Journal of Statistical Software, 80(1), 1-28.](https://www.jstatsoft.org/article/view/v080i01)
+
+## Original Computing Environment
+
+```{r}
+devtools::session_info()
+```
