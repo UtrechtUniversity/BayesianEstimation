@@ -212,7 +212,7 @@ For the exercise in R, click <a href="content/tuesday/Tutorial_BRMS.html" target
 
 This exercise is designed to make Bayesian inference more accessible for beginners. Just as in the earlier tutorial, users can engage with real-world examples to better understand the principles of Bayesian analysis.
 
-For the exercise in R, click <a href="content/tuesday/Piors_BRMS.html" target="_blank">here</a>. 
+For the exercise in R, click <a href="content/tuesday/Priors_BRMS.html" target="_blank">here</a>. 
 
 **Exercise 'Multilevel WAMBS'**
 
