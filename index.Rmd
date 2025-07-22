@@ -243,7 +243,7 @@ Day 3: we discuss estimation methods including alternatives that can be more eff
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online. 
 
-- Slides day 3
+- <a href="content/wednesday/slides_day3.pdf" target="_blank">Slides day 3</a>
 
 The exercises are available in R and Python, so you can choose the program you are most familiar with. Note that, if you work in R, the exercise requires a working version of the `brms` packages. See the `How to prepare` page if you do not have this yet. If you work in Python, we advise you to download the Jupyter notebooks and open them in [Google colab](https://colab.google) to work on the practical.
 
