@@ -320,21 +320,28 @@ https://github.com/UtrechtUniversity/BayesianEstimation
 ## Column 1
 
 ### Outline
-Day 5: today we elaborate on ways in which informative priors can be specified. We discuss how we can use expert knowledge and previous studies to inform these decisions. We also provide case studies and end with general reflections. In the afternoon, there will be opportunity to analyse your own data using the techniques learned during the week. 
+Day 5: today we quickly summarize what we've learned about (informative) priors. Then we look at *simulation-based calibration* as a method to assess the computational faithfulness of our model; do all three key elements of Bayesian estimation (prior, likelihood, and posterior) collaborate as expected? Upon request, we also quickly provide a sneak-peak into hypothesis testing with Bayes factors: what, why and how could we apply it in the Bayesian workflow? In the afternoon, there will be opportunity to analyse your own data using the techniques learned during the week. 
 
 ### Materials
 We adapt the course as we go. To ensure that you work with the latest iteration of the course materials, we advice all course participants to access the materials online.
 
-- Slides day 5
+- <a href="content/friday/slides_day5.pdf" target="_blank">Slides day 5</a>
 
+There are two tutorials/vignettes available today. However, to preserve time for the 'do-it-yourself' exercise, we'd recommend you only pick one and keep the other for later. 
 
+**Practical ‘Simulation-Based Calibration'**
 
-**Exercise ‘Expert Elicitation'**
+In this tutorial, you'll walk through the steps of a robust Bayesian workflow, including prior predictive checks, assessing computational faithfulness and sensitivity through simulation-based calibration, and posterior predictive checks. Note that the practicals are only available in R. 
 
-This exercise, using the Five-Step Method Shiny App, introduces the concept of specifying prior distributions based on eliciting expert knowledge. The participants will be guided through a comprehensive five-step method, enabling experts from diverse fields, such as academia, business, and society, to formulate their beliefs and predictions in the form of a probability distribution.
+For the practical in R, click <a href="content/friday/SBC.html" target="_blank">here</a>.
 
-To start with the exercise, click <a href="content/friday/exercise_elicit_expert_judgement.html" target="_blank">here</a>. To get to the Shiny App, click <a href="https://utrecht-university.shinyapps.io/elicitation/" target="_blank">here</a>. 
-The underlying code for the exercise is readily available on <a href="https://github.com/VeenDuco/Five-Step-Method-Shinyapp" target="_blank">GitHub</a>.
+**Practical ‘Hypothesis testing with Bayes factors'**
+
+In this tutorial, you'll learn how to perform hypothesis testing using Bayes factors using the Savage-Dickey density ratio method and model comparison with bridgesampling. This practical is only available in R.
+
+For the practical in R, click <a href="content/friday/Bayes_factors.html" target="_blank">here</a>.
+
+- [data file afterlife_beliefs](content/friday/afterlife_beliefs.csv)
 
 **Exercise ‘Skills showcase'**
 
@@ -346,11 +353,13 @@ Please note: if you are participating in this course via IOPS, please email your
 
 ### Useful references
 
-van de Schoot R, Veen D, Grandfield EM, et al . (2021) The Use of Questionable Research Practices to Survive in Academia Examined With Expert Elicitation, PriorData Conflicts, Bayes Factors for Replication Effects, and the Bayes Truth Serum. Front Psychol. doi: 10.3389/fpsyg.2021.621547.
+Heck, D. W., Boehm, U., Böing-Messing, F., Bürkner, P.-C., Derks, K., Dienes, Z., Fu, Q., Gu, X., Karimova, D., Kiers, H. A. L., Klugkist, I., Kuiper, R. M., Lee, M. D., Leenders, R., Leplaa, H. J., Linde, M., Ly, A., Meijerink-Bosman, M., Moerbeek, M., … Hoijtink, H. (2023). A review of applications of the Bayes factor in psychological research. Psychological Methods, 28(3), 558–579. https://doi.org/10.1037/met0000454
+
+Schad, D. J., Betancourt, M., & Vasishth, S. (2021). Toward a principled Bayesian workflow in cognitive science. Psychological Methods, 26(1), 103–126. https://doi.org/10.1037/met0000275
+
+Talts, S., Betancourt, M., Simpson, D., Vehtari, A., & Gelman, A. (2018). Validating Bayesian Inference Algorithms with Simulation-Based Calibration (No. arXiv:1804.06788). arXiv. https://doi.org/10.48550/arXiv.1804.06788
 
 Veen, D., Stoel, D., Zondervan-Zwijnenburg, M., & Van de Schoot, R. (2017). Proposal for a five-step method to elicit expert judgment. Frontiers in psychology, 8, 2110. https://doi.org/10.3389/fpsyg.2017.02110.
-
-https://www.rensvandeschoot.com/tutorials/expert-judgement/
 
 https://utrecht-university.shinyapps.io/elicitation/
 
