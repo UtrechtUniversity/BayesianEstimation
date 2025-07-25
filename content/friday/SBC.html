@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.551">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="By Suzanne Hoogeveen">
+
+<title>Simulation-based calibration</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="SBC_files/libs/clipboard/clipboard.min.js"></script>
+<script src="SBC_files/libs/quarto-html/quarto.js"></script>
+<script src="SBC_files/libs/quarto-html/popper.min.js"></script>
+<script src="SBC_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="SBC_files/libs/quarto-html/anchor.min.js"></script>
+<link href="SBC_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="SBC_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="SBC_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="SBC_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="SBC_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#example-afterlife-beliefs-and-mind-body-dualism" id="toc-example-afterlife-beliefs-and-mind-body-dualism" class="nav-link active" data-scroll-target="#example-afterlife-beliefs-and-mind-body-dualism">Example: afterlife beliefs and mind-body dualism</a></li>
+  <li><a href="#prior-predictive-checks" id="toc-prior-predictive-checks" class="nav-link" data-scroll-target="#prior-predictive-checks">1. Prior predictive checks</a></li>
+  <li><a href="#computational-faithfulness" id="toc-computational-faithfulness" class="nav-link" data-scroll-target="#computational-faithfulness">2. Computational faithfulness</a></li>
+  <li><a href="#model-sensitivity" id="toc-model-sensitivity" class="nav-link" data-scroll-target="#model-sensitivity">3. Model sensitivity</a></li>
+  <li><a href="#posterior-predictions" id="toc-posterior-predictions" class="nav-link" data-scroll-target="#posterior-predictions">4. Posterior predictions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Simulation-based calibration</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>By Suzanne Hoogeveen </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><em>Disclaimer: This is a draft version of the tutorial. Please let me know about any mistakes (and excuse any typos).</em></p>
+<p>We have already seen various methods to assess the appropriateness of our priors and posteriors, by means of prior/posterior predictive checks. Another method for validating the appropriateness of Bayesian models is based on assessing the faithfulness of the computational model, i.e., whether the model can recover the parameters that were used to generate the data. This is often referred to as simulation-based calibration (SBC) <span class="citation" data-cites="talts2018validating">(<a href="#ref-talts2018validating" role="doc-biblioref">Talts et al. 2018</a>)</span>. Here, we follow the Bayesian workflow proposed in <span class="citation" data-cites="kucharsky2021hidden">Kucharský et al. (<a href="#ref-kucharsky2021hidden" role="doc-biblioref">2021</a>)</span>, based on the recommendations by <span class="citation" data-cites="talts2018validating">Talts et al. (<a href="#ref-talts2018validating" role="doc-biblioref">2018</a>)</span> and <span class="citation" data-cites="schad2021principled">Schad, Betancourt, and Vasishth (<a href="#ref-schad2021principled" role="doc-biblioref">2021</a>)</span>.</p>
+<p>A full workflow for robust Bayesian inference focuses on the following steps:</p>
+<ol type="1">
+<li>assessing adequacy of priors (<strong>prior predictive checks</strong>): do the priors lead to reasonable predictions?</li>
+<li>assessing computational faithfulness (through <strong>simulation-based calibration</strong>): can the model recover the parameters that were used to generate the data?</li>
+<li>assessing model sensitivity: can the model return <strong>unbiased estimates and effectively update prior beliefs</strong> (i.e., can the model learn from data)?</li>
+<li>assessing adequacy of posteriors: <strong>posterior predictive checks</strong>: do the posterior estimates reflect reasonable predictions?</li>
+</ol>
+<p>In practice this involves:</p>
+<ol type="1">
+<li>Take the prior <span class="math inline">\(\pi(\theta)\)</span> and randomly draw a parameter set <span class="math inline">\(\tilde{\theta}\)</span> from it: <span class="math inline">\(\tilde{\theta} \sim \pi(\theta)\)</span></li>
+<li>Use this parameter set <span class="math inline">\(\tilde{\theta}\)</span> to simulate hypothetical data <span class="math inline">\(\tilde{y}\)</span> from the model: <span class="math inline">\(\tilde{y} \sim \pi(y|\tilde{\theta})\)</span></li>
+<li>Fit the model to this hypothetical data and draw samples from the posterior distribution: <span class="math inline">\(\tilde{\theta'} \sim \pi(\theta|\tilde{y})\)</span></li>
+<li>Find the rank of the true parameter <span class="math inline">\(\theta\)</span> within the posterior samples <span class="math inline">\(\tilde{\theta'}\)</span> (that is, the count of posterior samples smaller than the generating parameter value).</li>
+<li>Repeat steps 1-4, say, 100 times</li>
+<li>Assess faithfulness of the model by comparing the posterior estimates to the prior draws that were used to generate the data</li>
+<li>Assess model sensitivity by comparing the posterior estimates to the prior estimates (i.e., is the model unbiased and can it effectively update prior beliefs?)</li>
+<li>Fit the model to the actual data</li>
+<li>Assess the adequacy of the posterior estimates and predictions</li>
+</ol>
+<section id="example-afterlife-beliefs-and-mind-body-dualism" class="level2">
+<h2 class="anchored" data-anchor-id="example-afterlife-beliefs-and-mind-body-dualism">Example: afterlife beliefs and mind-body dualism</h2>
+<p>To show SBC in action, we’ll apply it to estimating a multilevel model on cross-cultural variation in afterlife beliefs and mind-body dualism, using a subset of the data from <span class="citation" data-cites="hoogeveen2023does">Hoogeveen et al. (<a href="#ref-hoogeveen2023does" role="doc-biblioref">2023</a>)</span>. The idea that high-level mental processes (e.g., love) continue after physical death, whereas bodily processes (e.g., hunger) cease. The original data consists of 10195 subjects from 24 countries, who each provided 6 continuation ratings (i.e., 61170 observations). Specifically, responses were tabulated as x out of 3 ‘yes, continues’ responses in the body-condition (hunger, working brains, hearing) and x out of 3 ‘yes, continues’ responses in the mind-condition (love, knowledge, desire). In the example here, we use a subset of the data with <span class="math inline">\(60\)</span> subjects across <span class="math inline">\(10\)</span> countries.</p>
+</section>
+<section id="prior-predictive-checks" class="level2">
+<h2 class="anchored" data-anchor-id="prior-predictive-checks">1. Prior predictive checks</h2>
+<p>To ensure that the model makes predictions are accordance with theoretical expectations we create prior predictive plots. Because we’re working with a (aggregated) binomial model (i.e., ‘yes’ vs.&nbsp;‘no’ responses, across 3 trials per category), we need to be especially careful about the prior settings. That is, because the priors are set on the transformed scale (logit-transformation), we need to check what the prior settings translate into on the probability scale. We can investigate prior predictions (on the response scale) before we touch the actual data. In this case, we have to specify priors on the intercept (i.e., overall probability of saying ‘continues’), the experimental effect (i.e., difference in probability of saying ‘continues’ between mental and physical states), and the between-country variation.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the data is a subset of the full cross-cultural dataset on afterlife beliefs</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># and mind-body dualism </span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"afterlife_beliefs.csv"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  country subject resp  cat condition site
+1 Belgium     468    2 -0.5      body    1
+2 Belgium     468    3  0.5      mind    1
+3 Belgium     473    1 -0.5      body    1
+4 Belgium     473    3  0.5      mind    1
+5 Belgium     475    2 -0.5      body    1
+6 Belgium     475    2  0.5      mind    1</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>logit <span class="ot">&lt;-</span> <span class="cf">function</span>(p) <span class="fu">log</span>(p <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> p))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>logit_dif <span class="ot">&lt;-</span> <span class="cf">function</span>(p_diff){</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  logit_A <span class="ot">&lt;-</span> <span class="fu">logit</span>(<span class="fu">ifelse</span>(<span class="fl">0.2</span><span class="sc">-</span>p_diff<span class="sc">/</span><span class="dv">2</span><span class="sc">&lt;</span><span class="dv">0</span>,<span class="fl">0.01</span>,<span class="fl">0.2</span><span class="sc">-</span>p_diff<span class="sc">/</span><span class="dv">2</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  logit_B <span class="ot">&lt;-</span> <span class="fu">logit</span>(<span class="fl">0.2</span><span class="sc">+</span>p_diff<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(logit_B <span class="sc">-</span> logit_A)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>m_int <span class="ot">&lt;-</span> <span class="fu">logit</span>(<span class="fl">0.2</span>) <span class="co"># -1.39</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>min_int <span class="ot">&lt;-</span> <span class="fu">logit</span>(<span class="fl">0.05</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>max_int <span class="ot">&lt;-</span> <span class="fu">logit</span>(<span class="fl">0.42</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>sd_int <span class="ot">&lt;-</span> (max_int <span class="sc">-</span> min_int) <span class="sc">/</span> <span class="dv">4</span> <span class="co"># 0.37</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># state effect </span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">logit_dif</span>(<span class="fl">0.15</span>) <span class="co"># 0.98</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>min <span class="ot">&lt;-</span> <span class="fu">logit_dif</span>(<span class="fl">0.01</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>max <span class="ot">&lt;-</span> <span class="fu">logit_dif</span>(<span class="fl">0.25</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>sd <span class="ot">&lt;-</span> (max <span class="sc">-</span> min) <span class="sc">/</span> <span class="dv">4</span> <span class="co"># 0.43</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Here, we use informative priors to reflect the knowledge we have from previous studies:</p>
+<ul>
+<li>overall average continuity is 0.2, from 0.05 to 0.42 (across different studies). Note that this is about the difference in means across studies, not across countries. We don’t know much about the difference between countries, but we do know that the overall intercept is around 0.2, with a range from 0.05 to 0.42.
+<ul>
+<li>we can translate this to the logit-scale. The mean will be <span class="math inline">\(log(p / (1 - p))\)</span>, so <span class="math inline">\(log(0.2 / (1 - 0.2)) = -1.39\)</span></li>
+<li>the minimum value is <span class="math inline">\(log(0.05 / (1 - 0.05)) = -2.94\)</span> and the maximum is <span class="math inline">\(log(0.42 / (1 - 0.42)) = -0.32\)</span>. From that we can get an approximate standard deviation of <span class="math inline">\(sd = (max - min) / 4 = 0.66\)</span>. We thus predict a distribution that puts more density on the lower values of 0/3, 1/3, 2/3 and 3/3 responses.</li>
+</ul></li>
+<li>state condition effect: We know that in previous studies, the average continuity was around 20%, with a different between mental and bodily states of around 15%. This means an expected difference of around 0.98 on the logit-scale. We also allow for some uncertainty, specifically, the observed range from 0.01 to 0.58 in the state-effect, which means a standard deviation of about 0.43 on the logit-scale (again we don’t know much about between-country differences).</li>
+</ul>
+<p>The prior predictions visualized in <a href="#fig-prior-preds" class="quarto-xref">Figure&nbsp;1</a> confirm these expectations. The top panel shows the prior predictive distribution of all responses. The bottom panels show that the distribution in the <em>body</em> condition predicts less continuity than the <em>mind</em> condition, which is in line with our prior information from previous literature.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pred_responses <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">paste0</span>(output_file, <span class="st">'prior_pred.csv'</span>),</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'#99B898'</span>,<span class="st">'#FF847C'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> bayesplot<span class="sc">::</span><span class="fu">ppd_dens_overlay</span>(<span class="at">ypred =</span> <span class="fu">as.matrix</span>(pred_responses)) <span class="sc">+</span> </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Prior predictive distribution"</span>) <span class="sc">+</span> </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">1</span>), </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0/3"</span>,<span class="st">"1/3"</span>,<span class="st">"2/3"</span>,<span class="st">"3/3"</span>)) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"none"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># or per condition</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> bayesplot<span class="sc">::</span><span class="fu">ppd_dens_overlay</span>(<span class="at">ypred =</span> <span class="fu">as.matrix</span>(pred_responses[,<span class="fu">seq</span>(<span class="dv">1</span>,<span class="fu">ncol</span>(pred_responses), <span class="at">by =</span> <span class="dv">2</span>)])) <span class="sc">+</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Prior predictive - body condition"</span>) <span class="sc">+</span> </span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> cols[<span class="dv">1</span>]) <span class="sc">+</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">1</span>), </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0/3"</span>,<span class="st">"1/3"</span>,<span class="st">"2/3"</span>,<span class="st">"3/3"</span>)) <span class="sc">+</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"none"</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> bayesplot<span class="sc">::</span><span class="fu">ppd_dens_overlay</span>(<span class="at">ypred =</span> <span class="fu">as.matrix</span>(pred_responses[,<span class="fu">seq</span>(<span class="dv">2</span>,<span class="fu">ncol</span>(pred_responses), <span class="at">by =</span> <span class="dv">2</span>)])) <span class="sc">+</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Prior predictive - mind condition"</span>) <span class="sc">+</span> </span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> cols[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">1</span>), </span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0/3"</span>,<span class="st">"1/3"</span>,<span class="st">"2/3"</span>,<span class="st">"3/3"</span>)) <span class="sc">+</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"none"</span>)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(p1, p2, p3,</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>             <span class="at">layout_matrix =</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                                   <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-prior-preds" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-prior-preds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="SBC_files/figure-html/fig-prior-preds-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-prior-preds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Prior model predictions of data featuring 60 subjects across 10 countries. Before having been in contact with the data, the model predicts slightly more lower values of 0/3, 1/3, 2/3 or 3/3 continuity responses (top panel) and more continuity in the mind compared to the body condition (bottom panels).
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="computational-faithfulness" class="level2">
+<h2 class="anchored" data-anchor-id="computational-faithfulness">2. Computational faithfulness</h2>
+<p>The idea of the computational faithfulness check is to see if the implemented sampling algorithm is able to recover the parameters that the data was simulated from. This is done by simulating data from the prior distribution, and then fitting the model to this simulated data. The MCMC algorithm should be able to recover the prior distribution accurately, which can be assessed by comparing the posterior samples to the prior draws that were used to generate the data.</p>
+<p>Here, we generated <span class="math inline">\(100\)</span> datasets from the prior distribution using predictive predictives. We then fitted the model to each of these datasets. To validate the computational faithfulness of the model, we then compared for each simulated dataset, the initial parameter value drawn from the prior (i.e., the draw that generated the data) to the samples from the posterior. This involved tallying the number of posterior samples which are smaller than the prior draw. When the model is computational faithful, it should be able to recover the prior distribution accurately. Specifically, all ranks –that is, the count of posterior samples smaller than the generating parameter value– should be equally probable, resulting in an approximately uniform distribution of rank statistics. <a href="#fig-sbc" class="quarto-xref">Figure&nbsp;2</a> depicts the results from the simulation based calibration for the fixed effect parameters and a random subset of country-level parameters (random effects) and confirm the approximately uniform distribution. These results shows that the MCMC algorithm faithfully recovers the prior distribution.</p>
+<p>Note that for the simulation-based calibration, we do need to thin the chains, because we need the draws from the posterior to be roughly independent in order to get an accurate estimate of the rank statistic.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize the simulation study </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>nsims_target   <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>nsims_ready    <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">list.files</span>(output_file, <span class="at">pattern=</span><span class="st">'sim_mu_post'</span>, </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">full.names =</span> <span class="cn">TRUE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>nsims          <span class="ot">&lt;-</span> nsims_target <span class="sc">-</span> nsims_ready</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>pred_responses <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">paste0</span>(output_file, <span class="st">'prior_pred.csv'</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>mu_prior   <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">read.csv</span>(<span class="fu">paste0</span>(output_file, <span class="st">'sim_mu_prior.csv'</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">header =</span> <span class="cn">TRUE</span>)[,<span class="dv">2</span>])</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>var_prior  <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">read.csv</span>(<span class="fu">paste0</span>(output_file, <span class="st">'sim_var_prior.csv'</span>), </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">header =</span> <span class="cn">TRUE</span>)[,<span class="dv">2</span>])</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># load prior parameters samples </span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>sbc_prior <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">paste0</span>(output_file, <span class="st">'prior_pred_all.csv'</span>),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                      <span class="at">header =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span>nsims_target,] </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>par_names_post <span class="ot">&lt;-</span> par_names_prior <span class="ot">&lt;-</span> <span class="fu">colnames</span>(sbc_prior)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(mu_prior) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(var_prior) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(sbc_prior)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run the simulation study (this takes a while, even for this simple model)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># you only have to run this one though</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># the output files are also included in the github repository, so you can </span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># download those and inspect the results directly.</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>dataset <span class="ot">&lt;-</span> dat</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nsims){</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add responses from prior predictives to the data</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  dataset<span class="sc">$</span>resp <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(pred_responses[nsims_ready <span class="sc">+</span> n,])</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># fit the model on the simulated data</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  fit_post <span class="ot">&lt;-</span> <span class="fu">brm</span>(<span class="at">data =</span> dataset, <span class="at">family =</span> binomial,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                  resp <span class="sc">|</span> <span class="fu">trials</span>(<span class="dv">3</span>) <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> cat <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> cat <span class="sc">|</span> site),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="sc">-</span><span class="fl">1.39</span>, <span class="fl">0.65</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">0.98</span>,<span class="fl">0.42</span>), <span class="at">class =</span> b),</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">0.5</span>,<span class="fl">0.2</span>), <span class="at">class =</span> sd),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">prior</span>(<span class="fu">lkj</span>(<span class="dv">2</span>), <span class="at">class =</span> L)),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter =</span> iterations, <span class="at">warmup =</span> warmup, </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                  <span class="at">seed =</span> <span class="dv">2025</span>, <span class="at">backend =</span> <span class="st">"cmdstanr"</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get posterior samples</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  sbc_post <span class="ot">&lt;-</span> posterior<span class="sc">::</span><span class="fu">as_draws_df</span>(fit_post)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  sbc_post <span class="ot">&lt;-</span> sbc_post[, <span class="dv">1</span><span class="sc">:</span>(<span class="fu">which</span>(<span class="fu">colnames</span>(sbc_post) <span class="sc">==</span> <span class="st">'lprior'</span>)<span class="sc">-</span><span class="dv">1</span>)]</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  par_names_post  <span class="ot">&lt;-</span> <span class="fu">colnames</span>(sbc_post) </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  par_names_prior <span class="ot">&lt;-</span> <span class="fu">colnames</span>(sbc_prior)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute the posterior medians and variances</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  mu_post  <span class="ot">&lt;-</span> <span class="fu">apply</span>(sbc_post, <span class="dv">2</span>, mean)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  var_post <span class="ot">&lt;-</span> <span class="fu">apply</span>(sbc_post, <span class="dv">2</span>, var) </span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute the 50% and 80% credible intervals</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  ci_post  <span class="ot">&lt;-</span> <span class="fu">apply</span>(sbc_post, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">quantile</span>(x, <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="fl">0.25</span>, <span class="fl">0.75</span>)))</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># thin the chains</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  sbc_post <span class="ot">&lt;-</span> sbc_post[<span class="fu">seq</span>(<span class="at">from=</span><span class="dv">1</span>, <span class="at">to=</span><span class="fu">nrow</span>(sbc_post), <span class="at">by =</span> <span class="dv">100</span>),]</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  rank <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">ncol =</span> <span class="fu">ncol</span>(sbc_post)))</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(rank) <span class="ot">&lt;-</span> par_names_post</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  <span class="co"># loop over parameters</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(par_names_post)) {</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># count the posterior samples that are smaller than the draw from the prior</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>    rank[, j] <span class="ot">&lt;-</span> <span class="fu">sum</span>(sbc_post[, par_names_post[j]] <span class="sc">&lt;</span> sbc_prior[nsims_ready <span class="sc">+</span> n,</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>                                                               par_names_prior[j]])</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>  <span class="co"># export results</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write.csv</span>(mu_post, </span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(output_file, <span class="st">'sim_mu_post_'</span>, nsims_ready <span class="sc">+</span> n, <span class="st">'.csv'</span>), </span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>            <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write.csv</span>(var_post, </span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(output_file, <span class="st">'sim_var_post_'</span>, nsims_ready <span class="sc">+</span> n, <span class="st">'.csv'</span>), </span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>            <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write.csv</span>(ci_post, </span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(output_file, <span class="st">'sim_ci_post_'</span>, nsims_ready <span class="sc">+</span> n, <span class="st">'.csv'</span>), </span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>            <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write.csv</span>(rank, </span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>            <span class="fu">paste0</span>(output_file, <span class="st">'sim_rank_'</span>, nsims_ready <span class="sc">+</span> n, <span class="st">'.csv'</span>), </span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>            <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rm</span>(fit_post)</span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load the simulated prior and posterior estimates </span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>nsims_ready    <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(<span class="st">'sim_mu_post'</span>, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">list.files</span>(output_file, <span class="at">pattern=</span><span class="st">'sim_mu_post'</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">full.names =</span> <span class="cn">TRUE</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>sbc_prior <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">paste0</span>(output_file, <span class="st">'prior_pred_all.csv'</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">header =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span>nsims_ready,] </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>npars <span class="ot">&lt;-</span> <span class="fu">ncol</span>(sbc_prior) <span class="co"># 26</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># compute necessary quantities</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>rank           <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">0</span>, <span class="at">ncol =</span> npars))</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>mu_post        <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">0</span>, <span class="at">ncol =</span> npars))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>var_post       <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">0</span>, <span class="at">ncol =</span> npars))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>ci_post        <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(rank) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(mu_post) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(var_post) <span class="ot">&lt;-</span> par_names_post</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nsims_ready){</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  mu_post[<span class="fu">nrow</span>(mu_post) <span class="sc">+</span> <span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">read.csv</span>(<span class="fu">paste0</span>(output_file, </span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>                                                   <span class="st">'sim_mu_post_'</span>, n, <span class="st">'.csv'</span>),</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">header =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  var_post[<span class="fu">nrow</span>(var_post) <span class="sc">+</span> <span class="dv">1</span>,] <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">read.csv</span>(<span class="fu">paste0</span>(output_file, </span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                                                     <span class="st">'sim_var_post_'</span>, n, <span class="st">'.csv'</span>),</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">header =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  rank[<span class="fu">nrow</span>(rank) <span class="sc">+</span> <span class="dv">1</span>,] <span class="ot">&lt;-</span>  <span class="fu">t</span>(<span class="fu">read.csv</span>(<span class="fu">paste0</span>(output_file, </span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>                                              <span class="st">'sim_rank_'</span>, n, <span class="st">'.csv'</span>),</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">header =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  ci_post[[<span class="fu">length</span>(ci_post) <span class="sc">+</span> <span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">paste0</span>(output_file, </span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>                                                    <span class="st">'sim_ci_post_'</span>, n, <span class="st">'.csv'</span>),</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>                                             <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># select the parameters to plot (fixed effects of intercept and condition, </span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># plus a random subset of 3 random effects (country-level))</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>nfix  <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(<span class="st">'^b_|^sd_'</span>, <span class="fu">colnames</span>(sbc_prior)))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>nran <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">grepl</span>(<span class="st">'^r_site'</span>, <span class="fu">colnames</span>(sbc_prior)))<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> <span class="fu">unique</span>(dat<span class="sc">$</span>country)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>all <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(all){</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  par_vector   <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>npars</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  param_labels <span class="ot">&lt;-</span> par_names_post</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  ran_index <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>nran, <span class="dv">4</span>))</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># four random intercepts and condition effects </span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  intercepts <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'r_site.'</span>, ran_index, <span class="st">'.Intercept.'</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  effects    <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">'r_site.'</span>, ran_index, <span class="st">'.cat'</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  fixed <span class="ot">&lt;-</span> <span class="fu">colnames</span>(sbc_prior)[<span class="dv">1</span><span class="sc">:</span>nfix]</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  names <span class="ot">&lt;-</span> <span class="fu">c</span>(fixed, intercepts, effects)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  par_vector <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(n <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(names)){</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    new_index  <span class="ot">&lt;-</span> <span class="fu">grep</span>(names[n], <span class="fu">colnames</span>(sbc_prior)) </span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    par_vector <span class="ot">&lt;-</span> <span class="fu">c</span>(par_vector, new_index)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># gives nice labels for plotting </span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  param_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">bquote</span>(<span class="st">'Intercept'</span>[.(countries[ran_index[<span class="dv">1</span>]])]),</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">bquote</span>(<span class="st">'Intercept'</span>[.(countries[ran_index[<span class="dv">2</span>]])]),</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">bquote</span>(<span class="st">'Intercept'</span>[.(countries[ran_index[<span class="dv">3</span>]])]),</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">bquote</span>(<span class="st">'Intercept'</span>[.(countries[ran_index[<span class="dv">4</span>]])]),</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">bquote</span>(<span class="st">'Condition'</span>[.(countries[ran_index[<span class="dv">1</span>]])]),</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">bquote</span>(<span class="st">'Condition'</span>[.(countries[ran_index[<span class="dv">2</span>]])]),</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">bquote</span>(<span class="st">'Condition'</span>[.(countries[ran_index[<span class="dv">3</span>]])]),</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">bquote</span>(<span class="st">'Condition'</span>[.(countries[ran_index[<span class="dv">4</span>]])]),</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">expression</span>(sigma[<span class="st">'Intercept'</span>]),</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">expression</span>(sigma[<span class="st">'Condition'</span>]),</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">expression</span>(mu[<span class="st">'Intercept'</span>]),</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">expression</span>(mu[<span class="st">'Condition'</span>]))</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>transparentColor <span class="ot">&lt;-</span> <span class="cf">function</span>(color, <span class="at">percent =</span> <span class="dv">50</span>, <span class="at">name =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  rgb.val <span class="ot">&lt;-</span> grDevices<span class="sc">::</span><span class="fu">col2rgb</span>(color)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="do">## Make new color using input color as base and alpha set by transparency</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  t.col <span class="ot">&lt;-</span> <span class="fu">rgb</span>(rgb.val[<span class="dv">1</span>], rgb.val[<span class="dv">2</span>], rgb.val[<span class="dv">3</span>],</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">max =</span> <span class="dv">255</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">alpha =</span> (<span class="dv">100</span> <span class="sc">-</span> percent) <span class="sc">*</span> <span class="dv">255</span> <span class="sc">/</span> <span class="dv">100</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">names =</span> name)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(t.col)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>band_color <span class="ot">&lt;-</span> <span class="fu">transparentColor</span>(<span class="at">color =</span> <span class="st">"grey36"</span>, <span class="at">percent =</span> <span class="dv">90</span>, <span class="at">name =</span> <span class="st">'colpost'</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>hist_color <span class="ot">&lt;-</span> <span class="fu">transparentColor</span>(<span class="at">color =</span> <span class="st">"slateblue"</span>, <span class="at">percent =</span> <span class="dv">70</span>, <span class="at">name =</span> <span class="st">'colpost'</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the historgrams</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>))</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co"># grey band</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>nr_simulations <span class="ot">&lt;-</span> nsims_ready</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co"># nr_samples_post_for_every_prior_sample</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="dv">100</span> <span class="co"># equivalent to highest number of rank</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>nr_of_bins <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co"># equals ideal number of samples per bin</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co"># how_many_sims_in_how_many_bins</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>thinning <span class="ot">&lt;-</span> nr_simulations<span class="sc">/</span>nr_of_bins</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co"># for the code later</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>breaks <span class="ot">&lt;-</span> L<span class="sc">/</span>nr_of_bins</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>low  <span class="ot">&lt;-</span> <span class="fu">qbinom</span>(<span class="fl">0.025</span>, nr_simulations, thinning<span class="sc">/</span>nr_simulations)</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>mid  <span class="ot">&lt;-</span> <span class="fu">qbinom</span>(<span class="fl">0.5</span>, nr_simulations, thinning<span class="sc">/</span>nr_simulations)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>high <span class="ot">&lt;-</span> <span class="fu">qbinom</span>(<span class="fl">0.975</span>, nr_simulations, thinning<span class="sc">/</span>nr_simulations)</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">1</span>, <span class="at">to =</span> L)</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="fu">seq_along</span>(par_vector)){</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>  hist_param <span class="ot">&lt;-</span> <span class="fu">hist</span>(rank[, par_vector[j]], </span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> nr_of_bins, </span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>                     <span class="at">plot=</span><span class="cn">FALSE</span>)</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="dv">1</span>, <span class="at">type=</span><span class="st">'n'</span>,</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>       <span class="at">las =</span> <span class="dv">1</span>, </span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> param_labels[j], </span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">'Rank'</span>, <span class="at">ylab =</span> <span class="st">'Frequency'</span>,</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty=</span><span class="st">'n'</span>, <span class="at">cex.lab=</span><span class="fl">1.5</span>, <span class="at">cex.main=</span><span class="dv">2</span>,</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>),</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, high <span class="sc">+</span> <span class="dv">5</span>)</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">polygon</span>(<span class="fu">c</span>(x, <span class="fu">rev</span>(x)), <span class="fu">rep</span>(<span class="fu">c</span>(high, low), <span class="at">each =</span> L), <span class="at">col =</span> band_color, <span class="at">border =</span> <span class="cn">NA</span>)</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">abline</span>(<span class="at">h=</span><span class="fu">c</span>(mid, high, low), <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>), <span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">3</span>))</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(hist_param, <span class="at">col =</span> hist_color, <span class="at">add =</span> <span class="cn">TRUE</span>) <span class="co"># Add 2nd histogram using different color</span></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-sbc" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sbc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="SBC_files/figure-html/fig-sbc-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sbc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Histograms of the rank statistic for simulated data featuring 10 countries and 60 subjects per country. The grey band represents the expected distribution of ranks assuming a uniform distribution. The rank statistic for each parameter is approximately uniformly distributed which indicates a good recovery of the prior distribution.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>A downside of the rank histogram is that the interpretation depends on the width of the bins. A more informative way to visualize the rank statistics is to plot the empirical cumulative distribution function (ECDF) of the ranks, and more specifically, the difference between the perfectly uniform CDF and the empirical CDF of the ranks, including the 95% interval of expected deviations. As shown in <a href="#fig-sbc-ecdf" class="quarto-xref">Figure&nbsp;3</a>, for all parameters, the ECDF of the ranks is approximately uniform (i.e., it stays within the band), which indicates that the model is computationally faithful, that is, unbiased with the appropriate level of certainty.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plot_sbc_ecdf_diff <span class="ot">&lt;-</span> <span class="cf">function</span>(ranks, <span class="at">n_rep =</span> <span class="dv">10000</span>, <span class="at">conf_level =</span> <span class="fl">0.95</span>, <span class="at">main =</span> <span class="st">"ECDF difference"</span>) {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  ranks <span class="ot">&lt;-</span> <span class="fu">sort</span>(ranks)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  n_samples <span class="ot">&lt;-</span> <span class="fu">length</span>(ranks)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  xvals <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="fu">max</span>(ranks)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Empirical ECDF</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  ecdf_vals <span class="ot">&lt;-</span> <span class="fu">ecdf</span>(ranks)(xvals)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Theoretical uniform ECDF</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  uniform_ecdf <span class="ot">&lt;-</span> xvals <span class="sc">/</span> <span class="fu">max</span>(xvals)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Simulate ECDFs under uniform null</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  sim_ecdfs <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">replicate</span>(n_rep, <span class="fu">ecdf</span>(<span class="fu">sample</span>(xvals, <span class="at">size =</span> n_samples, <span class="at">replace =</span> <span class="cn">TRUE</span>))(xvals)))</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  sim_diff <span class="ot">&lt;-</span> <span class="fu">sweep</span>(sim_ecdfs, <span class="dv">2</span>, uniform_ecdf, <span class="st">"-"</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Compute confidence bands for the difference</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  lower <span class="ot">&lt;-</span> <span class="fu">apply</span>(sim_diff, <span class="dv">2</span>, quantile, <span class="at">probs =</span> (<span class="dv">1</span> <span class="sc">-</span> conf_level) <span class="sc">/</span> <span class="dv">2</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  upper <span class="ot">&lt;-</span> <span class="fu">apply</span>(sim_diff, <span class="dv">2</span>, quantile, <span class="at">probs =</span> <span class="dv">1</span> <span class="sc">-</span> (<span class="dv">1</span> <span class="sc">-</span> conf_level) <span class="sc">/</span> <span class="dv">2</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Compute difference between observed ECDF and uniform</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  observed_diff <span class="ot">&lt;-</span> ecdf_vals <span class="sc">-</span> uniform_ecdf</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(xvals, observed_diff, <span class="at">type =</span> <span class="st">"n"</span>, <span class="at">bty =</span> <span class="st">"n"</span>,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylim =</span> <span class="fu">range</span>(<span class="fu">c</span>(observed_diff, lower, upper)),</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Rank"</span>, <span class="at">ylab =</span> <span class="st">"ECDF difference"</span>, <span class="at">main =</span> main)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Confidence band</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">polygon</span>(<span class="fu">c</span>(xvals, <span class="fu">rev</span>(xvals)), <span class="fu">c</span>(upper, <span class="fu">rev</span>(lower)), <span class="at">col =</span> <span class="st">"lightgray"</span>, <span class="at">border =</span> <span class="cn">NA</span>)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Plot observed ECDF difference</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(xvals, observed_diff, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"slateblue"</span>)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reference line: zero difference</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"darkgray"</span>)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="co"># plot ECDF for selected parameters</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>))</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="fu">seq_along</span>(par_vector)){</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_sbc_ecdf_diff</span>(rank[,j], <span class="at">main =</span> param_labels[j])</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-sbc-ecdf" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sbc-ecdf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="SBC_files/figure-html/fig-sbc-ecdf-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sbc-ecdf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Empirical cumulative distribution function (ECDF) of the ranks of the simulated data. The grey band represents the expected distribution of ranks assuming a uniform distribution. The ECDF of the ranks is approximately uniform which indicates a good recovery of the prior distribution.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>These plots are not only useful to detect if the model is well-calibrated or not, but they can also provide insight into the type of misspecification. See the lecture slides for examples of different shapes and what they signal about issues in the model.</p>
+</section>
+<section id="model-sensitivity" class="level2">
+<h2 class="anchored" data-anchor-id="model-sensitivity">3. Model sensitivity</h2>
+<p>Next we assess model sensitivity to confirm that (1) the implemented MCMC algorithm returns unbiased estimates and that (2) the data effectively update the prior beliefs (i.e., the likelihood should reduce the prior uncertainty yielding a lower posterior variance). For that, we depict the posterior z-scores of each parameter as a function of the posterior contraction for all simulated datasets. Ideally, posterior z-scores cluster around zero, indicating minimal overfitting to incorrect values and no prior/likelihood mismatch. Posterior contraction scores ideally concentrate around 1 indicating effective updating from prior to posterior. <a href="#fig-contract" class="quarto-xref">Figure&nbsp;4</a> plots the posterior z-score as a function of the posterior contraction for all group level parameters in the model as well as a random subset of parameters on the individual level. The outcomes of our simulations reveal favorable posterior z-scores, predominantly clustering around zero. The outcomes of the posterior contraction are also good, with many values close to one. Note that the level of posterior contraction also depends on the sample size; in small samples, less updating is expected.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># based on the model specification</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>z           <span class="ot">&lt;-</span> (mu_post <span class="sc">-</span> sbc_prior) <span class="sc">/</span> <span class="fu">sqrt</span>(var_post)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>contraction <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(var_post, <span class="dv">1</span>, <span class="cf">function</span>(x)  <span class="dv">1</span> <span class="sc">-</span> (x<span class="sc">/</span>var_prior)))</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># scatter plot 1</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="fu">seq_along</span>(par_vector)){</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(contraction[,par_vector[j]], z[,par_vector[j]],</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">'Posterior Contraction'</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab =</span> <span class="st">'Z Score'</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> param_labels[j],</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">4</span>),</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">las =</span> <span class="dv">1</span>, <span class="at">bty =</span> <span class="st">'n'</span>, <span class="at">cex.main=</span><span class="dv">2</span>,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">1</span>, <span class="at">cex.lab=</span><span class="fl">1.5</span>,</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">'slateblue'</span>)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>, <span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(<span class="fu">mean</span>(contraction[,par_vector[j]]), <span class="fu">mean</span>(z[, par_vector[j]]),</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">cex =</span> <span class="dv">2</span>, <span class="at">lwd=</span><span class="fl">1.5</span>,</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>         <span class="co">#col = 'grey36',</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">bg =</span> <span class="st">"lightgrey"</span>,</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>         <span class="at">pch =</span> <span class="dv">21</span>)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-contract" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-contract-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="SBC_files/figure-html/fig-contract-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-contract-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Assessment of model sensitivity. The grey dots depict the means of the distributions. Z-scores (y-axis) clustering around zero indicate that the model returns unbiased estimates. Posterior contraction (x-axis) ranges from around 0.5 to 1, which indicates satisfactory to good updating of model parameters.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In addition to assessing model sensitivity, we can also depict the relationship between the generating parameter values and the posterior estimates to evaluate the model’s ability to recover true parameter values. A perfect recovery of the true parameter values would result in a correlation of 1. Our results, shown in <a href="#fig-post-corr" class="quarto-xref">Figure&nbsp;5</a>, show correlations between <span class="math inline">\(0.73\)</span> to <span class="math inline">\(0.97\)</span> across population- and country-level parameters which again indicates good recovery.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># scatter plot</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="fu">seq_along</span>(par_vector)){</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  pos_x <span class="ot">&lt;-</span> <span class="fu">quantile</span>(sbc_prior[,par_vector[j]], <span class="fl">0.80</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  pos_y <span class="ot">&lt;-</span> <span class="fu">quantile</span>(mu_post[,par_vector[j]], <span class="fl">0.90</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  correlation <span class="ot">&lt;-</span> <span class="fu">cor</span>(sbc_prior[,par_vector[j]], mu_post[,par_vector[j]])</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(sbc_prior[,par_vector[j]], mu_post[,par_vector[j]],</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">'True'</span>,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab =</span> <span class="st">'Estimated'</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> param_labels[j],</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>       <span class="co">#main = colnames(mu_post)[par_vector[j]],</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">las =</span> <span class="dv">1</span>, <span class="at">bty =</span> <span class="st">'n'</span>, <span class="at">cex.main=</span><span class="dv">2</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">21</span>,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylim=</span><span class="fu">c</span>(<span class="fu">min</span>(sbc_prior[,par_vector[j]]), <span class="fu">max</span>(sbc_prior[,par_vector[j]])),</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">'slateblue'</span>, <span class="at">bg =</span> <span class="st">'lightgrey'</span>)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">lty=</span><span class="dv">3</span>, <span class="at">col =</span> <span class="st">"grey36"</span>)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">'bottomright'</span>, <span class="at">legend=</span><span class="fu">paste0</span>(<span class="st">'r = '</span>, <span class="fu">round</span>(correlation, <span class="dv">2</span>)), <span class="at">bty=</span><span class="st">'n'</span>, <span class="at">cex =</span> <span class="fl">1.5</span>)</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-post-corr" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-post-corr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="SBC_files/figure-html/fig-post-corr-1.png" class="img-fluid figure-img" width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-post-corr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: True versus estimated parameter values. Correlations between true values (x-axis) and estimated parameter values (y-axis) range between <span class="math inline">\(0.73\)</span> to <span class="math inline">\(0.97\)</span> which indicates good recovery of the model parameters.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="posterior-predictions" class="level2">
+<h2 class="anchored" data-anchor-id="posterior-predictions">4. Posterior predictions</h2>
+<p>The posterior predictive distribution can be interpreted as the model’s attempt to re-describe the behavioral data. Predictions from an adequate model should resemble the behavioral data. As seen before, the aggregated binomial model is not a perfect fit for these data, as it doesn’t capture the inflation of 0/3 and 3/3 well. <a href="#fig-post-preds" class="quarto-xref">Figure&nbsp;6</a> shows that the misfit is especially present in the mind condition, where the model predicts many 1/3 and 2/3 responses, while the data show a enhanced preference for 0/3 and 3/3 responses. Note that the posterior average per condition is close to the observed average, so we can likely trust the model coefficients, even with this misfit in the exact pattern of the data.</p>
+<p>In this case, we may want to consider alternative likelihood functions, such as a zero-inflated binomial model or an ordinal model, as discussed on Tuesday. Remember, however, that you sometimes need to make a trade-off between model complexity and model fit; easier models are typically easier to estimate and interpret, but might show more misfit to the exact data pattern. As a researcher you need to decide what fit is good enough, and ideally conduct sensitivity analyses on other model structures.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(p1, p2, p3,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">layout_matrix =</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                                   <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-post-preds" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-post-preds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="SBC_files/figure-html/fig-post-preds-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-post-preds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Posterior predictive distribution of the data. The model predicts responses in the body condition fairly well (bottom left), but shows clear misfit in the mind condition (bottom right), as it does not capture the inflation of 0/3 and 3/3 responses.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="references" class="level2 unnumbered">
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-hoogeveen2023does" class="csl-entry" role="listitem">
+Hoogeveen, Suzanne, Sacha Altay, Theiss Bendixen, Renatas Berniūnas, Joseph A Bulbulia, Arik Cheshin, Claudio Gentili, et al. 2023. <span>“Does She Still Love and Feel Hungry? <span>Afterlife</span> Beliefs, Mind-Body Dualism, and Religion Across 24 Countries.”</span> PsyArXiv. <a href="https://doi.org/10.31234/osf.io/tvycp">https://doi.org/10.31234/osf.io/tvycp</a>.
+</div>
+<div id="ref-kucharsky2021hidden" class="csl-entry" role="listitem">
+Kucharský, Šimon, N.-Han Tran, Karel Veldkamp, Maartje Raijmakers, and Ingmar Visser. 2021. <span>“Hidden <span>Markov Models</span> of <span>Evidence Accumulation</span> in <span>Speeded Decision Tasks</span>.”</span> <em>Computational Brain &amp; Behavior</em> 4 (4): 416–41. <a href="https://doi.org/10.1007/s42113-021-00115-0">https://doi.org/10.1007/s42113-021-00115-0</a>.
+</div>
+<div id="ref-schad2021principled" class="csl-entry" role="listitem">
+Schad, Daniel J., Michael Betancourt, and Shravan Vasishth. 2021. <span>“Toward a Principled <span>Bayesian</span> Workflow in Cognitive Science.”</span> <em>Psychological Methods</em> 26 (1): 103–26. <a href="https://doi.org/10.1037/met0000275">https://doi.org/10.1037/met0000275</a>.
+</div>
+<div id="ref-talts2018validating" class="csl-entry" role="listitem">
+Talts, Sean, Michael Betancourt, Daniel Simpson, Aki Vehtari, and Andrew Gelman. 2018. <span>“Validating <span>Bayesian Inference Algorithms</span> with <span>Simulation-Based Calibration</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.1804.06788">https://doi.org/10.48550/arXiv.1804.06788</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

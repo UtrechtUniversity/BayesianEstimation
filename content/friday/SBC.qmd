@@ -13,7 +13,7 @@ execute:
   echo: true
 ---
 
-# Simulation-based calibration 
+*Disclaimer: This is a draft version of the tutorial. Please let me know about any  mistakes (and excuse any typos).*
 
 We have already seen various methods to assess the appropriateness of our priors and posteriors, by means of prior/posterior predictive checks. Another method for validating the appropriateness of Bayesian models is based on assessing the faithfulness of the computational model, i.e., whether the model can recover the parameters that were used to generate the data. This is often referred to as simulation-based calibration (SBC) [@talts2018validating]. Here, we follow the Bayesian workflow proposed in @kucharsky2021hidden, based on the recommendations by @talts2018validating and @schad2021principled. 
 
@@ -36,6 +36,9 @@ In practice this involves:
 7. Assess model sensitivity by comparing the posterior estimates to the prior estimates (i.e., is the model unbiased and can it effectively update prior beliefs?)
 8. Fit the model to the actual data
 9. Assess the adequacy of the posterior estimates and predictions 
+
+## Example: afterlife beliefs and mind-body dualism
+To show SBC in action, we'll apply it to estimating a multilevel model on cross-cultural variation in afterlife beliefs and mind-body dualism, using a subset of the data from @hoogeveen2023does. The idea that high-level mental processes (e.g., love) continue after physical death, whereas bodily processes (e.g., hunger) cease. The original data consists of 10195 subjects from 24 countries, who each provided 6 continuation ratings (i.e., 61170 observations). Specifically, responses were tabulated as x out of 3 'yes, continues' responses in the body-condition (hunger, working brains, hearing) and x out of 3 'yes, continues' responses in the mind-condition (love, knowledge, desire). In the example here, we use a subset of the data with $60$ subjects across $10$ countries.
 
 ## 1. Prior predictive checks
 
@@ -215,6 +218,8 @@ colnames(mu_prior) <- colnames(var_prior) <- colnames(sbc_prior)
 ```{r run-simulation-study-inf, eval = runSims}
 # run the simulation study (this takes a while, even for this simple model)
 # you only have to run this one though
+# the output files are also included in the github repository, so you can 
+# download those and inspect the results directly.
 dataset <- dat
 for(n in 1:nsims){
   # add responses from prior predictives to the data
