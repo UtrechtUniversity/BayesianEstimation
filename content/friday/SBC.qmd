@@ -47,7 +47,6 @@ Because we're working with a (aggregated) binomial model (i.e., 'yes' vs. 'no' r
 
 
 ```{r setup}
-#| include: false
 #| cache: false
 library(brms)
 library(dplyr)
@@ -102,7 +101,6 @@ The prior predictions visualized in @fig-prior-preds confirm these expectations.
 
 
 ```{r prior-preds-inf}
-#| include: false
 #| cache: true
 # specify priors based on previous literature
 prior_inf <- c(brms::prior(normal(-1.39, 0.65), class = Intercept),
@@ -535,7 +533,6 @@ In this case, we may want to consider alternative likelihood functions, such as 
 
 ```{r posterior-predictions}
 #| cache: true
-#| include: false
 
 # now finally fit the model with real data
 fit_inf <- brm(data = dat, family = binomial,

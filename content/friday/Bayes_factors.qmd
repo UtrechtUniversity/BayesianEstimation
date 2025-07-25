@@ -44,7 +44,6 @@ Consider the following hypotheses:
 - $\mathcal{H3}$: the difference between mental and bodily continuation differs across countries. 
 
 ```{r setup}
-#| include: false
 #| cache: false
 library(brms)
 library(dplyr)
@@ -85,7 +84,6 @@ sd <- (max - min) / 4 # 0.43
 
 
 ```{r fit-models}
-#| include: false
 iterations <- 6000
 warmup <- 1000
 # we slightly change the formula to specify the intercept as a regression term, 
